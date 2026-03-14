@@ -194,3 +194,5 @@ export const clearAppLog = () =>
   invoke<void>("clear_app_log");
 export const getAppLogPath = () =>
   invoke<string>("get_app_log_path");
+export const openDataDir = () =>
+  invoke<void>("open_data_dir");

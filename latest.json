@@ -1,11 +1,11 @@
 {
-  "version": "0.10.0",
-  "notes": "v0.10.0 - Clickable updated badge shows session update summary toast",
-  "pub_date": "2026-03-14T23:55:59Z",
+  "version": "0.11.0",
+  "notes": "v0.11.0 - Add open folder button to Data Location setting",
+  "pub_date": "2026-03-15T00:08:26Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUV6UDAzVFhaeWlGMnIrRjRHb0ovR3NIbVdwdDEzMkdHbnRHTTkzeEl5VndmWWdrVm9ReXYvQ1NucHpKZ2ZuUWh3YkpjdzlYM21QK1NvQjYvUDBObmdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDkyOTI2CWZpbGU6TWVnYUxvYWRfMC4xMC4wX3g2NC1zZXR1cC5uc2lzLnppcApwb2FERFd1MmZmMm1kQWFZNWFhTWtNTGJQT3N4UTRjaUVrMEswT2QvSnhDaDY2YlVSQ09vQkpWQW1kRmc4V21TVUwxVDVOWHlxdDJiMlNjYTY4WTlBdz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.10.0/MegaLoad_0.10.0_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU9hYmV6ZDNqR0lmNUpQZ0VkZ0tBc0U4cmF0WHhsNjYzKzFGQ0RDOHcwN0pFdEhRRktZMUNsUmRGWGRTeDBTNmJCVlo5OVRkOE1QUzdzL0FMOURvQ0FnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDkzNjkyCWZpbGU6TWVnYUxvYWRfMC4xMS4wX3g2NC1zZXR1cC5uc2lzLnppcApQNlZKYThSRE4ycWdjczdwUTd0emJ2NHBQY2szS2YxV1ZKa0JOWktxOENMajdMeUd3SDRUNzBBZmdYeFJBRnJmZFhZQzJBWDExSTdJSE5QNGw4UW1CQT09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.11.0/MegaLoad_0.11.0_x64-setup.nsis.zip"
     }
   }
 }

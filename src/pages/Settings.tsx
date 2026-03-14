@@ -8,6 +8,7 @@ import {
   readAppLog,
   clearAppLog,
   getAppLogPath,
+  openDataDir,
 } from "../lib/tauri-api";
 import { useProfileStore } from "../stores/profileStore";
 import { useSettingsStore } from "../stores/settingsStore";
@@ -26,8 +27,6 @@ import {
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
-import { open } from "@tauri-apps/plugin-shell";
-import { appDataDir } from "@tauri-apps/api/path";
 import { cn } from "../lib/utils";
 
 export function Settings() {
@@ -404,7 +403,7 @@ export function Settings() {
             %APPDATA%\MegaLoad\
           </p>
           <button
-            onClick={async () => { const dir = await appDataDir(); open(dir); }}
+            onClick={() => openDataDir()}
             className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs transition-colors"
             title="Open in Explorer"
           >

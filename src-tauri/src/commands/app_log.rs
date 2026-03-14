@@ -161,3 +161,14 @@ pub fn clear_app_log() -> Result<(), String> {
 pub fn get_app_log_path() -> String {
     log_path().to_string_lossy().to_string()
 }
+
+#[command]
+pub fn open_data_dir() -> Result<(), String> {
+    let dir = megaload_dir();
+    fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    std::process::Command::new("explorer")
+        .arg(&dir)
+        .spawn()
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}
