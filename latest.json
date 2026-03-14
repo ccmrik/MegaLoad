@@ -1,11 +1,11 @@
-{
+﻿{
     "platforms":  {
                       "windows-x86_64":  {
-                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUpYRzhiM201M0xEcVR4UFRxaXBLSVNCYVcyRHhGZWtVNi85UnRHMVJtbk5MT0REQWtzaXJKRElRWXdvYWFZWHRMMmcrcEJaOXI3UDlYQjB4T1VTSGdzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDc5MDY5CWZpbGU6TWVnYUxvYWRfMC4zLjBfeDY0LXNldHVwLm5zaXMuemlwClh4UGoyU0cwYUxSTmhDZWxqRUszbkJxd3ZvRm44N0xONDk5Wi9hZVlMYm9VWTZnTzFGbGxVdHN1VW5Xem9qVGRtei9FY0w2RTZJemljbXI3c1kxVURnPT0K",
-                                             "url":  "https://github.com/ccmrik/MegaLoad/releases/download/v0.3.0/MegaLoad_0.3.0_x64-setup.nsis.zip"
+                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOVBLSVFxYUhkeUZCakt4a1Zub3plTnVGQUNjd1F6WnBrcHhyNUd2dmk2Y09MTjlUZmVsc21YN0pPV0pRdGtDa3pIOE5vbFJNV0pvamNvQk5ZOWtMb3c0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDgyNDQyCWZpbGU6TWVnYUxvYWRfMC41LjBfeDY0LXNldHVwLm5zaXMuemlwCkVqQkNXeFpzZU81RjZ6bVdzS3VxSVBOdkE0ZHY1S29NaWdIUlJucTF5dUxOY2daYmJjc0FDb0hScFlOVnI4bGQ1Smk0Y3JIbW5EeE9rS1ZnWVdId0JBPT0K",
+                                             "url":  "https://github.com/ccmrik/MegaLoad/releases/download/v0.5.0/MegaLoad_0.5.0_x64-setup.nsis.zip"
                                          }
                   },
-    "pub_date":  "2026-03-14T20:04:39Z",
-    "version":  "v0.3.0",
-    "notes":  "v0.3.0 - Mod versions \u0026 descriptions on Mods page"
+    "pub_date":  "2026-03-14T21:01:11Z",
+    "version":  "0.5.0",
+    "notes":  "v0.5.0 - Valheim Norse theme + third-party mod metadata"
 }

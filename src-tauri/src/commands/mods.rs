@@ -49,13 +49,11 @@ pub fn get_mods(bepinex_path: String) -> Result<Vec<ModInfo>, String> {
         scan_mods_dir(&disabled_dir, false, &mut mods)?;
     }
 
-    // Enrich with versions and descriptions from manifest
+    // Enrich with versions and descriptions from MegaLoad manifest (overrides Thunderstore)
     for m in &mut mods {
         if let Some((ver, desc)) = manifest_info.get(&m.name) {
-            if m.version.is_none() {
-                m.version = Some(ver.clone());
-            }
-            if m.description.is_none() {
+            m.version = Some(ver.clone());
+            if desc.is_some() {
                 m.description = desc.clone();
             }
         }
@@ -77,6 +75,9 @@ fn scan_mods_dir(dir: &Path, enabled: bool, mods: &mut Vec<ModInfo>) -> Result<(
         }
 
         if path.is_dir() {
+            // Read Thunderstore manifest.json if present (third-party mod metadata)
+            let ts_manifest = read_thunderstore_manifest(&path);
+
             // Mod in its own folder — look for DLLs inside
             if let Ok(sub_entries) = fs::read_dir(&path) {
                 for sub_entry in sub_entries.flatten() {
@@ -92,9 +93,9 @@ fn scan_mods_dir(dir: &Path, enabled: bool, mods: &mut Vec<ModInfo>) -> Result<(
                             file_name: sub_entry.file_name().to_string_lossy().to_string(),
                             folder: file_name.clone(),
                             enabled,
-                            version: None,
+                            version: ts_manifest.as_ref().map(|m| m.0.clone()),
                             guid: None,
-                            description: None,
+                            description: ts_manifest.as_ref().and_then(|m| m.1.clone()),
                         });
                     }
                 }
@@ -119,6 +120,17 @@ fn scan_mods_dir(dir: &Path, enabled: bool, mods: &mut Vec<ModInfo>) -> Result<(
     }
 
     Ok(())
+}
+
+/// Read a Thunderstore manifest.json from a mod folder to get version and description.
+/// Returns (version, Option<description>) or None if not found/parseable.
+fn read_thunderstore_manifest(folder: &Path) -> Option<(String, Option<String>)> {
+    let manifest_path = folder.join("manifest.json");
+    let data = fs::read_to_string(&manifest_path).ok()?;
+    let json: serde_json::Value = serde_json::from_str(&data).ok()?;
+    let version = json["version_number"].as_str()?.to_string();
+    let description = json["description"].as_str().map(|s| s.to_string());
+    Some((version, description))
 }
 
 #[command]
