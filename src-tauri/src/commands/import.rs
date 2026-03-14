@@ -1,3 +1,4 @@
+use crate::commands::app_log::app_log;
 use crate::commands::profiles::create_profile;
 use std::fs;
 use std::path::Path;
@@ -21,6 +22,7 @@ fn copy_dir_recursive(src: &Path, dst: &Path) -> Result<(), String> {
 
 #[command]
 pub fn import_r2modman_profile(profile_name: String, r2_profile_path: String) -> Result<String, String> {
+    app_log(&format!("Importing R2Modman profile: {} from {}", profile_name, r2_profile_path));
     let r2_path = Path::new(&r2_profile_path);
     if !r2_path.exists() {
         return Err("R2Modman profile path does not exist".to_string());

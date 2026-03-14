@@ -1,3 +1,4 @@
+use crate::commands::app_log::app_log;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{Read, Write};
@@ -116,7 +117,7 @@ fn save_cache(mods: &[ModUpdateInfo]) {
 /// Fetch the mod manifest — a single HTTP request for all mod info.
 fn fetch_manifest() -> Result<ModManifest, String> {
     let resp = ureq::get(MANIFEST_URL)
-        .set("User-Agent", "MegaLoad/0.5.0")
+        .set("User-Agent", "MegaLoad/0.6.0")
         .call()
         .map_err(|e| {
             let msg = format!("{}", e);
@@ -183,6 +184,7 @@ fn evaluate_updates(
 /// Check all mods for updates. Uses cache if <15min old, otherwise ONE HTTP request.
 #[command]
 pub fn check_mod_updates(bepinex_path: String) -> Result<UpdateCheckResult, String> {
+    app_log("Checking for mod updates...");
     let plugins_dir = PathBuf::from(&bepinex_path).join("plugins");
     let installed_versions = load_installed_versions();
 
@@ -241,6 +243,9 @@ pub fn check_mod_updates(bepinex_path: String) -> Result<UpdateCheckResult, Stri
 
     save_cache(&results);
 
+    let update_count = results.iter().filter(|m| m.has_update).count();
+    app_log(&format!("Update check complete: {} mods checked, {} updates available", results.len(), update_count));
+
     Ok(UpdateCheckResult {
         mods: results,
         total_updates,
@@ -256,6 +261,7 @@ pub fn install_mod_update(
     download_url: String,
     version: String,
 ) -> Result<String, String> {
+    app_log(&format!("Downloading update for {} v{}", mod_name, version.trim_start_matches('v')));
     // Find mod info — try manifest first, fall back to name-based defaults
     let manifest = fetch_manifest().ok();
     let manifest_mod = manifest
@@ -280,7 +286,7 @@ pub fn install_mod_update(
 
     // Download the DLL (this is a direct file download, not an API call — no rate limit)
     let resp = ureq::get(&download_url)
-        .set("User-Agent", "MegaLoad/0.5.0")
+        .set("User-Agent", "MegaLoad/0.6.0")
         .call()
         .map_err(|e| format!("Download failed for {}: {}", mod_name, e))?;
 
@@ -297,6 +303,7 @@ pub fn install_mod_update(
     let mut versions = load_installed_versions();
     versions.insert(mod_name.clone(), version.clone());
     save_installed_versions(&versions);
+    app_log(&format!("Updated {} to v{}", mod_name, version.trim_start_matches('v')));
 
     Ok(format!(
         "Updated {} to v{}",
@@ -308,6 +315,7 @@ pub fn install_mod_update(
 /// Check for updates and install all available updates in one go.
 #[command]
 pub fn auto_update_mods(bepinex_path: String) -> Result<UpdateCheckResult, String> {
+    app_log("Auto-update: checking and installing all available updates...");
     let check = check_mod_updates(bepinex_path.clone())?;
 
     let mut updated_mods = check.mods.clone();

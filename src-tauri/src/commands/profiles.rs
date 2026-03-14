@@ -1,3 +1,4 @@
+use crate::commands::app_log::app_log;
 use crate::models::{Profile, ProfileStore};
 use std::fs;
 use std::path::PathBuf;
@@ -37,6 +38,7 @@ pub fn get_profiles() -> Result<ProfileStore, String> {
 
 #[command]
 pub fn create_profile(name: String) -> Result<Profile, String> {
+    app_log(&format!("Creating profile: {}", name));
     let mut store = load_profiles();
     let id = format!("{:x}", md5_hash(&name));
 
@@ -70,7 +72,10 @@ pub fn create_profile(name: String) -> Result<Profile, String> {
 
 #[command]
 pub fn delete_profile(id: String) -> Result<(), String> {
-    let mut store = load_profiles();
+    let store = load_profiles();
+    let name = store.profiles.iter().find(|p| p.id == id).map(|p| p.name.clone()).unwrap_or_default();
+    app_log(&format!("Deleting profile: {} ({})", name, id));
+    let mut store = store;
     store.profiles.retain(|p| p.id != id);
     if store.active_profile.as_deref() == Some(&id) {
         store.active_profile = store.profiles.first().map(|p| p.id.clone());
@@ -89,6 +94,8 @@ pub fn delete_profile(id: String) -> Result<(), String> {
 #[command]
 pub fn set_active_profile(id: String) -> Result<(), String> {
     let mut store = load_profiles();
+    let name = store.profiles.iter().find(|p| p.id == id).map(|p| p.name.clone()).unwrap_or_default();
+    app_log(&format!("Switched active profile to: {} ({})", name, id));
     if !store.profiles.iter().any(|p| p.id == id) {
         return Err("Profile not found".to_string());
     }
@@ -107,6 +114,7 @@ pub fn set_active_profile(id: String) -> Result<(), String> {
 
 #[command]
 pub fn rename_profile(id: String, new_name: String) -> Result<(), String> {
+    app_log(&format!("Renaming profile {} to: {}", id, new_name));
     let mut store = load_profiles();
     for p in &mut store.profiles {
         if p.id == id {
@@ -120,6 +128,7 @@ pub fn rename_profile(id: String, new_name: String) -> Result<(), String> {
 
 #[command]
 pub fn create_profile_linked(name: String, bepinex_path: String) -> Result<Profile, String> {
+    app_log(&format!("Creating linked profile: {} -> {}", name, bepinex_path));
     let path = std::path::Path::new(&bepinex_path);
     if !path.exists() {
         return Err(format!("Path does not exist: {}", bepinex_path));

@@ -1,3 +1,4 @@
+use crate::commands::app_log::app_log;
 use std::fs;
 use std::io::{Cursor, Read};
 use std::path::{Path, PathBuf};
@@ -85,6 +86,7 @@ pub fn find_bepinex_sources(valheim_path: Option<String>) -> Result<Vec<(String,
 /// Copy BepInEx core files from a source core/ directory into a profile's BepInEx/core/.
 #[command]
 pub fn install_bepinex_core(source_core_path: String, profile_bepinex_path: String) -> Result<(), String> {
+    app_log(&format!("Installing BepInEx core from {} to {}", source_core_path, profile_bepinex_path));
     let src = Path::new(&source_core_path);
     if !has_bepinex_preloader(src) {
         return Err(format!(
@@ -204,6 +206,7 @@ fn copy_dir(src: &Path, dst: &Path) -> Result<(), String> {
 /// and BepInEx core/plugins/config to the profile's BepInEx directory.
 #[command]
 pub fn download_bepinex(valheim_path: String, profile_bepinex_path: String) -> Result<String, String> {
+    app_log("Downloading BepInEx from GitHub...");
     // 1. Try to get latest BepInEx 5.x download URL from GitHub API
     let download_url = get_latest_bepinex_5x_url()
         .unwrap_or_else(|_| BEPINEX_FALLBACK_URL.to_string());
@@ -227,7 +230,7 @@ pub fn download_bepinex(valheim_path: String, profile_bepinex_path: String) -> R
 /// Query GitHub API for the latest BepInEx 5.x release and return the Windows x64 zip URL.
 fn get_latest_bepinex_5x_url() -> Result<String, String> {
     let resp = ureq::get("https://api.github.com/repos/BepInEx/BepInEx/releases?per_page=50")
-        .set("User-Agent", "MegaLoad/0.5.0")
+        .set("User-Agent", "MegaLoad/0.6.0")
         .set("Accept", "application/vnd.github+json")
         .call()
         .map_err(|e| format!("GitHub API error: {}", e))?;
@@ -268,7 +271,7 @@ fn get_latest_bepinex_5x_url() -> Result<String, String> {
 
 fn download_file(url: &str) -> Result<Vec<u8>, String> {
     let resp = ureq::get(url)
-        .set("User-Agent", "MegaLoad/0.5.0")
+        .set("User-Agent", "MegaLoad/0.6.0")
         .call()
         .map_err(|e| format!("Download error: {}", e))?;
 

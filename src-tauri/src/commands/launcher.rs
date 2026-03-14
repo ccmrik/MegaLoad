@@ -1,3 +1,4 @@
+use crate::commands::app_log::app_log;
 use std::path::PathBuf;
 use std::fs;
 use tauri::command;
@@ -50,6 +51,7 @@ pub fn detect_r2modman_profiles() -> Result<Vec<(String, String)>, String> {
 
 #[command]
 pub fn launch_valheim(valheim_path: String, bepinex_path: String) -> Result<(), String> {
+    app_log(&format!("Launching Valheim: game={}, bepinex={}", valheim_path, bepinex_path));
     let game_dir = PathBuf::from(&valheim_path);
     let valheim_exe = game_dir.join("valheim.exe");
     if !valheim_exe.exists() {
@@ -87,6 +89,7 @@ pub fn launch_valheim(valheim_path: String, bepinex_path: String) -> Result<(), 
         .spawn()
         .map_err(|e| format!("Failed to launch Valheim: {}", e))?;
 
+    app_log("Valheim launched successfully");
     Ok(())
 }
 

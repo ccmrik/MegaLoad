@@ -1,3 +1,4 @@
+use crate::commands::app_log::app_log;
 use crate::models::ModInfo;
 use std::fs;
 use std::path::Path;
@@ -60,6 +61,9 @@ pub fn get_mods(bepinex_path: String) -> Result<Vec<ModInfo>, String> {
     }
 
     mods.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
+    let enabled_count = mods.iter().filter(|m| m.enabled).count();
+    let disabled_count = mods.iter().filter(|m| !m.enabled).count();
+    app_log(&format!("Scanned mods: {} total ({} enabled, {} disabled)", mods.len(), enabled_count, disabled_count));
     Ok(mods)
 }
 
@@ -146,6 +150,10 @@ pub fn toggle_mod(bepinex_path: String, folder: String, file_name: String, enabl
 
     fs::create_dir_all(dst_base).map_err(|e| e.to_string())?;
 
+    let mod_label = if folder.is_empty() { &file_name } else { &folder };
+    let action = if enable { "Enabled" } else { "Disabled" };
+    app_log(&format!("{} mod: {}", action, mod_label));
+
     if folder.is_empty() {
         // Loose DLL
         let src = src_base.join(&file_name);
@@ -163,6 +171,8 @@ pub fn toggle_mod(bepinex_path: String, folder: String, file_name: String, enabl
 
 #[command]
 pub fn delete_mod(bepinex_path: String, folder: String, file_name: String, enabled: bool) -> Result<(), String> {
+    let mod_label = if folder.is_empty() { &file_name } else { &folder };
+    app_log(&format!("Deleting mod: {}", mod_label));
     let plugins_dir = Path::new(&bepinex_path).join("plugins");
     let base = if enabled {
         plugins_dir
@@ -203,6 +213,7 @@ pub fn install_mod(bepinex_path: String, source_path: String) -> Result<String, 
             .unwrap_or_default()
             .to_string_lossy()
             .to_string();
+        app_log(&format!("Installing mod: {} from {}", mod_name, source_path));
         let dest_dir = plugins_dir.join(&mod_name);
         fs::create_dir_all(&dest_dir).map_err(|e| e.to_string())?;
         fs::copy(source, dest_dir.join(&file_name)).map_err(|e| e.to_string())?;

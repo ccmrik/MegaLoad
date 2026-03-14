@@ -5,8 +5,13 @@ import {
   importR2modmanProfile,
   ensureDoorstop,
   downloadBepinex,
+  readAppLog,
+  clearAppLog,
+  getAppLogPath,
 } from "../lib/tauri-api";
 import { useProfileStore } from "../stores/profileStore";
+import { useSettingsStore } from "../stores/settingsStore";
+import { useAppUpdateStore } from "../stores/appUpdateStore";
 import {
   FolderOpen,
   RefreshCw,
@@ -16,11 +21,17 @@ import {
   Info,
   Shield,
   AlertTriangle,
+  ScrollText,
+  Trash2,
+  ToggleLeft,
+  ToggleRight,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
 export function Settings() {
   const { fetchProfiles } = useProfileStore();
+  const { loggingEnabled, loaded: settingsLoaded, fetchSettings, setLoggingEnabled } = useSettingsStore();
+  const { currentVersion } = useAppUpdateStore();
   const [valheimPath, setValheimPath] = useState("");
   const [detecting, setDetecting] = useState(false);
   const [r2Profiles, setR2Profiles] = useState<[string, string][]>([]);
@@ -29,8 +40,11 @@ export function Settings() {
   const [doorstopOk, setDoorstopOk] = useState<boolean | null>(null);
   const [installingDoorstop, setInstallingDoorstop] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
+  const [logPreview, setLogPreview] = useState<string | null>(null);
+  const [downloading, setDownloading] = useState(false);
 
   useEffect(() => {
+    fetchSettings();
     detectValheimPath()
       .then((p) => {
         setValheimPath(p);
@@ -103,6 +117,51 @@ export function Settings() {
     } finally {
       setImporting(null);
     }
+  };
+
+  const handleToggleLogging = async () => {
+    await setLoggingEnabled(!loggingEnabled);
+    setToast(loggingEnabled ? "Logging disabled" : "Logging enabled");
+  };
+
+  const handleDownloadLog = async () => {
+    setDownloading(true);
+    try {
+      const content = await readAppLog(10000);
+      if (!content) {
+        setToast("Log file is empty");
+        return;
+      }
+      const logPath = await getAppLogPath();
+      const fileName = logPath.split("\\").pop() || "megaload.log";
+      const blob = new Blob([content], { type: "text/plain" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      URL.revokeObjectURL(url);
+      setToast("Log downloaded");
+    } catch (e) {
+      setToast(`Failed: ${e}`);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handlePreviewLog = async () => {
+    try {
+      const content = await readAppLog(50);
+      setLogPreview(content || "(empty)");
+    } catch {
+      setLogPreview("(failed to read log)");
+    }
+  };
+
+  const handleClearLog = async () => {
+    await clearAppLog();
+    setLogPreview(null);
+    setToast("Log cleared");
   };
 
   return (
@@ -269,6 +328,69 @@ export function Settings() {
         </div>
       )}
 
+      {/* App Logging */}
+      <div className="glass rounded-xl p-5 border border-zinc-800/50 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <ScrollText className="w-4 h-4 text-brand-400" />
+            <h2 className="text-sm font-semibold text-zinc-300">App Logging</h2>
+          </div>
+          {settingsLoaded && (
+            <button onClick={handleToggleLogging} className="shrink-0">
+              {loggingEnabled ? (
+                <ToggleRight className="w-8 h-8 text-brand-400" />
+              ) : (
+                <ToggleLeft className="w-8 h-8 text-zinc-600" />
+              )}
+            </button>
+          )}
+        </div>
+        <p className="text-xs text-zinc-500">
+          {loggingEnabled
+            ? "MegaLoad logs all operations (mods, updates, launches, config changes) to a local file."
+            : "Enable to record all MegaLoad operations for debugging and troubleshooting."}
+        </p>
+        {loggingEnabled && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleDownloadLog}
+                disabled={downloading}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-brand-500/10 text-brand-400 hover:bg-brand-500/20 transition-colors disabled:opacity-50"
+              >
+                {downloading ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Download className="w-3.5 h-3.5" />
+                )}
+                Download Log
+              </button>
+              <button
+                onClick={handlePreviewLog}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50 transition-colors"
+              >
+                <ScrollText className="w-3.5 h-3.5" />
+                Preview
+              </button>
+              <button
+                onClick={handleClearLog}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-800/50 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Clear
+              </button>
+            </div>
+            {logPreview !== null && (
+              <div className="max-h-48 overflow-y-auto rounded-lg bg-zinc-950 border border-zinc-800/50 p-3">
+                <pre className="text-[11px] text-zinc-400 font-mono whitespace-pre-wrap leading-relaxed">
+                  {logPreview}
+                </pre>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
       {/* Data Location */}
       <div className="glass rounded-xl p-5 border border-zinc-800/50 space-y-3">
         <div className="flex items-center gap-2">
@@ -289,7 +411,7 @@ export function Settings() {
         <div className="space-y-2 text-sm text-zinc-500">
           <p>
             <span className="text-zinc-300 font-semibold">MegaLoad</span>{" "}
-            <span className="text-brand-400">v0.1.0</span>
+            <span className="text-brand-400">v{currentVersion}</span>
           </p>
           <p>A modern Valheim mod manager built with Tauri + React</p>
           <p className="text-xs text-zinc-600">

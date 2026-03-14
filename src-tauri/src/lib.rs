@@ -1,6 +1,7 @@
 mod commands;
 mod models;
 
+use commands::app_log::*;
 use commands::bepinex::*;
 use commands::config::*;
 use commands::import::*;
@@ -12,6 +13,8 @@ use commands::updater::*;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
+    commands::app_log::init_logging();
+
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_fs::init())
@@ -58,6 +61,12 @@ pub fn run() {
             install_mod_update,
             auto_update_mods,
             set_mod_version,
+            // App logging
+            get_logging_enabled,
+            set_logging_enabled,
+            read_app_log,
+            clear_app_log,
+            get_app_log_path,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

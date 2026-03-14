@@ -1,3 +1,4 @@
+use crate::commands::app_log::app_log;
 use crate::models::{ConfigEntry, ConfigFile, ConfigSection};
 use std::fs;
 use std::path::Path;
@@ -34,6 +35,7 @@ pub fn save_config_value(
     key: String,
     value: String,
 ) -> Result<(), String> {
+    app_log(&format!("Config: [{}] {} = {}", section, key, value));
     let path = Path::new(&config_path);
     let content = fs::read_to_string(path).map_err(|e| e.to_string())?;
 
@@ -173,6 +175,7 @@ fn parse_config_file(path: &Path) -> Result<ConfigFile, String> {
 /// Reset all entries in a config file to their default values.
 #[command]
 pub fn reset_config_file(config_path: String) -> Result<ConfigFile, String> {
+    app_log(&format!("Resetting config to defaults: {}", config_path));
     let path = Path::new(&config_path);
     let config = parse_config_file(path)?;
 

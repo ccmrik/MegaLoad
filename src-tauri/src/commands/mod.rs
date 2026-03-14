@@ -1,3 +1,4 @@
+pub mod app_log;
 pub mod bepinex;
 pub mod config;
 pub mod import;

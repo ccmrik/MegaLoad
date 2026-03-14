@@ -179,3 +179,16 @@ export const autoUpdateMods = (bepinexPath: string) =>
   invoke<UpdateCheckResult>("auto_update_mods", { bepinexPath });
 export const setModVersion = (modName: string, version: string) =>
   invoke<void>("set_mod_version", { modName, version });
+
+// --- App logging commands ---
+
+export const getLoggingEnabled = () =>
+  invoke<boolean>("get_logging_enabled");
+export const setLoggingEnabled = (enabled: boolean) =>
+  invoke<void>("set_logging_enabled", { enabled });
+export const readAppLog = (tailLines?: number) =>
+  invoke<string>("read_app_log", { tailLines });
+export const clearAppLog = () =>
+  invoke<void>("clear_app_log");
+export const getAppLogPath = () =>
+  invoke<string>("get_app_log_path");
