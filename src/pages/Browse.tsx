@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useProfileStore } from "../stores/profileStore";
 import { useThunderstoreStore } from "../stores/thunderstoreStore";
 import {
@@ -58,6 +58,7 @@ export function Browse() {
   const [_detailLoading, setDetailLoading] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [showCategories, setShowCategories] = useState(false);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Initial load
   useEffect(() => {
@@ -78,10 +79,17 @@ export function Browse() {
     }
   }, [toast]);
 
-  const handleSearch = useCallback(() => {
-    setQuery(searchInput);
-    search(searchInput, category, 0);
-  }, [searchInput, category]);
+  // Debounced live search
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setQuery(searchInput);
+      search(searchInput, category, 0);
+    }, 350);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchInput]);
 
   const handleCategoryChange = (cat: string) => {
     const newCat = cat === category ? "" : cat;
@@ -216,17 +224,12 @@ export function Browse() {
             placeholder="Search Thunderstore mods..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSearch();
-            }}
             className="w-full pl-10 pr-10 py-2.5 rounded-lg glass border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-brand-500/50 focus:ring-1 focus:ring-brand-500/25 transition-all"
           />
           {searchInput && (
             <button
               onClick={() => {
                 setSearchInput("");
-                setQuery("");
-                search("", category, 0);
               }}
               className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300"
             >
@@ -234,13 +237,6 @@ export function Browse() {
             </button>
           )}
         </div>
-
-        <button
-          onClick={handleSearch}
-          className="px-4 py-2.5 rounded-lg bg-brand-500 text-zinc-950 font-semibold text-sm hover:bg-brand-400 transition-colors"
-        >
-          Search
-        </button>
 
         <div className="relative">
           <button

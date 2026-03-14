@@ -1,6 +1,6 @@
 {
   "productName": "MegaLoad",
-  "version": "0.12.2",
+  "version": "0.12.3",
   "identifier": "com.rik.megaload",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -29,6 +29,7 @@
   "bundle": {
     "active": true,
     "targets": ["nsis", "msi"],
+    "resources": ["resources/*"],
     "createUpdaterArtifacts": "v1Compatible",
     "icon": [
       "icons/32x32.png",

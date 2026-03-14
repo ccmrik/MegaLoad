@@ -53,6 +53,7 @@ export function Trainer() {
   const [showSaveInput, setShowSaveInput] = useState(false);
   const [toast, setToast] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [activeProfileName, setActiveProfileName] = useState<string | null>(null);
 
   useEffect(() => {
     if (profile?.bepinex_path) {
@@ -76,25 +77,35 @@ export function Trainer() {
     if (!profile?.bepinex_path || !saveName.trim()) return;
     await saveProfile(profile.bepinex_path, saveName.trim());
     setToast(`Saved profile: ${saveName.trim()}`);
+    setActiveProfileName(saveName.trim());
     setSaveName("");
     setShowSaveInput(false);
+  };
+
+  const handleQuickSave = async () => {
+    if (!profile?.bepinex_path || !activeProfileName) return;
+    await saveProfile(profile.bepinex_path, activeProfileName);
+    setToast(`Saved: ${activeProfileName}`);
   };
 
   const handleLoad = async (name: string) => {
     if (!profile?.bepinex_path) return;
     await loadProfile(profile.bepinex_path, name);
+    setActiveProfileName(name);
     setToast(`Loaded profile: ${name}`);
   };
 
   const handleDelete = async (name: string) => {
     if (!profile?.bepinex_path) return;
     await deleteProfile(profile.bepinex_path, name);
+    if (activeProfileName === name) setActiveProfileName(null);
     setToast(`Deleted profile: ${name}`);
   };
 
   const handleReset = async () => {
     if (!profile?.bepinex_path) return;
     await reset(profile.bepinex_path);
+    setActiveProfileName(null);
     setToast("All cheats disabled");
   };
 
@@ -148,12 +159,21 @@ export function Trainer() {
             <RotateCcw className="w-3.5 h-3.5" />
             Reset All
           </button>
+          {activeProfileName && (
+            <button
+              onClick={handleQuickSave}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-500 text-zinc-950 text-xs font-bold hover:bg-brand-400 transition-colors"
+            >
+              <Save className="w-3.5 h-3.5" />
+              Save "{activeProfileName}"
+            </button>
+          )}
           <button
             onClick={() => setShowSaveInput(!showSaveInput)}
             className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-brand-500/15 text-brand-400 text-xs font-semibold hover:bg-brand-500/25 transition-colors"
           >
             <Save className="w-3.5 h-3.5" />
-            Save State
+            Save As
           </button>
         </div>
       </div>
@@ -199,10 +219,14 @@ export function Trainer() {
           <div className="flex flex-wrap gap-2">
             {savedProfiles.map((sp) => {
               const activeCount = sp.cheats.filter((c) => c.enabled).length;
+              const isActive = sp.name === activeProfileName;
               return (
                 <div
                   key={sp.name}
-                  className="flex items-center gap-1 glass rounded-lg border border-zinc-800/50 overflow-hidden"
+                  className={cn(
+                    "flex items-center gap-1 glass rounded-lg border overflow-hidden",
+                    isActive ? "border-brand-500/40 bg-brand-500/5" : "border-zinc-800/50"
+                  )}
                 >
                   <button
                     onClick={() => handleLoad(sp.name)}
@@ -359,13 +383,11 @@ export function Trainer() {
             <span className="font-semibold text-zinc-300">
               How it works:
             </span>{" "}
-            Toggle cheats here, then launch the game. The trainer state is saved
-            to your profile and will be applied when the game starts via the
-            MegaTrainer BepInEx plugin.
+            Toggle cheats here, then launch the game. MegaLoad automatically
+            installs the trainer plugin to your profile.
           </p>
           <p className="text-[10px] text-zinc-600 mt-1">
-            Requires MegaTrainer.dll in your plugins folder. Save states persist
-            across sessions.
+            Save states persist across sessions.
           </p>
         </div>
       </div>
