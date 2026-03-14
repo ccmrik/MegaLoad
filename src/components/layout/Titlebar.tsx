@@ -1,5 +1,4 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { useEffect } from "react";
 import { Minus, Square, X, Download, Loader2 } from "lucide-react";
 import { useAppUpdateStore } from "../../stores/appUpdateStore";
 
@@ -12,14 +11,8 @@ export function Titlebar() {
     newVersion,
     downloadProgress,
     error,
-    checkForAppUpdate,
     installAndRelaunch,
   } = useAppUpdateStore();
-
-  // Check for app updates on mount
-  useEffect(() => {
-    checkForAppUpdate();
-  }, [checkForAppUpdate]);
 
   return (
     <div

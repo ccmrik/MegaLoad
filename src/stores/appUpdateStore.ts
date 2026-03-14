@@ -2,6 +2,9 @@ import { create } from "zustand";
 import { check, type Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 
+/** Poll every 5 minutes for app updates */
+const APP_POLL_INTERVAL_MS = 5 * 60 * 1000;
+
 type AppUpdateStatus =
   | "idle"
   | "checking"
@@ -20,17 +23,26 @@ interface AppUpdateState {
 
   checkForAppUpdate: () => Promise<void>;
   installAndRelaunch: () => Promise<void>;
+  startLiveCheck: () => void;
+  stopLiveCheck: () => void;
 }
+
+let pollTimer: ReturnType<typeof setInterval> | null = null;
 
 export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
   status: "idle",
-  currentVersion: "0.7.0",
+  currentVersion: "0.8.0",
   newVersion: null,
   downloadProgress: 0,
   error: null,
   pendingUpdate: null,
 
   checkForAppUpdate: async () => {
+    const { status } = get();
+    // Don't interrupt an active download or re-check if already checking
+    if (status === "downloading" || status === "ready" || status === "checking")
+      return;
+
     set({ status: "checking", error: null });
     try {
       const update = await check();
@@ -82,6 +94,23 @@ export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
       await relaunch();
     } catch (e) {
       set({ status: "error", error: String(e) });
+    }
+  },
+
+  startLiveCheck: () => {
+    if (pollTimer) return;
+    // Immediate check on start
+    get().checkForAppUpdate();
+    // Then poll every 5 minutes
+    pollTimer = setInterval(() => {
+      get().checkForAppUpdate();
+    }, APP_POLL_INTERVAL_MS);
+  },
+
+  stopLiveCheck: () => {
+    if (pollTimer) {
+      clearInterval(pollTimer);
+      pollTimer = null;
     }
   },
 }));

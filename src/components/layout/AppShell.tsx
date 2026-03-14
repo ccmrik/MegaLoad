@@ -1,8 +1,12 @@
 import { Outlet } from "react-router-dom";
 import { Titlebar } from "./Titlebar";
 import { Sidebar } from "./Sidebar";
+import { ToastContainer } from "../ToastContainer";
+import { useLiveUpdateChecks } from "../../hooks/useLiveUpdateChecks";
 
 export function AppShell() {
+  useLiveUpdateChecks();
+
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden">
       <Titlebar />
@@ -12,6 +16,7 @@ export function AppShell() {
           <Outlet />
         </main>
       </div>
+      <ToastContainer />
     </div>
   );
 }

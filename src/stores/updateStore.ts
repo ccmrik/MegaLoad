@@ -5,6 +5,9 @@ import {
   type UpdateCheckResult,
 } from "../lib/tauri-api";
 
+/** Poll every 5 minutes for mod updates (check only, no auto-install) */
+const MOD_POLL_INTERVAL_MS = 5 * 60 * 1000;
+
 interface UpdateState {
   checking: boolean;
   updating: boolean;
@@ -18,9 +21,17 @@ interface UpdateState {
 
   /** Check + auto-install all available updates (startup flow) */
   autoUpdate: (bepinexPath: string) => Promise<UpdateCheckResult | null>;
+
+  /** Start periodic mod update checking (check only, no auto-install) */
+  startLiveCheck: (bepinexPath: string) => void;
+
+  /** Stop periodic checking */
+  stopLiveCheck: () => void;
 }
 
-export const useUpdateStore = create<UpdateState>((set) => ({
+let modPollTimer: ReturnType<typeof setInterval> | null = null;
+
+export const useUpdateStore = create<UpdateState>((set, get) => ({
   checking: false,
   updating: false,
   updateResult: null,
@@ -28,6 +39,9 @@ export const useUpdateStore = create<UpdateState>((set) => ({
   startupCheckDone: false,
 
   checkUpdates: async (bepinexPath: string) => {
+    const { checking, updating } = get();
+    if (checking || updating) return null;
+
     set({ checking: true, error: null });
     try {
       const result = await checkModUpdates(bepinexPath);
@@ -58,6 +72,22 @@ export const useUpdateStore = create<UpdateState>((set) => ({
         startupCheckDone: true,
       });
       return null;
+    }
+  },
+
+  startLiveCheck: (bepinexPath: string) => {
+    if (modPollTimer) return;
+    // Don't do an immediate check — the startup autoUpdate handles that.
+    // First periodic check fires after the interval.
+    modPollTimer = setInterval(() => {
+      get().checkUpdates(bepinexPath);
+    }, MOD_POLL_INTERVAL_MS);
+  },
+
+  stopLiveCheck: () => {
+    if (modPollTimer) {
+      clearInterval(modPollTimer);
+      modPollTimer = null;
     }
   },
 }));

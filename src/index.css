@@ -62,6 +62,22 @@
   animation: fadeInUp 0.4s ease-out both;
 }
 
+/* Toast slide-in from right */
+@keyframes toastSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.toast-enter {
+  animation: toastSlideIn 0.3s ease-out both;
+}
+
 /* Staggered children for list items */
 .stagger-children > * {
   animation: fadeInUp 0.35s ease-out both;

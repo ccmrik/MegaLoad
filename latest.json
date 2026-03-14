@@ -1,1 +1,11 @@
-{"version":"0.6.1","notes":"v0.6.1 - Add -console launch arg for F5 devcommands support","pub_date":"2026-03-14T11:13:16Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUw3WmE1NFM0RVN3R25CQlBkbzdtYnVRWW9udVd0TkZoNVdNYVFJSXg0Y3JDbHd6TTZXMWhvaFZveGxKQ2ZEbUEzNVlOb09kYlB5cUxkVUQxeGhyMUFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDg2NTY1CWZpbGU6TWVnYUxvYWRfMC42LjFfeDY0LXNldHVwLm5zaXMuemlwCjMvZnVmVjJEVFhHR04wcFI3Tjl0Rm1NTWtpL09jT3dGOS9rTnA3Uk9CcjBvM1lpWW5wcHZEdHVVSEpMYjRkelhYcWhHU08vREY0YjB2cDJ6MHp4RkFnPT0K","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.6.1/MegaLoad_0.6.1_x64-setup.nsis.zip"}}}
+{
+    "platforms":  {
+                      "windows-x86_64":  {
+                                             "signature":  "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUk4Q2ttUHUzT0JwYWFoN0E5SFMrY29MUVRVTWhqVkV1S1RFOTAxbzNjSGRscHNTMDBXMTlPaUsrQVpOTmgvQmNoYmUrampKWWRSVGRSQ0krU1JIZWdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDg4MDYzCWZpbGU6TWVnYUxvYWRfMC43LjBfeDY0LXNldHVwLm5zaXMuemlwCk41b0hNNzhUd0NhVXlNNm8xY255UURwaE1CdGc2TWxGczRlRCtnTGp4SDZ5NFQ3SitiK2VxZGJxL09PbWhMcUsyd2xCR29FK3UxWmJrVzRzYjFQL0JnPT0K",
+                                             "url":  "https://github.com/ccmrik/MegaLoad/releases/download/v0.7.0/MegaLoad_0.7.0_x64-setup.nsis.zip"
+                                         }
+                  },
+    "pub_date":  "2026-03-14T22:34:39Z",
+    "version":  "0.7.0",
+    "notes":  "v0.7.0 - Config editor: natural section sorting + section nav menu"
+}

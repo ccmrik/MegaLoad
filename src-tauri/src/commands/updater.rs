@@ -11,8 +11,8 @@ use tauri::command;
 const MANIFEST_URL: &str =
     "https://github.com/ccmrik/MegaLoad/releases/latest/download/mod-manifest.json";
 
-/// Minimum seconds between update checks (15 minutes).
-const CHECK_COOLDOWN_SECS: u64 = 900;
+/// Minimum seconds between update checks (5 minutes).
+const CHECK_COOLDOWN_SECS: u64 = 300;
 
 /// Manifest schema from the hosted JSON file.
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -117,7 +117,7 @@ fn save_cache(mods: &[ModUpdateInfo]) {
 /// Fetch the mod manifest — a single HTTP request for all mod info.
 fn fetch_manifest() -> Result<ModManifest, String> {
     let resp = ureq::get(MANIFEST_URL)
-        .set("User-Agent", "MegaLoad/0.7.0")
+        .set("User-Agent", "MegaLoad/0.8.0")
         .call()
         .map_err(|e| {
             let msg = format!("{}", e);
@@ -286,7 +286,7 @@ pub fn install_mod_update(
 
     // Download the DLL (this is a direct file download, not an API call — no rate limit)
     let resp = ureq::get(&download_url)
-        .set("User-Agent", "MegaLoad/0.7.0")
+        .set("User-Agent", "MegaLoad/0.8.0")
         .call()
         .map_err(|e| format!("Download failed for {}: {}", mod_name, e))?;
 
