@@ -117,7 +117,7 @@ fn save_cache(mods: &[ModUpdateInfo]) {
 /// Fetch the mod manifest — a single HTTP request for all mod info.
 fn fetch_manifest() -> Result<ModManifest, String> {
     let resp = ureq::get(MANIFEST_URL)
-        .set("User-Agent", "MegaLoad/0.12.0")
+        .set("User-Agent", "MegaLoad/0.12.1")
         .call()
         .map_err(|e| {
             let msg = format!("{}", e);
@@ -253,6 +253,30 @@ pub fn check_mod_updates(bepinex_path: String) -> Result<UpdateCheckResult, Stri
     })
 }
 
+/// Return the list of our starter mods from the manifest.
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct StarterMod {
+    pub name: String,
+    pub version: String,
+    pub download_url: String,
+    pub description: Option<String>,
+}
+
+#[command]
+pub fn get_starter_mods() -> Result<Vec<StarterMod>, String> {
+    let manifest = fetch_manifest()?;
+    Ok(manifest
+        .mods
+        .into_iter()
+        .map(|m| StarterMod {
+            name: m.name,
+            version: m.version,
+            download_url: m.download_url,
+            description: m.description,
+        })
+        .collect())
+}
+
 /// Install a single mod update by downloading the DLL.
 #[command]
 pub fn install_mod_update(
@@ -286,7 +310,7 @@ pub fn install_mod_update(
 
     // Download the DLL (this is a direct file download, not an API call — no rate limit)
     let resp = ureq::get(&download_url)
-        .set("User-Agent", "MegaLoad/0.12.0")
+        .set("User-Agent", "MegaLoad/0.12.1")
         .call()
         .map_err(|e| format!("Download failed for {}: {}", mod_name, e))?;
 

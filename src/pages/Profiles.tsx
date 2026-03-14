@@ -9,10 +9,16 @@ import {
   FolderOpen,
   Link,
   Loader2,
+  Package,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { open } from "@tauri-apps/plugin-dialog";
-import { detectR2modmanProfiles } from "../lib/tauri-api";
+import {
+  detectR2modmanProfiles,
+  getStarterMods,
+  installModUpdate,
+  type StarterMod,
+} from "../lib/tauri-api";
 
 export function Profiles() {
   const {
@@ -32,11 +38,21 @@ export function Profiles() {
   const [r2Profiles, setR2Profiles] = useState<[string, string][]>([]);
   const [linkingR2, setLinkingR2] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
+  const [starterMods, setStarterMods] = useState<StarterMod[]>([]);
+  const [selectedStarters, setSelectedStarters] = useState<Set<string>>(new Set());
+  const [installingMods, setInstallingMods] = useState(false);
+  const [installProgress, setInstallProgress] = useState("");
 
   useEffect(() => {
     fetchProfiles();
     detectR2modmanProfiles()
       .then(setR2Profiles)
+      .catch(() => {});
+    getStarterMods()
+      .then((mods) => {
+        setStarterMods(mods);
+        setSelectedStarters(new Set(mods.map((m) => m.name)));
+      })
       .catch(() => {});
   }, [fetchProfiles]);
 
@@ -51,10 +67,49 @@ export function Profiles() {
     if (!newName.trim()) return;
     setCreating(true);
     try {
-      await createProfile(newName.trim());
+      const profile = await createProfile(newName.trim());
       setNewName("");
+
+      // Install selected starter mods
+      const selected = starterMods.filter((m) => selectedStarters.has(m.name));
+      if (selected.length > 0) {
+        setInstallingMods(true);
+        for (const mod of selected) {
+          setInstallProgress(`Installing ${mod.name}...`);
+          try {
+            await installModUpdate(
+              profile.bepinex_path,
+              mod.name,
+              mod.download_url,
+              mod.version
+            );
+          } catch (e) {
+            console.error(`Failed to install ${mod.name}:`, e);
+          }
+        }
+        setInstallProgress("");
+        setInstallingMods(false);
+        setToast(`Profile created with ${selected.length} mod${selected.length > 1 ? "s" : ""} installed!`);
+      }
     } finally {
       setCreating(false);
+    }
+  };
+
+  const toggleStarter = (name: string) => {
+    setSelectedStarters((prev) => {
+      const next = new Set(prev);
+      if (next.has(name)) next.delete(name);
+      else next.add(name);
+      return next;
+    });
+  };
+
+  const toggleAllStarters = () => {
+    if (selectedStarters.size === starterMods.length) {
+      setSelectedStarters(new Set());
+    } else {
+      setSelectedStarters(new Set(starterMods.map((m) => m.name)));
     }
   };
 
@@ -115,12 +170,12 @@ export function Profiles() {
       {/* Create / Link Options */}
       <div className="grid grid-cols-2 gap-4">
         {/* Create New Profile */}
-        <div className="glass rounded-xl p-5 border border-zinc-800/50">
+        <div className="glass rounded-xl p-5 border border-zinc-800/50 col-span-2">
           <h2 className="text-sm font-semibold text-zinc-300 mb-3">
             <Plus className="w-4 h-4 inline mr-1.5 -mt-0.5" />
-            Create Empty Profile
+            Create New Profile
           </h2>
-          <div className="flex gap-3">
+          <div className="flex gap-3 mb-4">
             <input
               type="text"
               placeholder="Profile name..."
@@ -133,14 +188,71 @@ export function Profiles() {
             />
             <button
               onClick={handleCreate}
-              disabled={!newName.trim() || creating}
+              disabled={!newName.trim() || creating || installingMods}
               className="flex items-center gap-2 px-5 py-2.5 rounded-lg bg-brand-500 text-zinc-950 font-semibold text-sm hover:bg-brand-400 transition-colors disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98]"
             >
-              <Plus className="w-4 h-4" />
-              Create
+              {creating || installingMods ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <Plus className="w-4 h-4" />
+              )}
+              {installingMods ? installProgress : "Create"}
             </button>
           </div>
-          <p className="text-[10px] text-zinc-600 mt-2">Creates an empty profile — you'll need to install mods into it.</p>
+
+          {/* Starter Mods Selection */}
+          {starterMods.length > 0 && (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <p className="text-xs text-zinc-400 flex items-center gap-1.5">
+                  <Package className="w-3.5 h-3.5" />
+                  Include starter mods
+                </p>
+                <button
+                  onClick={toggleAllStarters}
+                  className="text-[10px] text-zinc-500 hover:text-brand-400 transition-colors"
+                >
+                  {selectedStarters.size === starterMods.length ? "Deselect all" : "Select all"}
+                </button>
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {starterMods.map((mod) => {
+                  const selected = selectedStarters.has(mod.name);
+                  return (
+                    <button
+                      key={mod.name}
+                      onClick={() => toggleStarter(mod.name)}
+                      className={cn(
+                        "flex items-start gap-2.5 p-3 rounded-lg text-left transition-all border",
+                        selected
+                          ? "bg-brand-500/10 border-brand-500/30 text-zinc-200"
+                          : "bg-zinc-900/50 border-zinc-800/50 text-zinc-500 hover:border-zinc-700"
+                      )}
+                    >
+                      <div
+                        className={cn(
+                          "w-4 h-4 rounded border flex-shrink-0 flex items-center justify-center mt-0.5 transition-colors",
+                          selected
+                            ? "bg-brand-500 border-brand-500"
+                            : "border-zinc-600"
+                        )}
+                      >
+                        {selected && <Check className="w-3 h-3 text-zinc-950" />}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-xs font-semibold truncate">{mod.name}</p>
+                        {mod.description && (
+                          <p className="text-[10px] text-zinc-500 line-clamp-2 mt-0.5 leading-tight">
+                            {mod.description}
+                          </p>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
 
         {/* Link Existing BepInEx Folder */}

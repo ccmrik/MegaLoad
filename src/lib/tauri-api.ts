@@ -168,6 +168,15 @@ export interface UpdateCheckResult {
   from_cache: boolean;
 }
 
+export interface StarterMod {
+  name: string;
+  version: string;
+  download_url: string;
+  description: string | null;
+}
+
+export const getStarterMods = () =>
+  invoke<StarterMod[]>("get_starter_mods");
 export const checkModUpdates = (bepinexPath: string) =>
   invoke<UpdateCheckResult>("check_mod_updates", { bepinexPath });
 export const installModUpdate = (
