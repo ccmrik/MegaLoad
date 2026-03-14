@@ -15,6 +15,8 @@ interface UpdateState {
   error: string | null;
   /** True once the first startup check (+ auto-install) has finished */
   startupCheckDone: boolean;
+  /** Accumulated list of mod names updated during this session */
+  sessionUpdatedMods: string[];
 
   /** Check all mods for available updates */
   checkUpdates: (bepinexPath: string) => Promise<UpdateCheckResult | null>;
@@ -37,6 +39,7 @@ export const useUpdateStore = create<UpdateState>((set, get) => ({
   updateResult: null,
   error: null,
   startupCheckDone: false,
+  sessionUpdatedMods: [],
 
   checkUpdates: async (bepinexPath: string) => {
     const { checking, updating } = get();
@@ -57,12 +60,19 @@ export const useUpdateStore = create<UpdateState>((set, get) => ({
     set({ checking: true, updating: true, error: null });
     try {
       const result = await autoUpdateMods(bepinexPath);
-      set({
+      const newlyUpdated = result.mods
+        .filter((m) => m.status === "updated")
+        .map((m) => m.name);
+      set((state) => ({
         updateResult: result,
         checking: false,
         updating: false,
         startupCheckDone: true,
-      });
+        sessionUpdatedMods: [
+          ...state.sessionUpdatedMods,
+          ...newlyUpdated.filter((n) => !state.sessionUpdatedMods.includes(n)),
+        ],
+      }));
       return result;
     } catch (e) {
       set({

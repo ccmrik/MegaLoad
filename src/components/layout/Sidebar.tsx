@@ -17,6 +17,7 @@ import {
 import { cn } from "../../lib/utils";
 import { useProfileStore } from "../../stores/profileStore";
 import { useUpdateStore } from "../../stores/updateStore";
+import { useToastStore } from "../../stores/toastStore";
 import { detectValheimPath, launchValheim } from "../../lib/tauri-api";
 
 const navItems = [
@@ -41,7 +42,9 @@ export function Sidebar() {
     error: updateError,
     startupCheckDone,
     autoUpdate,
+    sessionUpdatedMods,
   } = useUpdateStore();
+  const addToast = useToastStore((s) => s.addToast);
   const hasRunStartupCheck = useRef(false);
 
   useEffect(() => {
@@ -147,10 +150,26 @@ export function Sidebar() {
             <div className="text-xs py-1.5 space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
                 {updatedCount > 0 && (
-                  <span className="flex items-center gap-1 text-emerald-400">
+                  <button
+                    onClick={() => {
+                      const names = sessionUpdatedMods.length > 0
+                        ? sessionUpdatedMods.join(", ")
+                        : updateResult?.mods
+                            .filter((m) => m.status === "updated")
+                            .map((m) => m.name)
+                            .join(", ") ?? "";
+                      addToast({
+                        type: "success",
+                        title: `${sessionUpdatedMods.length || updatedCount} mod${(sessionUpdatedMods.length || updatedCount) > 1 ? "s" : ""} updated this session`,
+                        message: names,
+                        duration: 8000,
+                      });
+                    }}
+                    className="flex items-center gap-1 text-emerald-400 hover:text-emerald-300 transition-colors cursor-pointer"
+                  >
                     <Download className="w-3 h-3" />
                     {updatedCount} updated
-                  </span>
+                  </button>
                 )}
                 {availableCount > 0 && (
                   <span className="flex items-center gap-1 text-brand-400">

@@ -1,11 +1,11 @@
 {
-  "version": "0.8.1",
-  "notes": "v0.8.1 - Fix config section scroll offset behind sticky header",
-  "pub_date": "2026-03-14T12:20:45Z",
+  "version": "0.9.0",
+  "notes": "v0.9.0 - Auto-remove orphan config files for uninstalled mods",
+  "pub_date": "2026-03-14T23:39:18Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUUzNWlTZTlXZDVVclEzaWcvUEZpV0RPdEdXb0s5djdCbUZuR2xoTWltYzE2eU9uU1BNZElUbTJlWUxYOEFZdHlxMFd6U2hpUkdpUUpCTzBFTERmeVE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDkwODMxCWZpbGU6TWVnYUxvYWRfMC44LjFfeDY0LXNldHVwLm5zaXMuemlwCm5xT01kQy9kM0Rka09JWkcvNlVaeGk1VTVTN2JUcXhCam9aZXdSb3BpYnU1MXlMclhkWFBaTWF0V2k0ekRJUE82ck92c2JiejI0MCtvVnByM3p3N0FnPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.8.1/MegaLoad_0.8.1_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU1OVWM5RjFwZ3hrcHUzdEtqdlpCaWI2L0NNVzlDWjNGMS9iVDQzMFhlbzcydzZDNlViVVVXUTlOYzY0VnFmYWZXUnFQd3NTeFRKaUh0M0Z0TzBZWndvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDkxODU0CWZpbGU6TWVnYUxvYWRfMC45LjBfeDY0LXNldHVwLm5zaXMuemlwCkRuOTI5ZlNxc2FmUlVvVldENjlLMVdkNjN6NC82OEZEaDBkenBPVGJ3NU1NbVhNSDJBS1ZXR0tYUlg3MHBjNGpEV0JYeW51VmVQdm9lTGRWOHlCY0N3PT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.9.0/MegaLoad_0.9.0_x64-setup.nsis.zip"
     }
   }
 }
