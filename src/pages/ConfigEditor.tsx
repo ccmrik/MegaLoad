@@ -151,11 +151,14 @@ export function ConfigEditor() {
   const scrollToSection = (sectionKey: string) => {
     // Accordion: expand only this section, collapse all others
     setExpandedSections(new Set([sectionKey]));
-    // Scroll after re-render
+    // Scroll after re-render, accounting for the sticky header
     setTimeout(() => {
       const el = sectionRefs.current[sectionKey];
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      const container = contentRef.current;
+      if (el && container) {
+        const headerHeight = 72; // sticky mod title header (~py-4 + content)
+        const elTop = el.offsetTop - headerHeight;
+        container.scrollTo({ top: Math.max(0, elTop), behavior: "smooth" });
       }
     }, 0);
   };
