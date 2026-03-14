@@ -1,0 +1,67 @@
+{
+  "productName": "MegaLoad",
+  "version": "0.1.0",
+  "identifier": "com.rik.megaload",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "withGlobalTauri": false,
+    "windows": [
+      {
+        "title": "MegaLoad",
+        "width": 1200,
+        "height": 800,
+        "minWidth": 900,
+        "minHeight": 600,
+        "decorations": false,
+        "transparent": false,
+        "center": true
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis", "msi"],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/256x256.png",
+      "icons/icon.ico"
+    ],
+    "publisher": "Rik",
+    "shortDescription": "Valheim Mod Manager",
+    "longDescription": "MegaLoad is a Valheim-specific mod manager with BepInEx integration, profile support, config editing, and one-click game launching.",
+    "category": "Game",
+    "windows": {
+      "certificateThumbprint": null,
+      "timestampUrl": null,
+      "nsis": {
+        "displayLanguageSelector": false,
+        "installerIcon": "icons/icon.ico",
+        "headerImage": null,
+        "sidebarImage": null,
+        "installMode": "currentUser"
+      },
+      "wix": null
+    }
+  },
+  "plugins": {
+    "shell": {
+      "open": true
+    },
+    "fs": {},
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEY0NDkyQjc0QzcwRTkwOUQKUldTZGtBN0hkQ3RKOUhUV1dWMkgxTW81eXBiQVRLN1ZDaVJXTFBGMlBUeEF5R1pPVWRMN2VYU3MK",
+      "endpoints": [
+        "https://github.com/ccmrik/MegaLoad/releases/latest/download/latest.json"
+      ]
+    }
+  }
+}

@@ -1,0 +1,36 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffcc00"/>
+      <stop offset="50%" stop-color="#ff6600"/>
+      <stop offset="100%" stop-color="#cc3300"/>
+    </radialGradient>
+    <filter id="blur" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4"/>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect x="0" y="0" width="512" height="512" rx="64" ry="64" fill="#000000"/>
+
+  <!-- Marble slab -->
+  <rect x="96" y="96" width="320" height="320" rx="16" ry="16" fill="#1a1a1a"/>
+  <path d="M96,96 L128,64 L384,64 L416,96 Z" fill="#1a1a1a"/>
+  <path d="M96,416 L128,448 L384,448 L416,416 Z" fill="#1a1a1a"/>
+
+  <!-- Veins (simulated) -->
+  <path d="M120,120 C160,160 200,140 240,180" stroke="#ffffff" stroke-opacity="0.2" stroke-width="2"/>
+  <path d="M280,200 C320,240 360,220 400,260" stroke="#ffffff" stroke-opacity="0.2" stroke-width="2"/>
+
+  <!-- Glowing M -->
+  <path d="M180,320 L180,200 L220,260 L256,200 L292,260 L332,200 L332,320" fill="url(#glow)" filter="url(#blur)"/>
+
+  <!-- Loading bars -->
+  <rect x="200" y="340" width="112" height="12" rx="2" ry="2" fill="url(#glow)" filter="url(#blur)"/>
+  <rect x="200" y="360" width="112" height="12" rx="2" ry="2" fill="url(#glow)" filter="url(#blur)"/>
+  <rect x="200" y="380" width="112" height="12" rx="2" ry="2" fill="url(#glow)" filter="url(#blur)"/>
+
+  <!-- Embers -->
+  <circle cx="160" cy="400" r="4" fill="url(#glow)" filter="url(#blur)"/>
+  <circle cx="360" cy="420" r="3" fill="url(#glow)" filter="url(#blur)"/>
+</svg>
