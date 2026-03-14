@@ -26,6 +26,8 @@ import {
   ToggleLeft,
   ToggleRight,
 } from "lucide-react";
+import { open } from "@tauri-apps/plugin-shell";
+import { appDataDir } from "@tauri-apps/api/path";
 import { cn } from "../lib/utils";
 
 export function Settings() {
@@ -397,9 +399,19 @@ export function Settings() {
           <Info className="w-4 h-4 text-zinc-400" />
           <h2 className="text-sm font-semibold text-zinc-300">Data Location</h2>
         </div>
-        <p className="text-xs text-zinc-500 font-mono">
-          %APPDATA%\MegaLoad\
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="text-xs text-zinc-500 font-mono">
+            %APPDATA%\MegaLoad\
+          </p>
+          <button
+            onClick={async () => { const dir = await appDataDir(); open(dir); }}
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-400 hover:text-zinc-200 text-xs transition-colors"
+            title="Open in Explorer"
+          >
+            <FolderOpen className="w-3.5 h-3.5" />
+            Open
+          </button>
+        </div>
         <p className="text-xs text-zinc-600">
           Profiles, settings, and configuration data are stored here.
         </p>

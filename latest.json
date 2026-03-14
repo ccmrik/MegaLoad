@@ -1,11 +1,11 @@
 {
-  "version": "0.9.0",
-  "notes": "v0.9.0 - Auto-remove orphan config files for uninstalled mods",
-  "pub_date": "2026-03-14T23:39:18Z",
+  "version": "0.10.0",
+  "notes": "v0.10.0 - Clickable updated badge shows session update summary toast",
+  "pub_date": "2026-03-14T23:55:59Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU1OVWM5RjFwZ3hrcHUzdEtqdlpCaWI2L0NNVzlDWjNGMS9iVDQzMFhlbzcydzZDNlViVVVXUTlOYzY0VnFmYWZXUnFQd3NTeFRKaUh0M0Z0TzBZWndvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDkxODU0CWZpbGU6TWVnYUxvYWRfMC45LjBfeDY0LXNldHVwLm5zaXMuemlwCkRuOTI5ZlNxc2FmUlVvVldENjlLMVdkNjN6NC82OEZEaDBkenBPVGJ3NU1NbVhNSDJBS1ZXR0tYUlg3MHBjNGpEV0JYeW51VmVQdm9lTGRWOHlCY0N3PT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.9.0/MegaLoad_0.9.0_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUV6UDAzVFhaeWlGMnIrRjRHb0ovR3NIbVdwdDEzMkdHbnRHTTkzeEl5VndmWWdrVm9ReXYvQ1NucHpKZ2ZuUWh3YkpjdzlYM21QK1NvQjYvUDBObmdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDkyOTI2CWZpbGU6TWVnYUxvYWRfMC4xMC4wX3g2NC1zZXR1cC5uc2lzLnppcApwb2FERFd1MmZmMm1kQWFZNWFhTWtNTGJQT3N4UTRjaUVrMEswT2QvSnhDaDY2YlVSQ09vQkpWQW1kRmc4V21TVUwxVDVOWHlxdDJiMlNjYTY4WTlBdz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.10.0/MegaLoad_0.10.0_x64-setup.nsis.zip"
     }
   }
 }
