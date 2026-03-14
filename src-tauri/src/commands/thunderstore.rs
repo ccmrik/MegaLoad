@@ -142,14 +142,18 @@ fn fetch_packages() -> Result<Vec<ThunderstorePackage>, String> {
 
     app_log("Fetching Thunderstore package list...");
     let resp = ureq::get(TS_API_URL)
-        .set("User-Agent", "MegaLoad/0.12.1")
+        .set("User-Agent", "MegaLoad/0.12.2")
         .set("Accept", "application/json")
         .call()
         .map_err(|e| format!("Thunderstore API error: {}", e))?;
 
-    let body = resp
-        .into_string()
-        .map_err(|e| format!("Read error: {}", e))?;
+    let body = {
+        let mut buf = Vec::new();
+        resp.into_reader()
+            .read_to_end(&mut buf)
+            .map_err(|e| format!("Read error: {}", e))?;
+        String::from_utf8(buf).map_err(|e| format!("UTF-8 error: {}", e))?
+    };
 
     let packages: Vec<ThunderstorePackage> =
         serde_json::from_str(&body).map_err(|e| format!("Parse error: {}", e))?;
@@ -422,7 +426,7 @@ pub fn uninstall_thunderstore_mod(
 
 fn download_ts_file(url: &str) -> Result<Vec<u8>, String> {
     let resp = ureq::get(url)
-        .set("User-Agent", "MegaLoad/0.12.1")
+        .set("User-Agent", "MegaLoad/0.12.2")
         .call()
         .map_err(|e| format!("Download error: {}", e))?;
 
