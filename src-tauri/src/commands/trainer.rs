@@ -2,7 +2,7 @@ use crate::commands::app_log::app_log;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::{Path, PathBuf};
-use tauri::command;
+use tauri::{command, AppHandle, Manager};
 
 // ── Types ──────────────────────────────────────────────────
 
@@ -179,11 +179,47 @@ fn now_secs() -> u64 {
         .as_secs()
 }
 
+// ── Auto-deploy ────────────────────────────────────────────
+
+fn ensure_trainer_plugin(app: &AppHandle, bepinex_path: &str) {
+    let dest_dir = PathBuf::from(bepinex_path).join("plugins").join("MegaTrainer");
+    let dest_dll = dest_dir.join("MegaTrainer.dll");
+
+    // Resolve the bundled resource
+    let resource = app
+        .path()
+        .resolve("resources/MegaTrainer.dll", tauri::path::BaseDirectory::Resource);
+    let source = match resource {
+        Ok(p) if p.exists() => p,
+        _ => return, // Resource not found (dev mode without bundle), skip
+    };
+
+    // Only copy if missing or different size (updated version)
+    let needs_copy = if dest_dll.exists() {
+        let src_len = fs::metadata(&source).map(|m| m.len()).unwrap_or(0);
+        let dst_len = fs::metadata(&dest_dll).map(|m| m.len()).unwrap_or(0);
+        src_len != dst_len
+    } else {
+        true
+    };
+
+    if needs_copy {
+        let _ = fs::create_dir_all(&dest_dir);
+        if fs::copy(&source, &dest_dll).is_ok() {
+            app_log(&format!(
+                "Auto-deployed MegaTrainer.dll to {}",
+                dest_dll.display()
+            ));
+        }
+    }
+}
+
 // ── Commands ───────────────────────────────────────────────
 
 /// Get all available cheats with their current toggle states.
 #[command]
-pub fn get_trainer_cheats(bepinex_path: String) -> Result<Vec<CheatDef>, String> {
+pub fn get_trainer_cheats(app: AppHandle, bepinex_path: String) -> Result<Vec<CheatDef>, String> {
+    ensure_trainer_plugin(&app, &bepinex_path);
     let data = load_trainer_data(&bepinex_path);
     let mut cheats = all_cheats();
 

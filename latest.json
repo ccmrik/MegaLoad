@@ -1,11 +1,11 @@
 {
-  "version": "0.12.1",
-  "notes": "v0.12.1 - Starter mods selection on profile creation",
-  "pub_date": "2026-03-14T22:40:51Z",
+  "version": "0.12.2",
+  "notes": "v0.12.2 - Fix Thunderstore Browse response size limit",
+  "pub_date": "2026-03-14T22:54:30Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFHc0poY1FNTUhqQjFXaVUvNFU4MlZBZHF6WWFNcHppUkwwT0FEREFGWjJGZHBsb0xLNzhVUUpNZnVDTXNHM2FWOEIyaU9oK3NDMHNvTGZ0WjY4ZEFrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNTI4MDM4CWZpbGU6TWVnYUxvYWRfMC4xMi4xX3g2NC1zZXR1cC5uc2lzLnppcAoyc0VYWEZQS0dDOVp3anlBVDQzWDRFeU9vRFlMNzdLYzVuOXRoa25qN1p0MmRVendjNFhsWkxXYy93UkVPM0hoUGowalpqS25SSTJ2VmtFN1NxSDhDdz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.12.1/MegaLoad_0.12.1_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUF2MEd6cHZGTElNdEFYQ1hLTHlmUjNsRGdQYXNvamR6MlRkcXIzODFMTXpaKzQ2Q0N3L1crUENOOTQxZUdvM2ZGcGY5d01jaWl4WXRzMmpoWk85eEFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNTI4ODU0CWZpbGU6TWVnYUxvYWRfMC4xMi4yX3g2NC1zZXR1cC5uc2lzLnppcApKZms5bmpUVjhwdk1nbU5LWS8wUGRFRkZxc3NMQWhjaVhSNTBXUUpIV2Fjd3VhRldBRnFZVm1BZSt6SnVQdXNPaHhsM21HZHE4UFRsQzhVOFl1bVNEQT09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.12.2/MegaLoad_0.12.2_x64-setup.nsis.zip"
     }
   }
 }
