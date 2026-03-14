@@ -1,11 +1,11 @@
 {
-  "version": "0.8.0",
-  "notes": "v0.8.0 - Live update checks, toast notifications, config accordion + show all/hide all",
-  "pub_date": "2026-03-14T12:10:38Z",
+  "version": "0.8.1",
+  "notes": "v0.8.1 - Fix config section scroll offset behind sticky header",
+  "pub_date": "2026-03-14T12:20:45Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUVQOHF6UWxYMHJpek1yU0pPSzBrNkRheEwxWWVZVzZIUjArM1VBaWdVTXIyMUlzU2ozcFJ3U2xmeC9jMENsVXpvc1pUVlkwTk4wN3dxdmU3dmUyR1E4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDkwMjIyCWZpbGU6TWVnYUxvYWRfMC44LjBfeDY0LXNldHVwLm5zaXMuemlwClkxbHduUVBIZXVVNVlGeTQxaEtWY1JkL1VTMGVaQVhGRWcwRFF5M21QcE1YZ2MyaG1QMUVtN1lIcW1ySGtZeERpTkZ1RHNPZzNDUUFsQTkzTzExTkJnPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.8.0/MegaLoad_0.8.0_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUUzNWlTZTlXZDVVclEzaWcvUEZpV0RPdEdXb0s5djdCbUZuR2xoTWltYzE2eU9uU1BNZElUbTJlWUxYOEFZdHlxMFd6U2hpUkdpUUpCTzBFTERmeVE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNDkwODMxCWZpbGU6TWVnYUxvYWRfMC44LjFfeDY0LXNldHVwLm5zaXMuemlwCm5xT01kQy9kM0Rka09JWkcvNlVaeGk1VTVTN2JUcXhCam9aZXdSb3BpYnU1MXlMclhkWFBaTWF0V2k0ekRJUE82ck92c2JiejI0MCtvVnByM3p3N0FnPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.8.1/MegaLoad_0.8.1_x64-setup.nsis.zip"
     }
   }
 }

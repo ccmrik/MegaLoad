@@ -4,6 +4,7 @@ import {
   getConfigFiles,
   saveConfigValue,
   resetConfigFile,
+  cleanOrphanConfigs,
   type ConfigFile,
   type ConfigEntry,
   type ConfigSection,
@@ -66,7 +67,10 @@ export function ConfigEditor() {
   useEffect(() => {
     if (profile?.bepinex_path) {
       setLoading(true);
-      getConfigFiles(profile.bepinex_path)
+      // Remove config files for uninstalled mods before loading
+      cleanOrphanConfigs(profile.bepinex_path)
+        .catch(() => {}) // non-critical — continue loading even if cleanup fails
+        .then(() => getConfigFiles(profile.bepinex_path))
         .then((files) => {
           setConfigs(files);
           if (files.length > 0 && !selectedMod) {

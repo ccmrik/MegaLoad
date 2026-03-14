@@ -1,5 +1,6 @@
 use crate::commands::app_log::app_log;
 use crate::models::{ConfigEntry, ConfigFile, ConfigSection};
+use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
 use tauri::command;
@@ -197,4 +198,89 @@ pub fn reset_config_file(config_path: String) -> Result<ConfigFile, String> {
 
     // Re-parse and return updated config
     parse_config_file(path)
+}
+
+/// Collect all installed mod DLL stems from plugins/ and plugins/_disabled/.
+fn collect_installed_mod_names(bepinex_path: &Path) -> HashSet<String> {
+    let mut names = HashSet::new();
+    let plugins_dir = bepinex_path.join("plugins");
+
+    for dir in [plugins_dir.clone(), plugins_dir.join("_disabled")] {
+        if let Ok(entries) = fs::read_dir(&dir) {
+            for entry in entries.flatten() {
+                let path = entry.path();
+                let fname = entry.file_name().to_string_lossy().to_string();
+                if fname.starts_with('_') {
+                    continue;
+                }
+                if path.is_dir() {
+                    // Folder-based mod — scan DLLs inside
+                    if let Ok(sub) = fs::read_dir(&path) {
+                        for sub_entry in sub.flatten() {
+                            if sub_entry.path().extension().and_then(|e| e.to_str()) == Some("dll") {
+                                if let Some(stem) = sub_entry.path().file_stem() {
+                                    names.insert(stem.to_string_lossy().to_lowercase());
+                                }
+                            }
+                        }
+                    }
+                } else if path.extension().and_then(|e| e.to_str()) == Some("dll") {
+                    if let Some(stem) = path.file_stem() {
+                        names.insert(stem.to_string_lossy().to_lowercase());
+                    }
+                }
+            }
+        }
+    }
+    names
+}
+
+/// Config filenames that should never be deleted (BepInEx core + common framework configs).
+const PROTECTED_PREFIXES: &[&str] = &["bepinex"];
+
+/// Remove config files for mods that are no longer installed.
+/// Returns the list of deleted config filenames.
+#[command]
+pub fn clean_orphan_configs(bepinex_path: String) -> Result<Vec<String>, String> {
+    let base = Path::new(&bepinex_path);
+    let config_dir = base.join("config");
+    if !config_dir.exists() {
+        return Ok(Vec::new());
+    }
+
+    let mod_names = collect_installed_mod_names(base);
+    let mut deleted = Vec::new();
+
+    let entries = fs::read_dir(&config_dir).map_err(|e| e.to_string())?;
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.extension().and_then(|e| e.to_str()) != Some("cfg") {
+            continue;
+        }
+        let file_name = entry.file_name().to_string_lossy().to_string();
+        let stem = file_name.trim_end_matches(".cfg").to_lowercase();
+
+        // Never delete protected configs
+        if PROTECTED_PREFIXES.iter().any(|p| stem.starts_with(p)) {
+            continue;
+        }
+
+        // Split GUID segments (e.g. "ccmrik.megaqol") and check if any segment
+        // matches an installed mod name
+        let segments: Vec<&str> = stem.split('.').collect();
+        let has_match = segments.iter().any(|seg| mod_names.contains(*seg));
+
+        if !has_match {
+            app_log(&format!("Removing orphan config: {}", file_name));
+            fs::remove_file(&path).map_err(|e| {
+                format!("Failed to delete {}: {}", file_name, e)
+            })?;
+            deleted.push(file_name);
+        }
+    }
+
+    if !deleted.is_empty() {
+        app_log(&format!("Cleaned {} orphan config file(s)", deleted.len()));
+    }
+    Ok(deleted)
 }

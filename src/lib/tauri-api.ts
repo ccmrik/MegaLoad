@@ -104,6 +104,8 @@ export const saveConfigValue = (
 ) => invoke<void>("save_config_value", { configPath, section, key, value });
 export const resetConfigFile = (configPath: string) =>
   invoke<ConfigFile>("reset_config_file", { configPath });
+export const cleanOrphanConfigs = (bepinexPath: string) =>
+  invoke<string[]>("clean_orphan_configs", { bepinexPath });
 
 // --- Log types & commands ---
 

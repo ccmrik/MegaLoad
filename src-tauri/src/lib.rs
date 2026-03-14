@@ -40,6 +40,7 @@ pub fn run() {
             get_config_files,
             save_config_value,
             reset_config_file,
+            clean_orphan_configs,
             // Logs
             read_log_file,
             read_log_tail,
