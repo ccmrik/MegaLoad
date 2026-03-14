@@ -82,8 +82,10 @@ pub fn launch_valheim(valheim_path: String, bepinex_path: String) -> Result<(), 
     write_doorstop_config(&doorstop_config_path, &absolute_preloader)?;
 
     // Launch with env vars as backup (some doorstop versions respect them)
+    // -console enables the in-game F5 console (required for devcommands)
     std::process::Command::new(valheim_exe)
         .current_dir(&game_dir)
+        .arg("-console")
         .env("DOORSTOP_ENABLE", "true")
         .env("DOORSTOP_INVOKE_DLL_PATH", &absolute_preloader)
         .spawn()
