@@ -1,11 +1,11 @@
 {
-  "version": "0.12.6",
-  "notes": "v0.12.6 - Add speed/jump slider controls to Trainer page",
-  "pub_date": "2026-03-15T11:11:23Z",
+  "version": "0.12.7",
+  "notes": "v0.12.7 - Auto-deploy content comparison fix, log export button",
+  "pub_date": "2026-03-15T11:47:59Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU1aeGpmMmJBRmRhZDYxYzF4a0Jja2h4WVhMNnhhdGZkVW1vd0Z0UStHKzI2RUYzVHhhS2UwOE1DVUtLRndyL1Zsdlk5NHU2UGU2MU41UjB0MGdTemdzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNTMzNDc0CWZpbGU6TWVnYUxvYWRfMC4xMi42X3g2NC1zZXR1cC5uc2lzLnppcApLSE5OYmYyeTBSYkUzcVVLVXZtV1JRWExqMXY1SEpOWCtGVUdFSmR5Y0JXaS9qemNXRnpjc3ZBTFRDZ1MrRkdIOFVYWWdXOUtQUGUrRDZyczI1M0FCdz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.12.6/MegaLoad_0.12.6_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdxRVpUeXhsM0ZVdnlHT0phTG5RUGtTRDNGUkI1dzY2SWtZOHUvL3ZVUkYwVHNQUHVHMzJCWFFId0xjQldCQkNBV0Q5ZGZnanh0WTBXdUVFTm50ZmdBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNTM1NjY1CWZpbGU6TWVnYUxvYWRfMC4xMi43X3g2NC1zZXR1cC5uc2lzLnppcApscTFQQ05KMlBDR0hOYWNlVmZmZ2NXb2R6aUJzQmNJTUU3SFVXdnNETWc0cFJUSStTN3hjMGlwVGs1ZXM4QjZNZWRJQmRQcGpZRjQra2FVNGRmNmZDZz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.12.7/MegaLoad_0.12.7_x64-setup.nsis.zip"
     }
   }
 }

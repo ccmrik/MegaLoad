@@ -48,6 +48,7 @@ pub fn run() {
             read_log_tail,
             get_log_size,
             clear_log,
+            save_log_file,
             // Launcher
             detect_valheim_path,
             detect_r2modman_profiles,

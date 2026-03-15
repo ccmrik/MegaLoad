@@ -4,8 +4,10 @@ import {
   readLogTail,
   clearLog,
   getLogSize,
+  saveLogFile,
   type LogLine,
 } from "../lib/tauri-api";
+import { save } from "@tauri-apps/plugin-dialog";
 import {
   AlertCircle,
   FileText,
@@ -83,6 +85,16 @@ export function LogViewer() {
     a.download = `LogOutput_${new Date().toISOString().slice(0, 10)}.log`;
     a.click();
     URL.revokeObjectURL(url);
+  };
+
+  const handleDownload = async () => {
+    if (!profile?.bepinex_path) return;
+    const dest = await save({
+      defaultPath: `LogOutput_${new Date().toISOString().slice(0, 10)}.log`,
+      filters: [{ name: "Log Files", extensions: ["log", "txt"] }],
+    });
+    if (!dest) return;
+    await saveLogFile(profile.bepinex_path, dest);
   };
 
   // Filter lines
@@ -172,6 +184,15 @@ export function LogViewer() {
           >
             <Download className="w-3.5 h-3.5" />
             Export
+          </button>
+
+          <button
+            onClick={handleDownload}
+            disabled={logSize === 0}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-30"
+          >
+            <FileText className="w-3.5 h-3.5" />
+            Download Full Log
           </button>
 
           <button

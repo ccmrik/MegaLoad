@@ -73,6 +73,83 @@ export function Trainer() {
     }
   }, [toast]);
 
+  // Numpad key bindings — mirrors MegaTrainer's in-game NumpadBindings
+  const numpadMap: Record<string, string> = {
+    Numpad0: "god_mode",
+    Numpad1: "unlimited_stamina",
+    Numpad2: "unlimited_weight",
+    Numpad3: "ghost_mode",
+    Numpad4: "no_skill_drain",
+    Numpad5: "debug_mode",
+    Numpad6: "no_placement_cost",
+    Numpad7: "no_weather_damage",
+    Numpad8: "instant_kill",
+    Numpad9: "no_durability_loss",
+  };
+
+  useEffect(() => {
+    if (!profile?.bepinex_path) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't capture when typing in inputs
+      const tag = (e.target as HTMLElement)?.tagName;
+      if (tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT") return;
+
+      const cheatId = numpadMap[e.code];
+      if (cheatId) {
+        e.preventDefault();
+        const cheat = cheats.find((c) => c.id === cheatId);
+        if (cheat) {
+          toggle(profile.bepinex_path, cheatId, !cheat.enabled);
+          setToast(`${cheat.name}: ${!cheat.enabled ? "ON" : "OFF"}`);
+        }
+        return;
+      }
+
+      const ctrl = e.ctrlKey;
+      if (e.code === "NumpadAdd") {
+        e.preventDefault();
+        if (ctrl) {
+          const val = Math.round(Math.min(jumpMultiplier + 0.1, 5) * 10) / 10;
+          setMultiplier(profile.bepinex_path, "jump", val);
+          useTrainerStore.setState({ jumpMultiplier: val });
+          setToast(`Jump Height: ${val.toFixed(1)}x`);
+        } else {
+          const val = Math.round(Math.min(speedMultiplier + 0.1, 5) * 10) / 10;
+          setMultiplier(profile.bepinex_path, "speed", val);
+          useTrainerStore.setState({ speedMultiplier: val });
+          setToast(`Speed: ${val.toFixed(1)}x`);
+        }
+        return;
+      }
+      if (e.code === "NumpadSubtract") {
+        e.preventDefault();
+        if (ctrl) {
+          const val = Math.round(Math.max(jumpMultiplier - 0.1, 0.1) * 10) / 10;
+          setMultiplier(profile.bepinex_path, "jump", val);
+          useTrainerStore.setState({ jumpMultiplier: val });
+          setToast(`Jump Height: ${val.toFixed(1)}x`);
+        } else {
+          const val = Math.round(Math.max(speedMultiplier - 0.1, 0.1) * 10) / 10;
+          setMultiplier(profile.bepinex_path, "speed", val);
+          useTrainerStore.setState({ speedMultiplier: val });
+          setToast(`Speed: ${val.toFixed(1)}x`);
+        }
+        return;
+      }
+      if (e.code === "NumpadMultiply") {
+        e.preventDefault();
+        setMultiplier(profile.bepinex_path, "speed", 1.0);
+        setMultiplier(profile.bepinex_path, "jump", 1.0);
+        useTrainerStore.setState({ speedMultiplier: 1.0, jumpMultiplier: 1.0 });
+        setToast("Speed & Jump: 1.0x (reset)");
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, [profile?.bepinex_path, cheats, toggle, setMultiplier, speedMultiplier, jumpMultiplier]);
+
   const handleToggle = async (cheatId: string, enabled: boolean) => {
     if (!profile?.bepinex_path) return;
     await toggle(profile.bepinex_path, cheatId, enabled);

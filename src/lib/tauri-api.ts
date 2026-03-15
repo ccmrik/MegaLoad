@@ -122,6 +122,8 @@ export const getLogSize = (bepinexPath: string) =>
   invoke<number>("get_log_size", { bepinexPath });
 export const clearLog = (bepinexPath: string) =>
   invoke<void>("clear_log", { bepinexPath });
+export const saveLogFile = (bepinexPath: string, destPath: string) =>
+  invoke<void>("save_log_file", { bepinexPath, destPath });
 
 // --- Import commands ---
 

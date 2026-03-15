@@ -99,3 +99,13 @@ pub fn clear_log(bepinex_path: String) -> Result<(), String> {
     }
     Ok(())
 }
+
+#[command]
+pub fn save_log_file(bepinex_path: String, dest_path: String) -> Result<(), String> {
+    let log_path = Path::new(&bepinex_path).join("LogOutput.log");
+    if !log_path.exists() {
+        return Err("LogOutput.log not found".to_string());
+    }
+    fs::copy(&log_path, &dest_path).map_err(|e| e.to_string())?;
+    Ok(())
+}
