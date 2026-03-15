@@ -1,11 +1,11 @@
 {
-  "version": "0.12.4",
-  "notes": "v0.12.4 - Numpad trainer hotkeys, speed/jump adjustment, updated MegaTrainer v1.1.0",
-  "pub_date": "2026-03-14T23:50:42Z",
+  "version": "0.12.5",
+  "notes": "v0.12.5 - Fix MegaTrainer AmbiguousMatchException + resilient Awake",
+  "pub_date": "2026-03-15T11:03:37Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUwyenoxbDNTM2wwZGVYYWFmYjZvNVdWVW0vYjBySlNsZTVzYTFuZDA2emVZaWNML25adGFIeE5lekw3eUNsbXk5NVdCNVpCNUozQi9ZaUN1bVZZK1FzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNTMyMjMyCWZpbGU6TWVnYUxvYWRfMC4xMi40X3g2NC1zZXR1cC5uc2lzLnppcApPeFdKTzd4dXI1aHlYL1dEcURETThDSzd3Rit5TCtlV0J3THpRUmFZeW0zbnhzTWtEUUw5UWdycmNLWU84NFFGSzB1YmtOMS82TjljYnB4OUJIM0tBdz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.12.4/MegaLoad_0.12.4_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU8rK1V3SFdNNlNsSDFXQnZCNTVQaGFtUUlXaUl0b2NrR3cvenkrbXNkbXRrZEwwaGNVRUl1bWViRWUwU1VTUExmVkJnODk5R2NaRkh4MTlKRmljQ0EwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNTMzMDA3CWZpbGU6TWVnYUxvYWRfMC4xMi41X3g2NC1zZXR1cC5uc2lzLnppcApJd1E4ZlkyalkyalFpNUUvUFFEVzRONDhLSTFraUpJVTJxbjkva1VQYUpiQURMQ1ZTRXdJam95Mk94U2hrUkZBeHlNNnNCTWFUZHhKOFNEa1lqNkJBZz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.12.5/MegaLoad_0.12.5_x64-setup.nsis.zip"
     }
   }
 }
