@@ -85,7 +85,7 @@ export function Sidebar() {
 
   const handleCheckUpdates = () => {
     if (profile?.bepinex_path) {
-      autoUpdate(profile.bepinex_path);
+      autoUpdate(profile.bepinex_path, true);
     }
   };
 

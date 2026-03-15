@@ -179,8 +179,8 @@ export interface StarterMod {
 
 export const getStarterMods = () =>
   invoke<StarterMod[]>("get_starter_mods");
-export const checkModUpdates = (bepinexPath: string) =>
-  invoke<UpdateCheckResult>("check_mod_updates", { bepinexPath });
+export const checkModUpdates = (bepinexPath: string, force = false) =>
+  invoke<UpdateCheckResult>("check_mod_updates", { bepinexPath, force });
 export const installModUpdate = (
   bepinexPath: string,
   modName: string,
@@ -188,8 +188,8 @@ export const installModUpdate = (
   version: string
 ) =>
   invoke<string>("install_mod_update", { bepinexPath, modName, downloadUrl, version });
-export const autoUpdateMods = (bepinexPath: string) =>
-  invoke<UpdateCheckResult>("auto_update_mods", { bepinexPath });
+export const autoUpdateMods = (bepinexPath: string, force = false) =>
+  invoke<UpdateCheckResult>("auto_update_mods", { bepinexPath, force });
 export const setModVersion = (modName: string, version: string) =>
   invoke<void>("set_mod_version", { modName, version });
 

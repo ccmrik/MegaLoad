@@ -19,10 +19,10 @@ interface UpdateState {
   sessionUpdatedMods: string[];
 
   /** Check all mods for available updates */
-  checkUpdates: (bepinexPath: string) => Promise<UpdateCheckResult | null>;
+  checkUpdates: (bepinexPath: string, force?: boolean) => Promise<UpdateCheckResult | null>;
 
-  /** Check + auto-install all available updates (startup flow) */
-  autoUpdate: (bepinexPath: string) => Promise<UpdateCheckResult | null>;
+  /** Check + auto-install all available updates. Pass force=true to bypass cache. */
+  autoUpdate: (bepinexPath: string, force?: boolean) => Promise<UpdateCheckResult | null>;
 
   /** Start periodic mod update checking (check only, no auto-install) */
   startLiveCheck: (bepinexPath: string) => void;
@@ -41,13 +41,13 @@ export const useUpdateStore = create<UpdateState>((set, get) => ({
   startupCheckDone: false,
   sessionUpdatedMods: [],
 
-  checkUpdates: async (bepinexPath: string) => {
+  checkUpdates: async (bepinexPath: string, force = false) => {
     const { checking, updating } = get();
     if (checking || updating) return null;
 
     set({ checking: true, error: null });
     try {
-      const result = await checkModUpdates(bepinexPath);
+      const result = await checkModUpdates(bepinexPath, force);
       set({ updateResult: result, checking: false });
       return result;
     } catch (e) {
@@ -56,10 +56,10 @@ export const useUpdateStore = create<UpdateState>((set, get) => ({
     }
   },
 
-  autoUpdate: async (bepinexPath: string) => {
+  autoUpdate: async (bepinexPath: string, force = false) => {
     set({ checking: true, updating: true, error: null });
     try {
-      const result = await autoUpdateMods(bepinexPath);
+      const result = await autoUpdateMods(bepinexPath, force);
       const newlyUpdated = result.mods
         .filter((m) => m.status === "updated")
         .map((m) => m.name);

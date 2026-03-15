@@ -117,7 +117,7 @@ fn save_cache(mods: &[ModUpdateInfo]) {
 /// Fetch the mod manifest — a single HTTP request for all mod info.
 fn fetch_manifest() -> Result<ModManifest, String> {
     let resp = ureq::get(MANIFEST_URL)
-        .set("User-Agent", "MegaLoad/0.13.1")
+        .set("User-Agent", "MegaLoad/0.13.2")
         .call()
         .map_err(|e| {
             let msg = format!("{}", e);
@@ -181,10 +181,23 @@ fn evaluate_updates(
         .collect()
 }
 
+fn clear_caches() {
+    if let Some(dir) = megaload_dir() {
+        let _ = fs::remove_file(dir.join("update_cache.json"));
+        let _ = fs::remove_file(dir.join("mod_manifest_cache.json"));
+    }
+}
+
 /// Check all mods for updates. Uses cache if <15min old, otherwise ONE HTTP request.
+/// When `force` is true, caches are cleared first to guarantee a fresh check.
 #[command]
-pub fn check_mod_updates(bepinex_path: String) -> Result<UpdateCheckResult, String> {
-    app_log("Checking for mod updates...");
+pub fn check_mod_updates(bepinex_path: String, force: bool) -> Result<UpdateCheckResult, String> {
+    if force {
+        app_log("Force-checking for mod updates (caches cleared)...");
+        clear_caches();
+    } else {
+        app_log("Checking for mod updates...");
+    }
     let plugins_dir = PathBuf::from(&bepinex_path).join("plugins");
     let installed_versions = load_installed_versions();
 
@@ -310,7 +323,7 @@ pub fn install_mod_update(
 
     // Download the DLL (this is a direct file download, not an API call — no rate limit)
     let resp = ureq::get(&download_url)
-        .set("User-Agent", "MegaLoad/0.13.1")
+        .set("User-Agent", "MegaLoad/0.13.2")
         .call()
         .map_err(|e| format!("Download failed for {}: {}", mod_name, e))?;
 
@@ -337,10 +350,11 @@ pub fn install_mod_update(
 }
 
 /// Check for updates and install all available updates in one go.
+/// When `force` is true, caches are cleared first to guarantee a fresh check.
 #[command]
-pub fn auto_update_mods(bepinex_path: String) -> Result<UpdateCheckResult, String> {
+pub fn auto_update_mods(bepinex_path: String, force: bool) -> Result<UpdateCheckResult, String> {
     app_log("Auto-update: checking and installing all available updates...");
-    let check = check_mod_updates(bepinex_path.clone())?;
+    let check = check_mod_updates(bepinex_path.clone(), force)?;
 
     let mut updated_mods = check.mods.clone();
 

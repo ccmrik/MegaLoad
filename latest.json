@@ -1,11 +1,1 @@
-{
-  "version": "0.13.0",
-  "notes": "v0.13.0 - Log Viewer download, Trainer numpad hotkeys",
-  "pub_date": "2026-03-15T12:12:13Z",
-  "platforms": {
-    "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUY1ajVYRUh4Snp1NjErSzNVVitlb0pBRkFRbEd4bjRTbDlxT2lwWDdEQlNSWWtvSFZlRUI2SXpsdGZvZTk4WGMrNmxmS1dBUFM4MWJLb0lRRFEwZ0FzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNTM3MTE5CWZpbGU6TWVnYUxvYWRfMC4xMy4wX3g2NC1zZXR1cC5uc2lzLnppcApCbU1vUmNhQU1XU04vc0Y0RnZ4QzYvUU95RkpwTkE1WC94NExwUEpQc2M4dmJtYks4ZzlHSjhvSVdVSThQTmkwZTBTVU41TU5wYzgxSFZRMkxCazZCUT09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.0/MegaLoad_0.13.0_x64-setup.nsis.zip"
-    }
-  }
-}
+{"version":"0.13.1","notes":"v0.13.1 - Profile page layout, open folder button, manifest fix","pub_date":"2026-03-15T13:08:26Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU1mREFNdjA2RjBGS3dJUUZZVHE4S1p4eVdKenBTVkY1TjFBMkVuM2JkWS9RM2xQVFhpVjdvdy9BbS94WWM1YTd0bi9yVmptUFFVdytnMUErYXRlbndVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczNTQwNDc5CWZpbGU6TWVnYUxvYWRfMC4xMy4xX3g2NC1zZXR1cC5uc2lzLnppcAp6T255YkpLL1A3aExIYTBPOFErNWVFdVNZbVhkb0Z3Y1F5WHIyUHBpa0pXclZpTVdkS3dCQ3BXVlhrbnZINmluMDZjc2VDNTVOcVYyOWtGUCtJNlJBdz09Cg==","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.13.1/MegaLoad_0.13.1_x64-setup.nsis.zip"}}}
