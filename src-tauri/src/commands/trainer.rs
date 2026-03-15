@@ -212,11 +212,11 @@ fn ensure_trainer_plugin(app: &AppHandle, bepinex_path: &str) {
         _ => return, // Resource not found (dev mode without bundle), skip
     };
 
-    // Only copy if missing or different size (updated version)
+    // Copy if missing or content differs (size check alone missed same-size updates)
     let needs_copy = if dest_dll.exists() {
-        let src_len = fs::metadata(&source).map(|m| m.len()).unwrap_or(0);
-        let dst_len = fs::metadata(&dest_dll).map(|m| m.len()).unwrap_or(0);
-        src_len != dst_len
+        let src_bytes = fs::read(&source).unwrap_or_default();
+        let dst_bytes = fs::read(&dest_dll).unwrap_or_default();
+        src_bytes != dst_bytes
     } else {
         true
     };

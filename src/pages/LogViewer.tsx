@@ -14,6 +14,7 @@ import {
   Search,
   ArrowDown,
   X,
+  Download,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -71,6 +72,17 @@ export function LogViewer() {
       setLines([]);
       setLogSize(0);
     }
+  };
+
+  const handleExport = () => {
+    const text = filteredLines.map((l) => l.text).join("\n");
+    const blob = new Blob([text], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `LogOutput_${new Date().toISOString().slice(0, 10)}.log`;
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   // Filter lines
@@ -151,6 +163,15 @@ export function LogViewer() {
           >
             <RefreshCw className="w-3.5 h-3.5" />
             Refresh
+          </button>
+
+          <button
+            onClick={handleExport}
+            disabled={filteredLines.length === 0}
+            className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-30"
+          >
+            <Download className="w-3.5 h-3.5" />
+            Export
           </button>
 
           <button
