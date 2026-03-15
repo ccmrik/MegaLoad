@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-03-15T14:00:00Z",
+  "updated_at": "2026-03-15T16:45:00Z",
   "mods": [
     {
       "name": "SluttyHoe",
@@ -28,16 +28,16 @@
     },
     {
       "name": "MegaShot",
-      "version": "2.0.2",
-      "download_url": "https://github.com/ccmrik/MegaShot/releases/download/v2.0.2/MegaShot.dll",
+      "version": "2.0.3",
+      "download_url": "https://github.com/ccmrik/MegaShot/releases/download/v2.0.3/MegaShot.dll",
       "dll_name": "MegaShot.dll",
       "plugin_folder": "MegaShot",
       "description": "Crossbow & firearms overhaul — scope/zoom, AOE, DoT, fire rate, magazine/reload system"
     },
     {
       "name": "MegaQoL",
-      "version": "1.5.8",
-      "download_url": "https://github.com/ccmrik/MegaQoL/releases/download/v1.5.8/MegaQoL.dll",
+      "version": "1.5.9",
+      "download_url": "https://github.com/ccmrik/MegaQoL/releases/download/v1.5.9/MegaQoL.dll",
       "dll_name": "MegaQoL.dll",
       "plugin_folder": "MegaQoL",
       "description": "Quality of life — auto repair, refueller, pet feeder, craft from containers, map teleport, mass farming"
