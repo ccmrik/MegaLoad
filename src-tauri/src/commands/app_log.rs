@@ -172,3 +172,16 @@ pub fn open_data_dir() -> Result<(), String> {
         .map_err(|e| e.to_string())?;
     Ok(())
 }
+
+#[command]
+pub fn open_folder(path: String) -> Result<(), String> {
+    let p = std::path::Path::new(&path);
+    if !p.exists() {
+        return Err(format!("Path does not exist: {}", path));
+    }
+    std::process::Command::new("explorer")
+        .arg(&path)
+        .spawn()
+        .map_err(|e| e.to_string())?;
+    Ok(())
+}

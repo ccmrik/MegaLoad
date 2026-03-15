@@ -91,6 +91,7 @@ pub fn run() {
             clear_app_log,
             get_app_log_path,
             open_data_dir,
+            open_folder,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -207,6 +207,8 @@ export const getAppLogPath = () =>
   invoke<string>("get_app_log_path");
 export const openDataDir = () =>
   invoke<void>("open_data_dir");
+export const openFolder = (path: string) =>
+  invoke<void>("open_folder", { path });
 
 // --- Thunderstore types & commands ---
 
