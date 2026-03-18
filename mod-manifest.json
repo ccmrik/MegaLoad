@@ -1,19 +1,19 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-03-15T17:36:00Z",
+  "updated_at": "2026-03-17T12:00:00Z",
   "mods": [
     {
       "name": "SluttyHoe",
-      "version": "3.7.5",
-      "download_url": "https://github.com/ccmrik/SluttyHoe/releases/download/v3.7.5/SluttyHoe.dll",
+      "version": "3.7.6",
+      "download_url": "https://github.com/ccmrik/SluttyHoe/releases/download/v3.7.6/SluttyHoe.dll",
       "dll_name": "SluttyHoe.dll",
       "plugin_folder": "SluttyHoe",
       "description": "Hoe tool overhaul with biome painter, extended terrain editing, and configurable radius"
     },
     {
       "name": "MegaMegingjord",
-      "version": "1.6.0",
-      "download_url": "https://github.com/ccmrik/MegaMegingjord/releases/download/v1.6.0/MegaMegingjord.dll",
+      "version": "1.6.1",
+      "download_url": "https://github.com/ccmrik/MegaMegingjord/releases/download/v1.6.1/MegaMegingjord.dll",
       "dll_name": "MegaMegingjord.dll",
       "plugin_folder": "MegaMegingjord",
       "description": "Megingjord belt powers — carry weight, headlamp, Eitr bonus, seafloor walk, speed & jump boost"
@@ -36,16 +36,16 @@
     },
     {
       "name": "MegaQoL",
-      "version": "1.5.11",
-      "download_url": "https://github.com/ccmrik/MegaQoL/releases/download/v1.5.11/MegaQoL.dll",
+      "version": "1.5.12",
+      "download_url": "https://github.com/ccmrik/MegaQoL/releases/download/v1.5.12/MegaQoL.dll",
       "dll_name": "MegaQoL.dll",
       "plugin_folder": "MegaQoL",
       "description": "Quality of life — auto repair, refueller, pet feeder, craft from containers, map teleport, mass farming"
     },
     {
       "name": "MegaFishing",
-      "version": "1.0.3",
-      "download_url": "https://github.com/ccmrik/MegaFishing/releases/download/v1.0.3/MegaFishing.dll",
+      "version": "1.0.4",
+      "download_url": "https://github.com/ccmrik/MegaFishing/releases/download/v1.0.4/MegaFishing.dll",
       "dll_name": "MegaFishing.dll",
       "plugin_folder": "MegaFishing",
       "description": "Fish auto-pull into containers/inventory with quality upgrade and configurable radius"
