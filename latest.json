@@ -1,11 +1,11 @@
 {
-  "version": "0.13.8",
-  "notes": "v0.13.8 - Fix log viewer export, add copy button, enable text selection",
-  "pub_date": "2026-03-19T08:15:29Z",
+  "version": "0.13.9",
+  "notes": "v0.13.9 - Steam cloud sync detection, disable launch while game running or syncing",
+  "pub_date": "2026-03-19T09:34:16Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOVByYVhMU3ppcUZRZXROb3NrMmQ1VENJaHRMeUx4VFNKMWZaT0xnTlN6NWVyQTRWZU00UnBYMVk4cVk3SzZDRnUwd21nQjk0Z05VRW8vS1RDTE16dFFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczODY4NDQ1CWZpbGU6TWVnYUxvYWRfMC4xMy44X3g2NC1zZXR1cC5uc2lzLnppcApoY05EOUZKZWo4ZFNScEZVU0FxSzVKMGJuSktUM1B3Q2ZPbVpmWHhQTVgrZml5TzRDSlhPV1JuR0w2cEgyTVN3eFNqSjhuWUNKbUdEL2QycmxsUklEQT09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.8/MegaLoad_0.13.8_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUNVWm12d0JZUkl1N2h5VmhtazhBd3FaMm1HaGNIY0tTbEQwVTJaOUlqWWVDZVZrcXlPdXVjbGxEU1orQ01IMzNiZTJhNXdHMmp4Z1E4OWVFNWhOQ2c0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczODczMTE4CWZpbGU6TWVnYUxvYWRfMC4xMy45X3g2NC1zZXR1cC5uc2lzLnppcApZMTlHTmlXcDRJQ2xpSitOYU80ZVZjZTFrWjhSZURSdnk2cVBrZytrOCtZbzhRamI5dUtkWHpxUVRudnBGcGFJd0VqS1dsUFBPYmk4Z1M1SWQvQ3hEQT09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.9/MegaLoad_0.13.9_x64-setup.nsis.zip"
     }
   }
 }

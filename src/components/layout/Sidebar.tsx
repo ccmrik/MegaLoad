@@ -106,7 +106,7 @@ export function Sidebar() {
 
   const updatesBlocking = checking || updating;
   const gameBlocking =
-    gameStatus?.valheim_running || gameStatus?.cloud_syncing || false;
+    gameStatus?.valheim_running || gameStatus?.cloud_syncing || (gameStatus ? !gameStatus.steam_running : false);
   const launchDisabled =
     !profile || !valheimPath || launching || updatesBlocking || gameBlocking;
 
@@ -260,9 +260,9 @@ export function Sidebar() {
               </div>
             )}
             {!gameStatus.steam_running && !gameStatus.valheim_running && !gameStatus.cloud_syncing && (
-              <div className="flex items-center gap-2 text-xs text-zinc-500">
+              <div className="flex items-center gap-2 text-xs text-amber-400">
                 <CloudOff className="w-3 h-3 shrink-0" />
-                <span>Steam not running</span>
+                <span>Steam not running — launch blocked</span>
               </div>
             )}
           </div>
@@ -297,6 +297,11 @@ export function Sidebar() {
             <>
               <Cloud className="w-4 h-4 animate-pulse" />
               Cloud Syncing...
+            </>
+          ) : gameStatus && !gameStatus.steam_running ? (
+            <>
+              <CloudOff className="w-4 h-4" />
+              Start Steam First
             </>
           ) : (
             <>

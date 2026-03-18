@@ -91,6 +91,19 @@ pub fn launch_valheim(valheim_path: String, bepinex_path: String) -> Result<(), 
         );
     }
 
+    // Ensure steam_appid.txt exists so SteamAPI_Init() works when launching directly
+    let appid_path = game_dir.join("steam_appid.txt");
+    if !appid_path.exists() {
+        fs::write(&appid_path, VALHEIM_APP_ID)
+            .map_err(|e| format!("Failed to write steam_appid.txt: {}", e))?;
+        app_log("Created steam_appid.txt");
+    }
+
+    // Verify Steam is running — SteamAPI_Init() will fail without it
+    if !is_process_running("steam.exe") {
+        return Err("Steam is not running. Please start Steam before launching Valheim.".to_string());
+    }
+
     // === KEY FIX: Rewrite doorstop_config.ini to use the ABSOLUTE path to this profile's BepInEx ===
     // This is what R2Modman does — env vars are unreliable across doorstop versions.
     let doorstop_config_path = game_dir.join("doorstop_config.ini");
@@ -144,14 +157,14 @@ pub fn check_game_status(valheim_path: String) -> Result<GameStatus, String> {
         false
     };
 
-    let ready = !valheim_running && !cloud_syncing;
+    let ready = !valheim_running && !cloud_syncing && steam_running;
 
     let status_text = if valheim_running {
         "Valheim is running".to_string()
     } else if cloud_syncing {
         "Steam Cloud sync in progress...".to_string()
     } else if !steam_running {
-        "Steam is not running".to_string()
+        "Steam is not running — launch Steam first".to_string()
     } else {
         "Ready".to_string()
     };
