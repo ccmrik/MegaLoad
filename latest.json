@@ -1,11 +1,11 @@
 {
-  "version": "0.13.7",
-  "notes": "v0.13.7 - Add MegaFactory to starter mods, featured Our Mods section on Browse page",
-  "pub_date": "2026-03-18T20:35:06Z",
+  "version": "0.13.8",
+  "notes": "v0.13.8 - Fix log viewer export, add copy button, enable text selection",
+  "pub_date": "2026-03-19T08:15:29Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFqdDFIK0FoREtWTDhON2hFMGtaV01CdHQyKzJXZ3ZkMVVsZTBEYmFIRXkraEZKcWVrZVJ5c2hLQnZCR1lTTXpWMmc3Vzk2N2NJd3dpcVlNeUpwdHdnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczODY2MDE0CWZpbGU6TWVnYUxvYWRfMC4xMy43X3g2NC1zZXR1cC5uc2lzLnppcApvbXQ1amtVVXFqM0MweDl4TXdvalNEeXFOajNya3oweXUxKy9xdXFNMU9sVzVLQitrZlp0Ujh6QlhWNWg2cTYwd0UwdE1aTlJ4RUUrQWR4cFkrNzFEQT09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.7/MegaLoad_0.13.7_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOVByYVhMU3ppcUZRZXROb3NrMmQ1VENJaHRMeUx4VFNKMWZaT0xnTlN6NWVyQTRWZU00UnBYMVk4cVk3SzZDRnUwd21nQjk0Z05VRW8vS1RDTE16dFFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczODY4NDQ1CWZpbGU6TWVnYUxvYWRfMC4xMy44X3g2NC1zZXR1cC5uc2lzLnppcApoY05EOUZKZWo4ZFNScEZVU0FxSzVKMGJuSktUM1B3Q2ZPbVpmWHhQTVgrZml5TzRDSlhPV1JuR0w2cEgyTVN3eFNqSjhuWUNKbUdEL2QycmxsUklEQT09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.8/MegaLoad_0.13.8_x64-setup.nsis.zip"
     }
   }
 }

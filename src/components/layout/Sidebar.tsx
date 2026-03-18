@@ -15,12 +15,16 @@ import {
   Download,
   Globe,
   Gamepad2,
+  Cloud,
+  CloudOff,
+  Monitor,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useProfileStore } from "../../stores/profileStore";
 import { useUpdateStore } from "../../stores/updateStore";
 import { useToastStore } from "../../stores/toastStore";
-import { detectValheimPath, launchValheim } from "../../lib/tauri-api";
+import { detectValheimPath, launchValheim, checkGameStatus } from "../../lib/tauri-api";
+import type { GameStatus } from "../../lib/tauri-api";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
@@ -39,6 +43,7 @@ export function Sidebar() {
   const [launching, setLaunching] = useState(false);
   const [valheimPath, setValheimPath] = useState<string | null>(null);
   const [launchError, setLaunchError] = useState<string | null>(null);
+  const [gameStatus, setGameStatus] = useState<GameStatus | null>(null);
   const {
     checking,
     updating,
@@ -70,6 +75,16 @@ export function Sidebar() {
     }
   }, [launchError]);
 
+  // Poll game/Steam status every 3 seconds
+  useEffect(() => {
+    if (!valheimPath) return;
+    const poll = () =>
+      checkGameStatus(valheimPath).then(setGameStatus).catch(() => {});
+    poll();
+    const id = setInterval(poll, 3000);
+    return () => clearInterval(id);
+  }, [valheimPath]);
+
   const handleLaunch = async () => {
     if (!profile?.bepinex_path || !valheimPath) return;
     setLaunching(true);
@@ -90,8 +105,10 @@ export function Sidebar() {
   };
 
   const updatesBlocking = checking || updating;
+  const gameBlocking =
+    gameStatus?.valheim_running || gameStatus?.cloud_syncing || false;
   const launchDisabled =
-    !profile || !valheimPath || launching || updatesBlocking;
+    !profile || !valheimPath || launching || updatesBlocking || gameBlocking;
 
   const updatedCount =
     updateResult?.mods.filter((m) => m.status === "updated").length ?? 0;
@@ -225,8 +242,32 @@ export function Sidebar() {
         </div>
       )}
 
-      {/* Launch Button */}
+      {/* Game Status + Launch Button */}
       <div className="p-3 border-t border-zinc-800/50">
+        {/* Game/Steam status indicator */}
+        {gameStatus && valheimPath && (
+          <div className="mb-2 space-y-1">
+            {gameStatus.valheim_running && (
+              <div className="flex items-center gap-2 text-xs text-brand-400">
+                <Monitor className="w-3 h-3 shrink-0" />
+                <span>Valheim is running</span>
+              </div>
+            )}
+            {gameStatus.cloud_syncing && (
+              <div className="flex items-center gap-2 text-xs text-sky-400">
+                <Cloud className="w-3 h-3 shrink-0 animate-pulse" />
+                <span>Steam Cloud syncing...</span>
+              </div>
+            )}
+            {!gameStatus.steam_running && !gameStatus.valheim_running && !gameStatus.cloud_syncing && (
+              <div className="flex items-center gap-2 text-xs text-zinc-500">
+                <CloudOff className="w-3 h-3 shrink-0" />
+                <span>Steam not running</span>
+              </div>
+            )}
+          </div>
+        )}
+
         <button
           onClick={handleLaunch}
           disabled={launchDisabled}
@@ -246,6 +287,16 @@ export function Sidebar() {
             <>
               <Loader2 className="w-4 h-4 animate-spin" />
               Updating...
+            </>
+          ) : gameStatus?.valheim_running ? (
+            <>
+              <Monitor className="w-4 h-4" />
+              Game Running
+            </>
+          ) : gameStatus?.cloud_syncing ? (
+            <>
+              <Cloud className="w-4 h-4 animate-pulse" />
+              Cloud Syncing...
             </>
           ) : (
             <>

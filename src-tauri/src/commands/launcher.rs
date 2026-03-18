@@ -1,7 +1,23 @@
 use crate::commands::app_log::app_log;
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::fs;
+use std::time::SystemTime;
+#[cfg(windows)]
+use std::os::windows::process::CommandExt;
+use serde::Serialize;
 use tauri::command;
+
+// Valheim's Steam App ID
+const VALHEIM_APP_ID: &str = "892970";
+
+#[derive(Serialize)]
+pub struct GameStatus {
+    pub valheim_running: bool,
+    pub steam_running: bool,
+    pub cloud_syncing: bool,
+    pub ready_to_launch: bool,
+    pub status_text: String,
+}
 
 #[command]
 pub fn detect_valheim_path() -> Result<String, String> {
@@ -113,4 +129,131 @@ debug_suspend=false
 "#);
     fs::write(path, config)
         .map_err(|e| format!("Failed to write doorstop_config.ini: {}", e))
+}
+
+/// Check the current game/Steam status for launch readiness.
+#[command]
+pub fn check_game_status(valheim_path: String) -> Result<GameStatus, String> {
+    let valheim_running = is_process_running("valheim.exe");
+    let steam_running = is_process_running("steam.exe");
+
+    // Only check cloud sync if the game isn't running (sync happens after game closes)
+    let cloud_syncing = if !valheim_running {
+        is_cloud_syncing(&valheim_path)
+    } else {
+        false
+    };
+
+    let ready = !valheim_running && !cloud_syncing;
+
+    let status_text = if valheim_running {
+        "Valheim is running".to_string()
+    } else if cloud_syncing {
+        "Steam Cloud sync in progress...".to_string()
+    } else if !steam_running {
+        "Steam is not running".to_string()
+    } else {
+        "Ready".to_string()
+    };
+
+    Ok(GameStatus {
+        valheim_running,
+        steam_running,
+        cloud_syncing,
+        ready_to_launch: ready,
+        status_text,
+    })
+}
+
+/// Check if a process is running by name using tasklist (Windows).
+fn is_process_running(name: &str) -> bool {
+    let output = std::process::Command::new("tasklist")
+        .args(["/FI", &format!("IMAGENAME eq {}", name), "/NH", "/FO", "CSV"])
+        .creation_flags(0x08000000) // CREATE_NO_WINDOW — suppress console flash
+        .output();
+
+    match output {
+        Ok(o) => {
+            let stdout = String::from_utf8_lossy(&o.stdout).to_lowercase();
+            stdout.contains(&name.to_lowercase())
+        }
+        Err(_) => false,
+    }
+}
+
+/// Detect whether Steam Cloud sync is active for Valheim.
+/// Uses two signals:
+///   1. appmanifest_892970.acf StateFlags has active bits (update/sync in progress)
+///   2. remotecache.vdf was modified very recently (files still uploading)
+fn is_cloud_syncing(valheim_path: &str) -> bool {
+    let game_dir = PathBuf::from(valheim_path);
+
+    // Navigate: .../steamapps/common/Valheim → .../steamapps/
+    let steamapps = match game_dir.parent().and_then(|p| p.parent()) {
+        Some(p) => p,
+        None => return false,
+    };
+
+    // Signal 1: Check app manifest StateFlags
+    let manifest_path = steamapps.join(format!("appmanifest_{}.acf", VALHEIM_APP_ID));
+    if let Ok(content) = fs::read_to_string(&manifest_path) {
+        if let Some(flags_str) = parse_acf_value(&content, "StateFlags") {
+            if let Ok(flags) = flags_str.parse::<u32>() {
+                // Active-state bits (anything beyond FullyInstalled=4):
+                //   64=AppRunning, 256=UpdateRunning, 512=UpdatePaused,
+                //   1024=UpdateStarted, 4096=BackupRunning, 8192=Reconfiguring,
+                //   16384=Validating, 32768=AddingFiles
+                const ACTIVE_BITS: u32 = 64 | 256 | 512 | 1024 | 4096 | 8192 | 16384 | 32768;
+                if flags & ACTIVE_BITS != 0 {
+                    return true;
+                }
+            }
+        }
+    }
+
+    // Signal 2: Check remotecache.vdf modification time in Steam userdata
+    // Path: <Steam root>/userdata/<SteamID>/892970/remotecache.vdf
+    let steam_root = match steamapps.parent() {
+        Some(p) => p,
+        None => return false,
+    };
+    let userdata = steam_root.join("userdata");
+    if userdata.exists() {
+        if let Ok(entries) = fs::read_dir(&userdata) {
+            for entry in entries.flatten() {
+                let cache_path = entry.path().join(VALHEIM_APP_ID).join("remotecache.vdf");
+                if was_modified_within_secs(&cache_path, 12) {
+                    return true;
+                }
+            }
+        }
+    }
+
+    false
+}
+
+/// Parse a top-level key-value pair from a Valve ACF/VDF text file.
+/// Format: `"key"		"value"`
+fn parse_acf_value(content: &str, key: &str) -> Option<String> {
+    let needle = format!("\"{}\"", key);
+    for line in content.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with(&needle) {
+            let parts: Vec<&str> = trimmed.split('"').collect();
+            if parts.len() >= 4 {
+                return Some(parts[3].to_string());
+            }
+        }
+    }
+    None
+}
+
+/// Check if a file was modified within the last N seconds.
+fn was_modified_within_secs(path: &Path, secs: u64) -> bool {
+    fs::metadata(path)
+        .ok()
+        .and_then(|m| m.modified().ok())
+        .and_then(|t| SystemTime::now().duration_since(t).ok())
+        .map(|d| d.as_secs() < secs)
+        .unwrap_or(false)
 }
