@@ -1,10 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { useProfileStore } from "../stores/profileStore";
 import { useThunderstoreStore } from "../stores/thunderstoreStore";
+import { useUpdateStore } from "../stores/updateStore";
 import {
   getThunderstoreDetail,
+  getStarterMods,
+  installModUpdate,
   type ThunderstoreListItem,
   type ThunderstoreModDetail,
+  type StarterMod,
 } from "../lib/tauri-api";
 import {
   Search,
@@ -23,12 +27,14 @@ import {
   ArrowUpCircle,
   CheckCircle2,
   AlertTriangle,
+  Crown,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
 export function Browse() {
   const { activeProfile } = useProfileStore();
   const profile = activeProfile();
+  const { updateResult, checkUpdates } = useUpdateStore();
   const {
     items,
     total,
@@ -59,11 +65,16 @@ export function Browse() {
   const [toast, setToast] = useState<string | null>(null);
   const [showCategories, setShowCategories] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [ourMods, setOurMods] = useState<StarterMod[]>([]);
+  const [installingOurMod, setInstallingOurMod] = useState<string | null>(null);
 
   // Initial load
   useEffect(() => {
     search();
     loadCategories();
+    getStarterMods()
+      .then(setOurMods)
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -134,6 +145,27 @@ export function Browse() {
 
   const getInstalledVersion = (fullName: string) =>
     installedMods.find((m) => m.full_name === fullName)?.version ?? null;
+
+  const isOurModInstalled = (modName: string) => {
+    if (!updateResult?.mods) return false;
+    const mod = updateResult.mods.find((m) => m.name === modName);
+    return mod ? mod.status !== "not-installed" : false;
+  };
+
+  const handleInstallOurMod = async (mod: StarterMod) => {
+    if (!profile?.bepinex_path) return;
+    setInstallingOurMod(mod.name);
+    try {
+      await installModUpdate(profile.bepinex_path, mod.name, mod.download_url, mod.version);
+      setToast(`${mod.name} installed!`);
+      // Refresh update state so installed status updates
+      checkUpdates(profile.bepinex_path, true);
+    } catch (e) {
+      setToast(`Failed to install ${mod.name}: ${e}`);
+    } finally {
+      setInstallingOurMod(null);
+    }
+  };
 
   const totalPages = Math.ceil(total / perPage);
 
@@ -314,6 +346,67 @@ export function Browse() {
 
       {/* Results */}
       <div className="flex-1 min-h-0 overflow-y-auto">
+        {/* Our Mods — Featured Section */}
+        {ourMods.length > 0 && page === 0 && !query && !category && (
+          <div className="mb-5">
+            <div className="flex items-center gap-2 mb-3">
+              <Crown className="w-4 h-4 text-brand-400" />
+              <h2 className="text-sm font-semibold text-zinc-300">Our Mods</h2>
+              <span className="text-[10px] text-zinc-600 ml-1">by MegaLoad</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              {ourMods.map((mod) => {
+                const installed = isOurModInstalled(mod.name);
+                const isInstalling = installingOurMod === mod.name;
+                return (
+                  <div
+                    key={mod.name}
+                    className={cn(
+                      "glass rounded-xl p-4 flex items-center gap-4 transition-all duration-200 border",
+                      installed
+                        ? "border-emerald-500/20"
+                        : "border-brand-500/20 hover:border-brand-500/40"
+                    )}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-brand-500/10 flex items-center justify-center shrink-0">
+                      <Crown className="w-5 h-5 text-brand-400" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-semibold text-zinc-200 truncate text-sm">{mod.name}</h3>
+                        <span className="text-[10px] text-zinc-500 font-mono">v{mod.version}</span>
+                        {installed && (
+                          <span className="shrink-0 px-1.5 py-0.5 rounded text-[10px] font-bold bg-emerald-500/15 text-emerald-400">
+                            INSTALLED
+                          </span>
+                        )}
+                      </div>
+                      {mod.description && (
+                        <p className="text-[11px] text-zinc-500 truncate mt-0.5">{mod.description}</p>
+                      )}
+                    </div>
+                    <div className="shrink-0" onClick={(e) => e.stopPropagation()}>
+                      {isInstalling ? (
+                        <Loader2 className="w-5 h-5 text-brand-400 animate-spin" />
+                      ) : installed ? (
+                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                      ) : (
+                        <button
+                          onClick={() => handleInstallOurMod(mod)}
+                          className="p-2 rounded-lg hover:bg-brand-500/10 text-zinc-500 hover:text-brand-400 transition-colors"
+                          title="Install"
+                        >
+                          <Download className="w-4.5 h-4.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="w-8 h-8 text-brand-400 animate-spin" />

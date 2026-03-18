@@ -49,6 +49,14 @@
       "dll_name": "MegaFishing.dll",
       "plugin_folder": "MegaFishing",
       "description": "Fish auto-pull into containers/inventory with quality upgrade and configurable radius"
+    },
+    {
+      "name": "MegaFactory",
+      "version": "1.0.0",
+      "download_url": "https://github.com/ccmrik/MegaFactory/releases/download/v1.0.0/MegaFactory.dll",
+      "dll_name": "MegaFactory.dll",
+      "plugin_folder": "MegaFactory",
+      "description": "Auto-feed factory stations (Kiln, Smelter, Blast Furnace, Windmill, Spinning Wheel) with work order system"
     }
   ]
 }
