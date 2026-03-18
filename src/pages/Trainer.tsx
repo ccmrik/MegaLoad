@@ -87,6 +87,11 @@ export function Trainer() {
     Numpad9: "no_durability_loss",
   };
 
+  // Reverse lookup: cheat ID → numpad key label
+  const cheatKeyLabel: Record<string, string> = Object.fromEntries(
+    Object.entries(numpadMap).map(([code, id]) => [id, code.replace("Numpad", "Num ")])
+  );
+
   useEffect(() => {
     if (!profile?.bepinex_path) return;
 
@@ -509,6 +514,11 @@ export function Trainer() {
                         <h3 className="font-semibold text-zinc-200 text-sm">
                           {cheat.name}
                         </h3>
+                        {cheatKeyLabel[cheat.id] && (
+                          <span className="px-1.5 py-0.5 rounded bg-zinc-800 text-[10px] font-mono font-semibold text-zinc-400 border border-zinc-700/50 shrink-0">
+                            {cheatKeyLabel[cheat.id]}
+                          </span>
+                        )}
                       </div>
                       <p className="text-xs text-zinc-500 leading-relaxed">
                         {cheat.description}

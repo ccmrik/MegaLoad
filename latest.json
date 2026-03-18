@@ -1,11 +1,11 @@
 {
-  "version": "0.13.4",
-  "notes": "v0.13.4 - Update bundled MegaTrainer.dll to v1.2.2",
-  "pub_date": "2026-03-18T11:12:33Z",
+  "version": "0.13.5",
+  "notes": "v0.13.5 - Fix duplicate mods in list",
+  "pub_date": "2026-03-19T06:18:07Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUNadnFpZ1dRM2ZXSmZyYStXQ1BNTVVEeXo4cjUrK1ZvekFmMEFKRmNxWmIraXNhbENQN1A2aDB1UEZjLzRmNCtTVmlrMGs0bFdvMnNoOUY0QzJKVncwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczODMyMzM3CWZpbGU6TWVnYUxvYWRfMC4xMy40X3g2NC1zZXR1cC5uc2lzLnppcAptMzk4b1hxOGdjSTU0aTZHQlRHWHBWZ3dtZjhTUU80TmF0LzIwM0I5NVlvTHUrU2NmOHRpem1QM3E5Tlo4M0d4ZHJqV21vMW9TbU0rbkR5L1JicDZBUT09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.4/MegaLoad_0.13.4_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUljQkNhbVNadmZlcVRpWjQ3MHpSUHF2dzVEakNQcHNibUxiT0J0Z29XYUo4NUIzUnFEb1Y1VmI5a210NWV0Nmp3L0tybUVrQ0NwL0ZZdnE5R3IzbmdRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczODYxNDczCWZpbGU6TWVnYUxvYWRfMC4xMy41X3g2NC1zZXR1cC5uc2lzLnppcApycEw0Q3V5enBCSjNUcGpIVG4rZWllaDF2aU4vK2R5bVM1eHROaXprUUJhQW40YkRnaDRoMWpzb3dYMUcxdkYvcUcxdkU1RjV1WUE3YU9iTE1KWlVCdz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.5/MegaLoad_0.13.5_x64-setup.nsis.zip"
     }
   }
 }
