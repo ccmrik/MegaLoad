@@ -136,12 +136,22 @@ export const importR2modmanProfile = (
 
 // --- Launcher commands ---
 
+export interface GameStatus {
+  valheim_running: boolean;
+  steam_running: boolean;
+  cloud_syncing: boolean;
+  ready_to_launch: boolean;
+  status_text: string;
+}
+
 export const detectValheimPath = () =>
   invoke<string>("detect_valheim_path");
 export const detectR2modmanProfiles = () =>
   invoke<[string, string][]>("detect_r2modman_profiles");
 export const launchValheim = (valheimPath: string, bepinexPath: string) =>
   invoke<void>("launch_valheim", { valheimPath, bepinexPath });
+export const checkGameStatus = (valheimPath: string) =>
+  invoke<GameStatus>("check_game_status", { valheimPath });
 
 // --- BepInEx bootstrap commands ---
 
