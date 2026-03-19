@@ -631,6 +631,20 @@ function ConfigEntryRow({
                 onSave(v);
               }}
             />
+          ) : isNumber && numRange ? (
+            <SliderControl
+              value={localValue}
+              min={numRange.min}
+              max={numRange.max}
+              step={numRange.step}
+              isFloat={
+                entry.value_type === "Single" ||
+                entry.value_type === "Float" ||
+                entry.value_type === "Double"
+              }
+              onChange={setLocalValue}
+              onCommit={(v) => onSave(v)}
+            />
           ) : hasAcceptable ? (
             <SelectControl
               value={localValue}
@@ -655,20 +669,6 @@ function ConfigEntryRow({
                 setLocalValue(v);
                 onSave(v);
               }}
-            />
-          ) : isNumber && numRange ? (
-            <SliderControl
-              value={localValue}
-              min={numRange.min}
-              max={numRange.max}
-              step={numRange.step}
-              isFloat={
-                entry.value_type === "Single" ||
-                entry.value_type === "Float" ||
-                entry.value_type === "Double"
-              }
-              onChange={setLocalValue}
-              onCommit={(v) => onSave(v)}
             />
           ) : isNumber ? (
             <NumberInput
