@@ -1,11 +1,11 @@
 {
-  "version": "0.13.10",
-  "notes": "v0.13.10 - Block launch when Steam not running, ensure steam_appid.txt exists",
-  "pub_date": "2026-03-19T09:43:11Z",
+  "version": "0.13.12",
+  "notes": "v0.13.12 - Config Editor: parse BepInEx metadata for dropdowns, sliders, type detection. Fix BOM handling and line ending preservation.",
+  "pub_date": "2026-03-19T21:51:10Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUswOEtlM0IvK210YkdSbTh3Smx6VEIwRVJGRWZiV2pHNmV0eWsvSDZ0VUJTN1hkQy9kVEgvb2pCU2lWdnhrRTlLL0Z1blFsUitTYTBWTHBIM1F2b3c0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczODczNzgyCWZpbGU6TWVnYUxvYWRfMC4xMy4xMF94NjQtc2V0dXAubnNpcy56aXAKdU9WMnh6R1N6czBlb3hGMTM1eEpPbFBRRHdKSmRjVTR1UFFvT1FYRVhya0dmdWcreWpWV1c2cDJPSnBObjRrSnNTN0t3OFREYUtEbUxoRFROSk5GQXc9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.10/MegaLoad_0.13.10_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUwzYjFVcU9YVzAyL3pOcEJtVGJieXBYRWxSZ3phTUc0TE54QjZldm1DUWdOKzZucGhvdzd4L0Y5SjNYVkF3ZCtwb0FvcnFZS0tjK250OHAzTWRUUmdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczOTU2NzE0CWZpbGU6TWVnYUxvYWRfMC4xMy4xMl94NjQtc2V0dXAubnNpcy56aXAKU2JiVk5JRFhWbGxQNW9LR0piaDlRUyt5d3VHRlhYbkFvL0Z5S2hpM3F3cldHcUI2R2s4bXBLRDJOQlVDNWlmaVpMWlFLc1pyQlliYU5IcC9TL1k4Q2c9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.12/MegaLoad_0.13.12_x64-setup.nsis.zip"
     }
   }
 }

@@ -42,7 +42,10 @@ pub fn save_config_value(
 
     app_log(&format!("Config: [{}] {} = {}", section, key, value));
     let path = Path::new(&config_path);
-    let content = fs::read_to_string(path).map_err(|e| e.to_string())?;
+    let raw = fs::read_to_string(path).map_err(|e| e.to_string())?;
+    // Strip UTF-8 BOM if present, detect original line endings
+    let content = raw.strip_prefix('\u{FEFF}').unwrap_or(&raw);
+    let line_ending = if content.contains("\r\n") { "\r\n" } else { "\n" };
 
     let mut lines: Vec<String> = content.lines().map(|l| l.to_string()).collect();
     let mut in_section = false;
@@ -65,12 +68,14 @@ pub fn save_config_value(
         }
     }
 
-    fs::write(path, lines.join("\n")).map_err(|e| e.to_string())?;
+    fs::write(path, lines.join(line_ending)).map_err(|e| e.to_string())?;
     Ok(())
 }
 
 fn parse_config_file(path: &Path) -> Result<ConfigFile, String> {
-    let content = fs::read_to_string(path).map_err(|e| e.to_string())?;
+    let raw = fs::read_to_string(path).map_err(|e| e.to_string())?;
+    // Strip UTF-8 BOM if present
+    let content = raw.strip_prefix('\u{FEFF}').unwrap_or(&raw);
     let file_name = path
         .file_name()
         .unwrap_or_default()
@@ -129,14 +134,45 @@ fn parse_config_file(path: &Path) -> Result<ConfigFile, String> {
                 if !vals.is_empty() {
                     pending_acceptable = Some(vals);
                 }
+            } else if let Some(rest) = comment.strip_prefix("Acceptable value range:") {
+                let range_str = rest.trim().to_string();
+                if !range_str.is_empty() {
+                    pending_acceptable = Some(vec![range_str]);
+                }
             } else if !comment.is_empty() {
                 pending_description.push(comment.to_string());
             }
             continue;
         }
 
-        // Skip single # comments
-        if trimmed.starts_with('#') || trimmed.is_empty() {
+        // Single # metadata lines (BepInEx standard format)
+        if trimmed.starts_with('#') && !trimmed.starts_with("##") {
+            let comment = trimmed[1..].trim();
+            if let Some(rest) = comment.strip_prefix("Setting type:") {
+                pending_type = Some(rest.trim().to_string());
+            } else if let Some(rest) = comment.strip_prefix("Default value:") {
+                pending_default = Some(rest.trim().to_string());
+            } else if let Some(rest) = comment.strip_prefix("Acceptable values:") {
+                let vals: Vec<String> = rest
+                    .split(',')
+                    .map(|v| v.trim().to_string())
+                    .filter(|v| !v.is_empty())
+                    .collect();
+                if !vals.is_empty() {
+                    pending_acceptable = Some(vals);
+                }
+            } else if let Some(rest) = comment.strip_prefix("Acceptable value range:") {
+                // Store range as a single-element vec (frontend parses "From X to Y")
+                let range_str = rest.trim().to_string();
+                if !range_str.is_empty() {
+                    pending_acceptable = Some(vec![range_str]);
+                }
+            }
+            continue;
+        }
+
+        // Skip empty lines
+        if trimmed.is_empty() {
             continue;
         }
 
