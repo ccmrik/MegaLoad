@@ -8,6 +8,8 @@ import { Profiles } from "./pages/Profiles";
 import { Settings } from "./pages/Settings";
 import { LogViewer } from "./pages/LogViewer";
 import { Trainer } from "./pages/Trainer";
+import { ValheimData } from "./pages/ValheimData";
+import { Cart } from "./pages/Cart";
 
 function App() {
   return (
@@ -18,6 +20,8 @@ function App() {
         <Route path="/browse" element={<Browse />} />
         <Route path="/config" element={<ConfigEditor />} />
         <Route path="/trainer" element={<Trainer />} />
+        <Route path="/valheim-data" element={<ValheimData />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path="/logs" element={<LogViewer />} />
         <Route path="/profiles" element={<Profiles />} />
         <Route path="/settings" element={<Settings />} />

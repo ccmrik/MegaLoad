@@ -1,0 +1,1341 @@
+/**
+ * Converts valheim_data_dump.json (from MegaDataExtractor BepInEx plugin)
+ * into the TypeScript data file used by MegaLoad's Valheim Data page.
+ * 
+ * Usage: node convert-dump.cjs
+ * Output: src/data/valheim-items.ts
+ */
+
+const fs = require("fs");
+const path = require("path");
+
+const DUMP_PATH = path.join(__dirname, "..", "..", "valheim_data_dump.json");
+const OUTPUT_PATH = path.join(__dirname, "..", "src", "data", "valheim-items.ts");
+const WIKI_MAP_PATH = path.join(__dirname, "wiki-map.json");
+
+// Wiki map: prefab ID → [url] or [url, groupName]
+const WIKI_MAP = fs.existsSync(WIKI_MAP_PATH) ? JSON.parse(fs.readFileSync(WIKI_MAP_PATH, "utf-8")) : {};
+
+let rawText = fs.readFileSync(DUMP_PATH, "utf-8");
+// Strip BOM if present (C# UTF8 encoding adds it)
+if (rawText.charCodeAt(0) === 0xFEFF) rawText = rawText.substring(1);
+const raw = JSON.parse(rawText);
+const { items, recipes, creatureDrops, pieces, localization } = raw;
+
+// ── Localization resolver ──
+function loc(token) {
+  if (!token) return "";
+  let text = token;
+  if (token.startsWith("$")) {
+    const key = token.substring(1);
+    text = localization[key] || token;
+  }
+  return stripRichText(text);
+}
+
+// Strip Unity rich text tags from names/descriptions
+function stripRichText(text) {
+  if (!text) return "";
+  return text
+    .replace(/<\/?color[^>]*>/gi, "")
+    .replace(/<\/?b>/gi, "")
+    .replace(/<\/?i>/gi, "")
+    .replace(/<\/?size[^>]*>/gi, "")
+    .trim();
+}
+
+// ── Filter out creature/NPC attacks and internal items ──
+
+// Prefab patterns that are ALWAYS creature/NPC attacks
+const CREATURE_ATTACK_PATTERNS = [
+  /_attack/i, /_bite$/i, /_ram$/i, /_spit$/i, /_punch$/i, /_stomp$/i,
+  /_slam$/i, /_taunt$/i, /_scream$/i, /_screech$/i, /_claws$/i, /_heal$/i,
+  /_throw$/i, /_shoot$/i, /_groundslam$/i, /BiteAttack/i, /_swipe/i,
+  /_combo$/i, /_melee$/i, /_aoe$/i, /_breath$/i, /_spin$/i, /_swoopattack$/i,
+  /_wingspin$/i, /_rootspawn$/i,
+  /^bat_/, /^bjorn_/, /^blob_/, /^boar_/, /^charred_/i,
+  /^deer_/, /^draugr_/, /^drake_/, /^fenring_/i, /^ghost_/, /^goblin(?!Totem)/i,
+  /^greydwarf_/, /^greyling_/, /^hatchling_/, /^leech_/, /^lox_/,
+  /^neck_/, /^seeker_/, /^skeleton_/, /^stonegolem_/, /^troll_/,
+  /^ulv_/, /^valkyrie_/, /^wolf_/, /^wraith_/,
+  /^Dverger/i, /^asksvin_/i, /^morgen_/i, /^volture_/i,
+  /^fader_/i, /^eikthyr_/i, /^bonemass_/i, /^dragon_/i,
+  /^gdking_/i, /^gd_king_/i, /^seekerqueen_/i, /^goblinking/i, /^chicken_/i,
+  /^serpent_/i, /^deathsquito_/i, /^imp_/i, /^stone_golem_/i,
+  /^fallenvalkyrie_/i, /^fallen_valkyrie/i, /^tick_/i, /^gjall_/i, /^surtling_/i,
+  /^babyseeker/i, /^unbjorn/i, /^hildingfall/i, /^geirrhafa/i,
+  /^frostresist_ragdoll/i, /^tentaroot/i, /^dvergr_/i,
+  /^blobtar_/i, /^abomination_/i, /^thungur/i,
+  /^BonemawSerpent_/i, /^SeekerBrute_/i, /^TrainingDummy/i,
+];
+
+// Specific prefabs to blacklist (NPC weapons, duplicates, world objects)
+const BLACKLISTED_PREFABS = new Set([
+  "GoblinSword",         // NPC fuling weapon
+  "SwordIronFire",       // Duplicate Dyrnwyn (quest version, no recipe)
+  "StoneRock",           // Internal rock object
+  "Charred_Melee_Dyrnwyn", // NPC creature variant
+  "Charred_Melee_Fader",   // NPC creature variant
+  "Charred_Melee",         // NPC creature variant
+  "SledgeCheat",         // Debug cheat weapon
+  "SwordCheat",          // Debug cheat weapon
+  "Tankard_dvergr",      // NPC dvergr item
+  "Mistile_kamikaze",    // Creature kamikaze attack
+  "PlayerUnarmed",       // Internal bare-hands weapon
+
+  // Boss altar upgrade pickups — not player-usable items
+  "HealthUpgrade_Bonemass",
+  "HealthUpgrade_GDKing",
+  "StaminaUpgrade_Greydwarf",
+  "StaminaUpgrade_Troll",
+  "StaminaUpgrade_Wraith",
+]);
+
+function isCreatureAttack(prefab) {
+  return CREATURE_ATTACK_PATTERNS.some(pat => pat.test(prefab));
+}
+
+function isInternalItem(item) {
+  const n = item.name;
+  if (!n || n === "") return true;
+  if (isCreatureAttack(item.prefab)) return true;
+  if (BLACKLISTED_PREFABS.has(item.prefab)) return true;
+  if (item.itemType === "Customization") return true;  // Hairstyles and beards
+  // Items named with just the prefab (no $ token, likely internal)
+  if (n === item.prefab && item.maxQuality <= 1 && item.value === 0) return true;
+  return false;
+}
+
+// Filter for build pieces — skip world-spawned containers, NPC pieces, and deprecated pieces
+function isWorldPiece(prefab) {
+  if (/^TreasureChest_/i.test(prefab)) return true;
+  if (/^loot_chest_/i.test(prefab)) return true;
+  if (/^Placeable_Hard/i.test(prefab)) return true;    // World rock objects
+  if (/^OLD_/i.test(prefab)) return true;               // Deprecated building pieces
+  if (/^Ashlands_Arch/i.test(prefab)) return true;      // Ashlands ruin geometry (wrong name)
+  if (/^Ashlands_WallBlock/i.test(prefab)) return true;  // Ashlands ruin geometry (wrong name)
+  if (/^blackmarble_creep_/i.test(prefab)) return true;  // Vine-covered Dvergr ruin variants
+  if (WORLD_PIECE_PREFABS.has(prefab)) return true;
+  return false;
+}
+
+// Specific build pieces that exist in game data but aren't player-buildable
+const WORLD_PIECE_PREFABS = new Set([
+  "fire_pit_haldor",       // NPC campfire at Haldor
+  "fire_pit_hildir",       // NPC campfire at Hildir
+  "BogWitch_Fire_Pit",     // NPC campfire at Bog Witch
+  "Candle_resin_bogwitch", // Bog Witch decoration
+  "sign_notext",           // World-placed sign variant
+]);
+
+// ── Vendor-only items: these have fake recipes in the dump but can only be bought ──
+// Hildir's cosmetic armor — not craftable, only purchasable from Hildir
+const VENDOR_ONLY_PREFABS = new Set([
+  ...Array.from({length: 10}, (_, i) => `ArmorDress${i + 1}`),
+  ...Array.from({length: 10}, (_, i) => `ArmorTunic${i + 1}`),
+  ...Array.from({length: 10}, (_, i) => `HelmetHat${i + 1}`),
+]);
+
+// ── Build recipe lookup: prefab -> recipe ──
+const recipeMap = {};  // item prefab -> recipe object
+for (const r of recipes) {
+  if (VENDOR_ONLY_PREFABS.has(r.item)) continue;  // Skip vendor-only fake recipes
+  recipeMap[r.item] = r;
+}
+// ── Link mead final products to their base recipes ──
+// Final meads (MeadBugRepellent) have no recipe; only MeadBase* items do.
+// Map each final product → its base's recipe so it shows station + ingredients.
+const MEAD_BASE_MAP = {};
+for (const r of recipes) {
+  if (r.item.startsWith("MeadBase")) {
+    const finalId = r.item.replace("MeadBase", "Mead");
+    MEAD_BASE_MAP[finalId] = r;
+  } else if (r.item === "BarleyWineBase") {
+    MEAD_BASE_MAP["BarleyWine"] = r;
+  }
+}
+for (const [finalId, baseRecipe] of Object.entries(MEAD_BASE_MAP)) {
+  if (!recipeMap[finalId]) {
+    recipeMap[finalId] = baseRecipe;
+  }
+}
+// ── Build creature drop lookup: item prefab -> [{creature, chance, min, max}] ──
+const dropLookup = {};  // item prefab -> [{creaturePrefab, creature, chance, min, max}]
+for (const cd of creatureDrops) {
+  const creatureName = loc(findCreatureName(cd.creature));
+  for (const d of cd.drops) {
+    if (!dropLookup[d.prefab]) dropLookup[d.prefab] = [];
+    dropLookup[d.prefab].push({
+      creaturePrefab: cd.creature,
+      creature: creatureName || cd.creature,
+      chance: d.chance,
+      min: d.min,
+      max: d.max,
+      health: cd.health,
+    });
+  }
+}
+
+// ── Build item biomes from creature drops ──
+// If creatures from multiple biomes drop this item, the item belongs to multiple biomes.
+function getBiomesFromDrops(prefab) {
+  const itemDrops = dropLookup[prefab];
+  if (!itemDrops || itemDrops.length === 0) return [];
+  const biomes = new Set();
+  for (const d of itemDrops) {
+    const b = guessCreatureBiome(d.creaturePrefab);
+    if (b) biomes.add(b);
+  }
+  return [...biomes];
+}
+
+function findCreatureName(prefab) {
+  // Try common localization patterns
+  const patterns = [
+    `enemy_${prefab.toLowerCase()}`,
+    `enemy_${prefab}`,
+    prefab.toLowerCase(),
+  ];
+  for (const p of patterns) {
+    if (localization[p]) return localization[p];
+  }
+
+  // Explicit overrides for prefabs that don't match localization keys
+  const CREATURE_NAME_OVERRIDES = {
+    "BogWitchKvastur": "Kvastur",
+    "Charred_Archer_Fader": "Summoned Charred Marksman",
+    "Charred_Melee_Dyrnwyn": "Lord Reto",
+    "Charred_Melee_Fader": "Summoned Charred Warrior",
+    "Draugr_Elite": "Draugr Elite",
+    "Draugr_Ranged": "Draugr Archer",
+    "Dverger": "Dvergr Rogue",
+    "DvergerAshlands": "Dvergr Rogue",
+    "DvergerMage": "Dvergr Mage",
+    "DvergerMageFire": "Dvergr Mage",
+    "DvergerMageIce": "Dvergr Mage",
+    "DvergerMageSupport": "Dvergr Mage",
+    "Fenring_Cultist": "Cultist",
+    "Fenring_Cultist_Hildir": "Geirrhafa",
+    "gd_king": "The Elder",
+
+    "GoblinArcher": "Fuling Archer",
+    "GoblinBruteBros": "Zil & Thungr",
+    "GoblinShaman_Hildir": "Goblin Shaman",
+    "Greydwarf_Elite": "Greydwarf Brute",
+    "Greydwarf_Shaman": "Greydwarf Shaman",
+    "Hatchling": "Drake",
+    "Hive": "The Hive",
+    "TheHive": "The Hive",
+    "Leech_cave": "Cave Leech",
+    "SeekerBrood": "Seeker Brood",
+    "Skeleton_Hildir": "Brenna",
+    "Skeleton_Poison": "Rancid Remains",
+    "Skeleton_NoArcher": "Skeleton",
+  };
+  if (CREATURE_NAME_OVERRIDES[prefab]) return CREATURE_NAME_OVERRIDES[prefab];
+
+  // Clean up the prefab name as fallback
+  return prefab
+    .replace(/_/g, " ")
+    .replace(/([a-z])([A-Z])/g, "$1 $2")
+    .trim();
+}
+
+// ── Map game ItemType to our ItemType ──
+function mapItemType(gameType, prefab, shared) {
+  // Special cases
+  if (prefab === "FishingRod") return "Tool";
+  
+  switch (gameType) {
+    case "Material": return "Material";
+    case "Consumable":
+      if (shared.food > 0) return "Food";
+      if (shared.name && (shared.name.includes("mead") || shared.name.includes("Mead"))) return "Potion";
+      const resolvedName = loc(shared.name).toLowerCase();
+      if (resolvedName.includes("mead") || resolvedName.includes("potion") || resolvedName.includes("barley wine")) return "Potion";
+      if (shared.food > 0 || shared.foodStamina > 0 || shared.foodEitr > 0) return "Food";
+      return "Food"; // Most consumables are food
+    case "OneHandedWeapon":
+    case "TwoHandedWeapon":
+    case "TwoHandedWeaponLeft":
+    case "Bow": return "Weapon";
+    case "Shield": return "Armor";
+    case "Helmet":
+    case "Chest":
+    case "Legs":
+    case "Shoulder":
+    case "Utility":
+    case "Trinket": return "Armor";
+    case "Ammo":
+    case "AmmoNonEquipable": return "Ammo";
+    case "Torch": return "Tool";
+    case "Tool": return "Tool";
+    case "Trophy": return "Misc";
+    case "Customization": return "Misc";
+    case "Misc": return "Misc";
+    case "Fish": return "Material"; // Fish are materials (can be cooked)
+    default: return "Misc";
+  }
+}
+
+// ── Map game ItemType to subcategory ──
+function mapSubcategory(gameType, prefab, shared) {
+  // Special cases
+  if (prefab === "FishingRod") return "Fishing Rod";
+  
+  const skill = shared.skillType;
+  
+  switch (gameType) {
+    case "OneHandedWeapon":
+    case "TwoHandedWeapon":
+    case "TwoHandedWeaponLeft":
+      if (skill === "Swords") return "Sword";
+      if (skill === "Axes") return "Axe";
+      if (skill === "Clubs") return "Mace";
+      if (skill === "Polearms") return "Polearm";
+      if (skill === "Spears") return "Spear";
+      if (skill === "Knives") return "Knife";
+      if (skill === "Unarmed") return "Fist";
+      if (skill === "Crossbows") return "Crossbow";
+      if (skill === "ElementalMagic") return "Staff";
+      if (skill === "BloodMagic") return "Staff";
+      if (skill === "WoodCutting") return "Axe";
+      if (skill === "Pickaxes") return "Pickaxe";
+      return "Weapon";
+    case "Bow": return "Bow";
+    case "Shield": return "Shield";
+    case "Helmet": return "Helmet";
+    case "Chest": return "Chest";
+    case "Legs": return "Legs";
+    case "Shoulder": return "Cape";
+    case "Utility": return "Utility";
+    case "Trinket": return "Trinket";
+    case "Ammo":
+    case "AmmoNonEquipable":
+      if (shared.ammoType === "$ammo_arrows" || prefab.startsWith("Arrow")) return "Arrow";
+      if (shared.ammoType === "$ammo_bolts" || prefab.startsWith("Bolt")) return "Bolt";
+      if (prefab.includes("Bomb") || prefab.includes("bomb")) return "Bomb";
+      if (prefab.includes("Missile")) return "Missile";
+      return "Ammo";
+    case "Material":
+      if (prefab.includes("Ore") || prefab.includes("Scrap")) return "Ore";
+      if (prefab.includes("Ingot") || prefab === "Copper" || prefab === "Tin" || prefab === "Bronze" || prefab === "Iron" || prefab === "Silver" || prefab === "BlackMetal" || prefab === "FlametalNew") return "Ingot";
+      if (prefab.includes("Trophy")) return "Trophy";
+      if (prefab.includes("Wood") || prefab === "RoundLog" || prefab === "FineWood" || prefab === "ElderBark" || prefab === "YggdrasilWood") return "Wood";
+      if (prefab.includes("Hide") || prefab.includes("Leather") || prefab.includes("Pelt") || prefab.includes("Scale")) return "Hide";
+      if (prefab.includes("Seed")) return "Seed";
+      if (prefab.includes("Gem") || prefab.includes("Ruby") || prefab.includes("Amber") || prefab.includes("Pearl")) return "Gem";
+      return "Material";
+    case "Consumable":
+      if (shared.food > 0) return "Food";
+      return "Consumable";
+    case "Fish": return "Fish";
+    case "Trophy": return "Trophy";
+    case "Torch": return "Torch";
+    case "Tool":
+      if (skill === "Pickaxes") return "Pickaxe";
+      if (skill === "WoodCutting") return "Axe";
+      return "Tool";
+    case "Customization": return "Customization";
+    case "Misc": return "Misc";
+    default: return gameType;
+  }
+}
+
+// ── Compute biome from highest-tier ingredient + crafting station ──
+// Each item's biome = the highest biome tier among its ingredients and station.
+// For raw materials, we define their "first found" biome explicitly.
+// For crafted items, we recurse into their ingredients.
+
+const BIOME_PROGRESSION = [
+  "Meadows", "Black Forest", "Ocean", "Swamp", "Mountain", "Plains", "Mistlands", "Ashlands", "Deep North",
+];
+const BIOME_TIER = {};
+BIOME_PROGRESSION.forEach((b, i) => BIOME_TIER[b] = i);
+
+// Crafting station → minimum biome tier to access it
+const STATION_BIOME = {
+  "$piece_workbench": "Meadows",
+  "$piece_cauldron": "Meadows",
+  "$piece_meadcauldron": "Meadows",
+  "$piece_preptable": "Meadows",
+  "$piece_forge": "Black Forest",
+  "$piece_stonecutter": "Black Forest",
+  "$piece_artisanstation": "Plains",
+  "$piece_blackforge": "Mistlands",
+  "$piece_magetable": "Mistlands",
+};
+
+// Raw material/item → its FIRST available biome (lowest tier where you can get it)
+const RAW_MATERIAL_BIOME = {
+  // ─── Meadows (tier 0) ───
+  "Wood": "Meadows",
+  "Stone": "Meadows",
+  "Resin": "Meadows",
+  "Flint": "Meadows",
+  "LeatherScraps": "Meadows",
+  "DeerHide": "Meadows",
+  "RawMeat": "Meadows",
+  "BoarMeat": "Meadows",
+  "NeckTail": "Meadows",
+  "Feathers": "Meadows",
+  "Dandelion": "Meadows",
+  "Mushroom": "Meadows",
+  "Raspberry": "Meadows",
+  "Honey": "Meadows",
+  "QueenBee": "Meadows",
+  "Acorn": "Meadows",
+  "BeechSeeds": "Meadows",
+  "HardAntler": "Meadows",
+  "Coal": "Meadows",
+  "ChickenEgg": "Plains",
+  "ChickenMeat": "Plains",
+  // Cooked meats used as recipe ingredients (tier = source creature biome)
+  "CookedMeat": "Meadows",
+  "CookedDeerMeat": "Meadows",
+  "FishCooked": "Meadows",
+
+  // ─── Black Forest (tier 1) ───
+  "RoundLog": "Black Forest",
+  "FineWood": "Black Forest",
+  "Copper": "Black Forest",
+  "CopperOre": "Black Forest",
+  "Tin": "Black Forest",
+  "TinOre": "Black Forest",
+  "Bronze": "Black Forest",
+  "GreydwarfEye": "Black Forest",
+  "BoneFragments": "Black Forest",
+  "TrollHide": "Black Forest",
+  "Blueberries": "Black Forest",
+  "MushroomBlue": "Black Forest",
+  "Thistle": "Black Forest",
+  "CarrotSeeds": "Black Forest",
+  "Carrot": "Black Forest",
+  "PineCone": "Black Forest",
+  "FirCone": "Black Forest",
+  "SurtlingCore": "Black Forest",
+  "ElderBark": "Black Forest",
+  "YmirRemains": "Black Forest",
+  "CryptKey": "Black Forest",
+  "FishingRod": "Black Forest",
+  "FishingBait": "Black Forest",
+  "BarberKit": "Black Forest",
+  "BarrelRings": "Black Forest",
+  "HelmetDverger": "Black Forest",
+  "BeltStrength": "Black Forest",
+  "HelmetSweatBand": "Black Forest",
+  "Thunderstone": "Black Forest",
+  "AncientSeed": "Black Forest",
+  // Amber, AmberPearl, Ruby, SilverNecklace, Coins moved to BIOME_OVERRIDE (multi-biome loot)
+  "BirchSeeds": "Meadows",
+
+  // ─── Ocean (tier 2) ───
+  "Chitin": "Ocean",
+  "FreshSeaweed": "Ocean",
+  "SpiceOceans": "Ocean",
+  "SerpentMeat": "Ocean",
+  "SerpentScale": "Ocean",
+  "SerpentMeatCooked": "Ocean",
+
+  // ─── Swamp (tier 3) ───
+  "Iron": "Swamp",
+  "IronScrap": "Swamp",
+  "Guck": "Swamp",
+  "Bloodbag": "Swamp",
+  "TurnipSeeds": "Swamp",
+  "Turnip": "Swamp",
+  "Entrails": "Swamp",
+  "Ooze": "Swamp",
+  "Root": "Swamp",
+  "ElderBark": "Swamp",
+
+  // ─── Mountain (tier 4) ───
+  "Silver": "Mountain",
+  "SilverOre": "Mountain",
+  "Obsidian": "Mountain",
+  "WolfMeat": "Mountain",
+  "WolfPelt": "Mountain",
+  "WolfFang": "Mountain",
+  "WolfClaw": "Mountain",
+  "DragonTear": "Mountain",
+  "Crystal": "Mountain",
+  "FreezeGland": "Mountain",
+  "OnionSeeds": "Mountain",
+  "Onion": "Mountain",
+
+  // ─── Plains (tier 5) ───
+  "BlackMetal": "Plains",
+  "BlackMetalScrap": "Plains",
+  "Cloudberry": "Plains",
+  "Barley": "Plains",
+  "Flax": "Plains",
+  "LinenThread": "Plains",
+  "NeedleOld": "Plains",
+  "LoxMeat": "Plains",
+  "LoxPelt": "Plains",
+  "LoxBone": "Plains",
+  "Tar": "Plains",
+  "BlobTar": "Plains",
+  "GoblinTotem": "Plains",
+
+  // ─── Mistlands (tier 6) ───
+  "Carapace": "Mistlands",
+  "Eitr": "Mistlands",
+  "Sap": "Mistlands",
+  "YggdrasilWood": "Mistlands",
+  "MushroomJotunPuffs": "Mistlands",
+  "MushroomMagecap": "Mistlands",
+  "BugMeat": "Mistlands",
+  "CookedBugMeat": "Mistlands",
+  "RoyalJelly": "Mistlands",
+  "Softtissue": "Mistlands",
+  "Wisp": "Mistlands",
+  "BlackMarble": "Mistlands",
+  "JuteBlue": "Mistlands",
+  "JuteGreen": "Mistlands",
+  "JuteRed": "Mistlands",
+  "HareMeat": "Mistlands",
+  "ScaleHide": "Mistlands",
+  "SpiceMistlands": "Mistlands",
+
+  // ─── Ashlands (tier 7) ───
+  "Flametal": "Ashlands",
+  "FlametalNew": "Ashlands",
+  "FlametalOre": "Ashlands",
+  "Blackwood": "Ashlands",
+  "SulfurStone": "Ashlands",
+  "GemstoneBlue": "Ashlands",
+  "GemstoneGreen": "Ashlands",
+  "GemstoneRed": "Ashlands",
+  "CharcoalResin": "Ashlands",
+  "CeramicPlate": "Ashlands",
+  "VineberrySeeds": "Ashlands",
+  "Fiddleheadfern": "Ashlands",
+  "SpiceAshlands": "Ashlands",
+  "AsksvinCarrionNeck": "Ashlands",
+  "AsksvinCarrionPelvic": "Ashlands",
+  "AsksvinCarrionRibcage": "Ashlands",
+  "AsksvinCarrionSkull": "Ashlands",
+  "AsksvinMeat": "Ashlands",
+  "CookedAsksvinMeat": "Ashlands",
+  // BjornMeat: drops from Bear (Black Forest) AND Vile (Plains)
+  "BjornMeat": ["Black Forest", "Plains"],
+  "VoltureMeat": "Ashlands",
+  "MorgenSinew": "Ashlands",
+  "VineBerry": "Ashlands",
+  "Vineberry": "Ashlands",
+  "Pot_Shard_Green": "Ashlands",
+  "Pot_Shard_Red": "Ashlands",
+  "BellFragment": "Ashlands",
+  "VineGreenSeeds": "Ashlands",
+  "Proustitite": "Ashlands",
+  "Grausten": "Ashlands",
+  "BoneMawSerpentMeat": "Ashlands",
+  "BonemawSerpentScale": "Ashlands",
+  "BonemawSerpentTooth": "Ashlands",
+  "CharredBone": "Ashlands",
+
+  // ─── Deep North (tier 8) ───
+  "FishingBaitDeepNorth": "Deep North",
+};
+
+// Items that should keep multi-biome or specific override lists (fish, vendor items, etc.)
+const BIOME_OVERRIDE = {
+  // Fish — biome is where they're caught, not crafted
+  "Fish1": ["Meadows"],           // Perch
+  "Fish2": ["Black Forest"],      // Pike
+  "Fish3": ["Ocean"],             // Tuna
+  "Fish4_cave": ["Mountain"],     // Tetra
+  "Fish5": ["Black Forest"],      // Trollfish
+  "Fish6": ["Swamp"],             // Giant Herring
+  "Fish7": ["Plains"],             // Grouper
+  "Fish8": ["Ocean"],             // Coral Cod
+  "Fish9": ["Mistlands"],         // Anglerfish
+  "Fish10": ["Deep North"],       // Northern Salmon
+  "Fish11": ["Ashlands"],         // Magmafish
+  "Fish12": ["Plains"],           // Pufferfish
+  "FishRaw": ["Meadows"],
+  "FishAnglerRaw": ["Mistlands"],
+  // Cooked meats — biome from the raw meat source, not the cooking recipe
+  "CookedMeat": ["Meadows"],
+  "NeckTailGrilled": ["Meadows"],
+  "CookedChickenMeat": ["Plains"],
+  "CookedEgg": ["Plains"],
+  "FishCooked": ["Meadows"],
+  "CookedDeerMeat": ["Meadows"],
+  "CookedWolfMeat": ["Mountain"],
+  "CookedLoxMeat": ["Plains"],
+  "CookedBugMeat": ["Mistlands"],
+  "CookedHareMeat": ["Mistlands"],
+  "CookedBjornMeat": ["Black Forest", "Plains"],
+  "CookedAsksvinMeat": ["Ashlands"],
+  "CookedVoltureMeat": ["Ashlands"],
+  "CookedBoneMawSerpentMeat": ["Ashlands"],
+  // Meads — biome = max(vendor_gate, max(ingredient_tiers))
+  // Bog Witch meads have Swamp (tier 3) as minimum since recipe is purchased from Bog Witch
+  // Regular meads use max ingredient tier only
+  // ── Regular Cauldron meads ──
+  "MeadHealthMinor": ["Black Forest"],    // Blueberries=BF
+  "MeadStaminaMinor": ["Black Forest"],   // YellowMush=BF
+  "MeadTasty": ["Black Forest"],          // Blueberries=BF
+  "MeadPoisonResist": ["Black Forest"],   // Thistle=BF (first found in BF)
+  "MeadHealthMedium": ["Swamp"],          // Bloodbag=Swamp
+  "MeadStaminaMedium": ["Plains"],        // Cloudberry=Plains
+  "MeadFrostResist": ["Swamp"],           // Bloodbag=Swamp highest ingredient
+  "MeadHealthMajor": ["Mistlands"],       // GiantBloodSack=Mistlands, RoyalJelly=Mistlands
+  "MeadBugRepellent": ["Mistlands"],      // FragrantBundle=Mistlands
+  "MeadEitrMinor": ["Mistlands"],         // Sap/Magecap=Mistlands
+  "MeadHealthLingering": ["Ashlands"],    // Vineberry=Ashlands
+  "MeadStaminaLingering": ["Mistlands"],  // Sap/JotunPuffs=Mistlands
+  "MeadEitrLingering": ["Ashlands"],      // Vineberry=Ashlands
+  "BarleyWine": ["Plains"],               // Barley/Cloudberry=Plains
+  // ── Bog Witch meads (Swamp vendor gate, tier 3 minimum) ──
+  "MeadBzerker": ["Swamp"],              // Toadstool=Swamp, BogWitch=Swamp
+  "MeadLightfoot": ["Mountain"],         // WolfPelt=Mountain > Swamp
+  "MeadSwimmer": ["Swamp"],              // BogWitch=Swamp(3) > Seaweed=Ocean(2)
+  "MeadTamer": ["Ashlands"],             // PungentPebbles=Ashlands > Swamp
+  "MeadStrength": ["Mountain"],          // PowderedDragonEgg=Mountain > Swamp
+  "MeadHasty": ["Mistlands"],            // CuredSquirrelHamstring=Mistlands > Swamp
+  "MeadTrollPheromones": ["Swamp"],      // BogWitch=Swamp(3) > TrollHide=BF(1)
+  // Regional spices
+  "SpicePlains": ["Plains"],
+  "SpiceMountains": ["Mountain"],
+  "SpiceForests": ["Black Forest"],
+  // Hildir quest keys
+  "HildirKey_forestcrypt": ["Black Forest"],
+  "HildirKey_plainsfortress": ["Plains"],
+  "HildirKey_mountaincave": ["Mountain"],
+  // Creatures
+  "Bat": ["Mountain"],
+  "Greyling": ["Meadows"],
+  "SeekerBrood": ["Mistlands"],
+  "BlobFrost": ["Mountain"],
+  "BlobLava": ["Ashlands"],
+  // Special
+  "HelmetFishingHat": ["Meadows"],
+  "DeerStew": ["Meadows"],
+
+  // ─── Multi-biome loot (found in chests/dungeons across many biomes) ───
+  "Amber": ["Meadows", "Black Forest", "Swamp", "Mountain", "Plains"],
+  "AmberPearl": ["Meadows", "Black Forest", "Swamp", "Mountain", "Plains"],
+  "Ruby": ["Black Forest", "Swamp", "Mountain", "Plains", "Mistlands"],
+  "SilverNecklace": ["Swamp", "Mountain"],
+  "Coins": ["Meadows", "Black Forest", "Swamp", "Mountain", "Plains", "Mistlands", "Ashlands"],
+
+  // ─── Vendor-only items (biome = vendor location) ───
+  // Hildir — Meadows
+  ...Object.fromEntries([
+    ...Array.from({length: 10}, (_, i) => [`ArmorDress${i + 1}`, ["Meadows"]]),
+    ...Array.from({length: 10}, (_, i) => [`ArmorTunic${i + 1}`, ["Meadows"]]),
+    ...Array.from({length: 10}, (_, i) => [`HelmetHat${i + 1}`, ["Meadows"]]),
+  ]),
+
+  // ─── Cooked/processed foods (no recipe, source=Pickup from cooking station) ───
+  "Bread": ["Meadows"],
+  "SerpentMeatCooked": ["Ocean"],
+  "HoneyGlazedChicken": ["Meadows"],
+  "MeatPlatter": ["Plains"],
+  "FishAndBread": ["Meadows"],
+  "MisthareSupreme": ["Mistlands"],
+  "MagicallyStuffedShroom": ["Mistlands"],
+  "PiquantPie": ["Ashlands"],
+  "RoastedCrustPie": ["Ashlands"],
+  "VikingCupcake": ["Meadows"],
+  "LoxPie": ["Plains"],
+
+  // ─── Feast table items (biome in the name) ───
+  "FeastMeadows": ["Meadows"],
+  "FeastBlackforest": ["Black Forest"],
+  "FeastSwamps": ["Swamp"],
+  "FeastMountains": ["Mountain"],
+  "FeastOceans": ["Ocean"],
+  "FeastPlains": ["Plains"],
+  "FeastMistlands": ["Mistlands"],
+  "FeastAshlands": ["Ashlands"],
+
+  // ─── Mushrooms & foraged items (multi-biome foraging) ───
+  "MushroomYellow": ["Black Forest", "Swamp"],
+  "MushroomBzerker": ["Swamp"],
+  "MushroomSmokePuff": ["Mistlands"],
+  "Carrot": ["Black Forest"],
+  "Turnip": ["Swamp"],
+  "Onion": ["Mountain"],
+  "BarleyFlour": ["Plains"],
+
+  // ─── Ores & mining materials ───
+  "IronOre": ["Swamp"],
+  "FlametalOreNew": ["Ashlands"],
+  "CopperScrap": ["Black Forest"],
+  "BronzeScrap": ["Ashlands"],
+  "Bronze": ["Black Forest", "Mountain", "Ashlands"],
+  "BlackCore": ["Mistlands"],
+  "MoltenCore": ["Ashlands"],
+  "Ironpit": ["Ashlands"],
+
+  // ─── Multi-biome foraged/dropped materials ───
+  "SurtlingCore": ["Black Forest", "Swamp"],
+  "BoneFragments": ["Meadows", "Black Forest", "Swamp"],
+  "Thistle": ["Black Forest", "Swamp"],
+  "Acorn": ["Meadows"],
+  "SerpentMeat": ["Ocean"],
+  "SerpentScale": ["Ocean"],
+
+  // ─── Swamp materials ───
+  "WitheredBone": ["Swamp"],
+
+  // ─── Mountain materials ───
+  "DragonEgg": ["Mountain"],
+  "WolfHairBundle": ["Mountain"],
+  "PowderedDragonEgg": ["Mountain"],
+
+  // ─── Mistlands materials ───
+  "DvergrKeyFragment": ["Mistlands"],
+  "DvergrNeedle": ["Mistlands"],
+  "CuredSquirrelHamstring": ["Mistlands"],
+  "ScytheHandle": ["Mistlands"],
+  "DyrnwynBladeFragment": ["Mistlands"],
+  "DyrnwynTipFragment": ["Mistlands"],
+  "FragrantBundle": ["Mistlands"],
+
+  // ─── Ashlands materials ───
+  "CharredCogwheel": ["Ashlands"],
+  "Charredskull": ["Ashlands"],
+  "AsksvinEgg": ["Ashlands"],
+  "PungentPebbles": ["Ashlands"],
+  "CandleWick": ["Ashlands"],
+  "BlobVial": ["Ashlands"],
+  "FireworksRocket_White": ["Ashlands"],
+
+  // ─── Trophies (biome of the creature) ───
+  "TrophyDraugrFem": ["Swamp"],
+  "TrophyForestTroll": ["Black Forest"],
+  "TrophyHatchling": ["Mountain"],
+  "TrophyTheElder": ["Black Forest"],
+  "TrophyKvastur": ["Swamp"],
+
+  // ─── Creatures missing biomes ───
+  "Hatchling": ["Mountain"],
+  "Hive": ["Meadows"],
+  "TheHive": ["Meadows"],
+  "BogWitchKvastur": ["Swamp"],
+
+  // ─── Boss/event rewards ───
+  "HealthUpgrade_Bonemass": ["Swamp"],
+  "HealthUpgrade_GDKing": ["Black Forest"],
+  "StaminaUpgrade_Greydwarf": ["Black Forest"],
+  "StaminaUpgrade_Troll": ["Black Forest"],
+  "StaminaUpgrade_Wraith": ["Swamp"],
+  "VegvisirShard_Bonemass": ["Swamp"],
+  "AxeHead1": ["Black Forest"],
+  "AxeHead2": ["Swamp"],
+
+  // ─── Miscellaneous ───
+  "HelmetYule": ["Black Forest"],
+  "CapeTest": ["Meadows"],
+  "ShieldKnight": ["Meadows"],
+  "Sparkler": ["Meadows"],
+
+  // ─── Build pieces ───
+  "blackmarble_head01": ["Mistlands"],
+  "blackmarble_head02": ["Mistlands"],
+  "rug_deer": ["Meadows"],
+  "rug_wolf": ["Mountain"],
+  "rug_fur": ["Plains"],
+  "skull_pile": ["Swamp"],
+  "sapling_seedcarrot": ["Black Forest"],
+  "sapling_seedonion": ["Mountain"],
+  "sapling_seedturnip": ["Swamp"],
+};
+
+// Cache for computed biome tiers
+const _biomeTierCache = {};
+const _RESOLVING = Symbol("resolving"); // cycle detection
+
+// Get the biome tier of a single material/item by looking up RAW_MATERIAL_BIOME,
+// creature drops, or recursing into its recipe ingredients.
+function getItemBiomeTier(prefab) {
+  if (_biomeTierCache[prefab] !== undefined) {
+    return _biomeTierCache[prefab] === _RESOLVING ? -1 : _biomeTierCache[prefab];
+  }
+
+  // Mark as resolving (cycle detection)
+  _biomeTierCache[prefab] = _RESOLVING;
+
+  // 1. Check raw material map
+  if (RAW_MATERIAL_BIOME[prefab]) {
+    const tier = BIOME_TIER[RAW_MATERIAL_BIOME[prefab]] ?? -1;
+    _biomeTierCache[prefab] = tier;
+    return tier;
+  }
+
+  // 2. Check creature drops (lowest biome the creature is found in)
+  const drops = getBiomesFromDrops(prefab);
+  if (drops.length > 0) {
+    let minTier = 999;
+    for (const b of drops) {
+      const t = BIOME_TIER[b] ?? 999;
+      if (t < minTier) minTier = t;
+    }
+    if (minTier < 999) {
+      _biomeTierCache[prefab] = minTier;
+      return minTier;
+    }
+  }
+
+  // 3. If it has a recipe, recurse: max(station_tier, max(ingredient_tiers))
+  const recipe = recipeMap[prefab];
+  if (recipe) {
+    let maxTier = -1;
+
+    // Station tier
+    if (recipe.craftingStation && STATION_BIOME[recipe.craftingStation]) {
+      const stationTier = BIOME_TIER[STATION_BIOME[recipe.craftingStation]] ?? -1;
+      if (stationTier > maxTier) maxTier = stationTier;
+    }
+
+    // Ingredient tiers (only base recipe ingredients, not upgrade-only ones)
+    for (const r of recipe.resources) {
+      if (!r.item || r.amount === 0) continue;
+      const ingTier = getItemBiomeTier(r.item);
+      if (ingTier > maxTier) maxTier = ingTier;
+    }
+
+    _biomeTierCache[prefab] = maxTier;
+    return maxTier;
+  }
+
+  // 4. Unknown — no biome info
+  _biomeTierCache[prefab] = -1;
+  return -1;
+}
+
+// Compute the biome(s) for an item for display.
+// Returns a single-element array with the computed biome, or the override list.
+function guessBiomes(prefab, recipePrefab) {
+  // Hard overrides (fish, meads, cooked meats, etc.)
+  if (BIOME_OVERRIDE[prefab]) {
+    return [...BIOME_OVERRIDE[prefab]];
+  }
+
+  // Compute from recipe ingredients + station
+  const tier = getItemBiomeTier(prefab);
+  if (tier >= 0 && tier < BIOME_PROGRESSION.length) {
+    return [BIOME_PROGRESSION[tier]];
+  }
+
+  // Fallback: creature drops
+  const dropBiomes = getBiomesFromDrops(prefab);
+  if (dropBiomes.length > 0) return dropBiomes;
+
+  return [];
+}
+
+// ── Determine source (how to obtain) ──
+function getSource(prefab, recipe, itemDrops) {
+  const sources = [];
+  if (VENDOR_ONLY_PREFABS.has(prefab)) {
+    sources.push("Vendor");
+    return sources;
+  }
+  if (recipe) sources.push("Crafting");
+  if (itemDrops && itemDrops.length > 0) sources.push("Creature Drop");
+  
+  const p = prefab.toLowerCase();
+  if (p.includes("ore") || p.includes("scrap")) sources.push("Mining");
+  if (p.includes("trophy")) sources.push("Creature Drop");
+  if (p.includes("seed")) sources.push("Pickup");
+  if (p.includes("mushroom") || p.includes("thistle") || p.includes("carrot") ||
+      p.includes("turnip") || p.includes("onion") || p.includes("barley") ||
+      p.includes("flax")) sources.push("Foraging");
+  
+  if (sources.length === 0) sources.push("Pickup");
+  return [...new Set(sources)];
+}
+
+// ── Map crafting station tokens to display names ──
+function mapStation(stationToken) {
+  if (!stationToken) return "";
+  const resolved = loc(stationToken);
+  // Common mapping
+  const map = {
+    "$piece_workbench": "Workbench",
+    "$piece_forge": "Forge",
+    "$piece_cauldron": "Cauldron",
+    "$piece_stonecutter": "Stonecutter",
+    "$piece_artisanstation": "Artisan Table",
+    "$piece_blackforge": "Black Forge",
+    "$piece_magetable": "Galdr Table",
+    "$piece_runeforge": "Rune Forge",
+    "$piece_meadcauldron": "Mead Ketill",
+    "$piece_preptable": "Food Preparation Table",
+  };
+  return map[stationToken] || resolved || stationToken;
+}
+
+// ── Build stats array for an item ──
+function buildStats(item) {
+  const stats = [];
+  const d = item.damages;
+  const dpl = item.damagesPerLevel;
+  const isWeapon = ["OneHandedWeapon", "TwoHandedWeapon", "TwoHandedWeaponLeft", "Bow", "Torch"].includes(item.itemType);
+  const isArmor = ["Chest", "Legs", "Helmet", "Shoulder", "Shield", "Trinket", "Utility"].includes(item.itemType);
+  const isShield = item.itemType === "Shield";
+  const hasSkill = item.skillType && item.skillType !== "None";
+  const hasDamage = d.slash > 0 || d.pierce > 0 || d.blunt > 0 || d.fire > 0 || d.frost > 0 ||
+    d.lightning > 0 || d.poison > 0 || d.spirit > 0 || d.damage > 0;
+  
+  // Damage stats — only for weapons/tools with actual damage
+  if (isWeapon || hasDamage) {
+    if (d.slash > 0) stats.push({ label: "Slash", value: `${d.slash}` + (dpl.slash > 0 ? ` (+${dpl.slash}/lvl)` : "") });
+    if (d.pierce > 0) stats.push({ label: "Pierce", value: `${d.pierce}` + (dpl.pierce > 0 ? ` (+${dpl.pierce}/lvl)` : "") });
+    if (d.blunt > 0) stats.push({ label: "Blunt", value: `${d.blunt}` + (dpl.blunt > 0 ? ` (+${dpl.blunt}/lvl)` : "") });
+    if (d.fire > 0) stats.push({ label: "Fire", value: `${d.fire}` + (dpl.fire > 0 ? ` (+${dpl.fire}/lvl)` : "") });
+    if (d.frost > 0) stats.push({ label: "Frost", value: `${d.frost}` + (dpl.frost > 0 ? ` (+${dpl.frost}/lvl)` : "") });
+    if (d.lightning > 0) stats.push({ label: "Lightning", value: `${d.lightning}` + (dpl.lightning > 0 ? ` (+${dpl.lightning}/lvl)` : "") });
+    if (d.poison > 0) stats.push({ label: "Poison", value: `${d.poison}` + (dpl.poison > 0 ? ` (+${dpl.poison}/lvl)` : "") });
+    if (d.spirit > 0) stats.push({ label: "Spirit", value: `${d.spirit}` + (dpl.spirit > 0 ? ` (+${dpl.spirit}/lvl)` : "") });
+    if (d.damage > 0) stats.push({ label: "Damage", value: `${d.damage}` + (dpl.damage > 0 ? ` (+${dpl.damage}/lvl)` : "") });
+  }
+
+  // Chop/pickaxe (for tools)
+  if (d.chop > 0) stats.push({ label: "Chop", value: `${d.chop}` });
+  if (d.pickaxe > 0) stats.push({ label: "Pickaxe", value: `${d.pickaxe}` });
+
+  // Armor — only for armor/shield/utility items
+  if (isArmor && item.armor > 0) stats.push({ label: "Armor", value: `${item.armor}` + (item.armorPerLevel > 0 ? ` (+${item.armorPerLevel}/lvl)` : "") });
+
+  // Block — only for weapons/shields with a real skill type (excludes bombs/throwables)
+  if ((isWeapon || isShield) && hasSkill && item.blockPower > 0 && hasDamage) {
+    stats.push({ label: "Block", value: `${item.blockPower}` + (item.blockPowerPerLevel > 0 ? ` (+${item.blockPowerPerLevel}/lvl)` : "") });
+  }
+  if ((isWeapon || isShield) && hasSkill && item.timedBlockBonus > 1 && hasDamage) {
+    stats.push({ label: "Parry Bonus", value: `${item.timedBlockBonus}x` });
+  }
+
+  // Backstab — only for weapons with a real skill type and actual damage
+  if (isWeapon && hasSkill && item.backstabBonus > 1 && hasDamage) {
+    stats.push({ label: "Backstab", value: `${item.backstabBonus}x` });
+  }
+
+  // Knockback — only for weapons with a real skill type and actual damage
+  if (isWeapon && hasSkill && item.attackForce > 0 && hasDamage) {
+    stats.push({ label: "Knockback", value: `${item.attackForce}` });
+  }
+
+  // Movement penalty
+  if (item.movementModifier < 0) stats.push({ label: "Movement", value: `${(item.movementModifier * 100).toFixed(0)}%` });
+
+  // Food stats
+  if (item.food > 0) stats.push({ label: "Health", value: `${item.food}` });
+  if (item.foodStamina > 0) stats.push({ label: "Stamina", value: `${item.foodStamina}` });
+  if (item.foodEitr > 0) stats.push({ label: "Eitr", value: `${item.foodEitr}` });
+  if (item.foodBurnTime > 0) stats.push({ label: "Duration", value: `${Math.round(item.foodBurnTime / 60)}m` });
+  if (item.foodRegen > 0) stats.push({ label: "Regen", value: `${item.foodRegen}/tick` });
+
+  // Quality
+  if (item.maxQuality > 1) stats.push({ label: "Max Quality", value: `${item.maxQuality}` });
+
+  // Set bonus
+  if (item.setName) stats.push({ label: "Set", value: `${item.setName} (${item.setSize}pc)` });
+
+  return stats;
+}
+
+// ══════════════════════════════════════════════════════════════
+//  MAIN CONVERSION
+// ══════════════════════════════════════════════════════════════
+
+console.log("Processing dump...");
+console.log(`  Items: ${items.length}`);
+console.log(`  Recipes: ${recipes.length}`);
+console.log(`  Creatures: ${creatureDrops.length}`);
+console.log(`  Pieces: ${pieces.length}`);
+console.log(`  Localization: ${Object.keys(localization).length}`);
+
+const converted = [];
+const seenIds = new Set();
+
+// Process items
+for (const item of items) {
+  if (isInternalItem(item)) continue;
+  if (seenIds.has(item.prefab)) continue;
+  
+  // Skip DvergerArbalest_shoot variants (these are attack actions, not the actual crossbow)
+  if (item.prefab.includes("_shoot")) continue;
+  
+  const name = loc(item.name);
+  if (!name || name.startsWith("$")) continue; // Skip if localization failed
+  
+  // Skip items with generic creature names 
+  if (name.match(/^(lox|boar|wolf|deer|neck)\s/i) && !item.prefab.match(/^(Lox|Boar|Wolf|Deer|Neck)$/)) continue;
+
+  const recipe = recipeMap[item.prefab];
+  const itemDrops = dropLookup[item.prefab];
+  const biomes = guessBiomes(item.prefab, recipe);
+  
+  const recipeIngredients = recipe ? recipe.resources
+    .filter(r => r.item)
+    .map(r => ({
+      id: r.item,
+      name: loc(findItemName(r.item)),
+      amount: r.amount,
+    })) : [];
+
+  // Build upgrade costs (level 2+)
+  const upgradeCosts = [];
+  if (item.maxQuality > 1 && recipe) {
+    for (let lvl = 2; lvl <= item.maxQuality; lvl++) {
+      const resources = recipe.resources
+        .filter(r => r.item && r.amountPerLevel > 0)
+        .map(r => ({
+          id: r.item,
+          name: loc(findItemName(r.item)),
+          amount: r.amountPerLevel,
+        }));
+      if (resources.length > 0) {
+        upgradeCosts.push({
+          level: lvl,
+          stationLevel: lvl,
+          resources,
+        });
+      }
+    }
+  }
+  
+  const drops = [];  // Items don't have drops — creatures do
+  
+  const entry = {
+    id: item.prefab,
+    name: name,
+    type: mapItemType(item.itemType, item.prefab, item),
+    subcategory: mapSubcategory(item.itemType, item.prefab, item),
+    description: loc(item.description),
+    biomes: biomes,
+    source: getSource(item.prefab, recipe, itemDrops),
+    station: recipe ? mapStation(recipe.craftingStation) : "",
+    stationLevel: recipe ? recipe.minStationLevel : 0,
+    maxQuality: item.maxQuality,
+    stack: item.maxStackSize,
+    weight: item.weight,
+    value: item.value,
+    recipe: recipeIngredients,
+    upgradeCosts: upgradeCosts,
+    drops: drops,
+    stats: buildStats(item),
+    wikiUrl: WIKI_MAP[item.prefab] ? WIKI_MAP[item.prefab][0] : "",
+    wikiGroup: WIKI_MAP[item.prefab] && WIKI_MAP[item.prefab][1] ? WIKI_MAP[item.prefab][1] : "",
+  };
+  
+  converted.push(entry);
+  seenIds.add(item.prefab);
+}
+
+// Process creatures (as their own entries with drops)
+// Blacklist creature prefabs that are internal/variant/not real enemies
+const CREATURE_BLACKLIST = new Set([
+  "Charred_Melee", "Charred_Melee_Dyrnwyn", "Charred_Melee_Fader",
+  "TrainingDummy", "DvergerTest", "Lox_Calf", "Boar_piggy",
+  "Wolf_cub", "Chicken", "Hen", "gd_king",
+  "Goblin_Gem",  // Destructible gemstone node, not a creature
+]);
+const CREATURE_SKIP_PATTERNS = [
+  /_nochest$/i, /_Summoned$/i, /Test$/i, /_NonSleeping$/i,
+  /Hildir_nochest$/i, /BruteBros/i,
+];
+
+for (const cd of creatureDrops) {
+  if (seenIds.has(cd.creature)) continue;
+  if (CREATURE_BLACKLIST.has(cd.creature)) continue;
+  if (CREATURE_SKIP_PATTERNS.some(p => p.test(cd.creature))) continue;
+  
+  const name = findCreatureName(cd.creature);
+  if (!name) continue;
+  
+  // Strip any remaining Unity rich text from creature names
+  const cleanName = stripRichText(name);
+  
+  const drops = cd.drops
+    .filter(d => d.prefab)
+    .map(d => ({
+      id: d.prefab,
+      name: loc(findItemName(d.prefab)),
+      chance: d.chance,
+      min: d.min,
+      max: d.max,
+    }));
+  
+  const biome = guessCreatureBiome(cd.creature);
+  
+  const entry = {
+    id: cd.creature,
+    name: cleanName,
+    type: "Creature",
+    subcategory: cd.health >= 5000 ? "Boss" : "Creature",
+    description: "",
+    biomes: biome ? [biome] : [],
+    source: [biome || "World"],
+    station: "",
+    stationLevel: 0,
+    maxQuality: 1,
+    stack: 1,
+    weight: 0,
+    value: 0,
+    recipe: [],
+    upgradeCosts: [],
+    drops: drops,
+    stats: [{ label: "Health", value: `${cd.health}` }],
+    wikiUrl: WIKI_MAP[cd.creature] ? WIKI_MAP[cd.creature][0] : "",
+    wikiGroup: WIKI_MAP[cd.creature] && WIKI_MAP[cd.creature][1] ? WIKI_MAP[cd.creature][1] : "",
+  };
+  
+  converted.push(entry);
+  seenIds.add(cd.creature);
+}
+
+// Process build pieces
+for (const p of pieces) {
+  if (seenIds.has(p.prefab)) continue;
+  if (isWorldPiece(p.prefab)) continue;
+  
+  const name = loc(p.name);
+  if (!name || name.startsWith("$")) continue;
+  if (name === "yourare dead") continue; // Internal
+  
+  const recipeIngredients = (p.resources || [])
+    .filter(r => r.item)
+    .map(r => ({
+      id: r.item,
+      name: loc(findItemName(r.item)),
+      amount: r.amount,
+    }));
+  
+  // Skip pieces with no recipe (internal/debug)
+  if (recipeIngredients.length === 0) continue;
+  
+  const entry = {
+    id: p.prefab,
+    name: name,
+    type: "BuildPiece",
+    subcategory: mapPieceCategory(p.category),
+    description: loc(p.description),
+    biomes: guessBiomes(p.prefab, { resources: p.resources || [] }),
+    source: ["Building"],
+    station: p.craftingStation ? mapStation(p.craftingStation) : "",
+    stationLevel: 0,
+    maxQuality: 1,
+    stack: 1,
+    weight: 0,
+    value: 0,
+    recipe: recipeIngredients,
+    upgradeCosts: [],
+    drops: [],
+    stats: p.comfort > 0 ? [{ label: "Comfort", value: `${p.comfort}` }] : [],
+    wikiUrl: WIKI_MAP[p.prefab] ? WIKI_MAP[p.prefab][0] : "",
+    wikiGroup: WIKI_MAP[p.prefab] && WIKI_MAP[p.prefab][1] ? WIKI_MAP[p.prefab][1] : "",
+  };
+  
+  converted.push(entry);
+  seenIds.add(p.prefab);
+}
+
+function findItemName(prefab) {
+  const item = items.find(i => i.prefab === prefab);
+  if (item) return item.name;
+  // Try pieces
+  const piece = pieces.find(p => p.prefab === prefab);
+  if (piece) return piece.name;
+  // Fallback: clean up prefab name
+  return prefab.replace(/([a-z])([A-Z])/g, "$1 $2");
+}
+
+function guessCreatureBiome(prefab) {
+  // Check BIOME_OVERRIDE first (authoritative for edge cases)
+  if (BIOME_OVERRIDE[prefab]) return BIOME_OVERRIDE[prefab][0];
+  
+  const p = prefab.toLowerCase();
+  // ── Specific overrides BEFORE generic patterns (order matters!) ──
+  if (p.includes("unbjorn")) return "Plains";        // Vile — Plains, not Ashlands
+  if (p === "bjorn") return "Black Forest";            // Bear — Black Forest, not Ashlands
+  if (p === "blobfrost") return "Mountain";            // Frost Blob — Mountain, not Swamp
+  if (p === "bloblava") return "Ashlands";             // Lava Blob — Ashlands, not Swamp
+  if (p === "blobtar") return "Plains";                // Growth — Plains, not Swamp
+  if (p === "skeleton_poison") return "Swamp";         // Rancid Remains — Swamp crypts
+  if (p === "dvergerashlands") return "Ashlands";      // Ashlands-specific Dvergr
+  // Base Dvergr (rogues + mages) are Mistlands
+  if (p.startsWith("dverger") || p.startsWith("dvergr")) return "Mistlands";
+  
+  // ── Generic biome patterns ──
+  if (p.includes("charred") || p.includes("morgen") || p.includes("asksvin") || p.includes("volture") ||
+      p.includes("fader") || p.includes("bjorn") || p.includes("fallen") ||
+      p.includes("lavaman") || p.includes("bonemaw")) return "Ashlands";
+  if (p.includes("seeker") || p.includes("gjall") || p.includes("tick") || p === "seekerqueen" || 
+      p.includes("hare")) return "Mistlands";
+  if (p.includes("goblin") || p.includes("deathsquito") || p.includes("lox") || p.includes("growth")) return "Plains";
+  if (p.includes("fenring") || p.includes("wolf") || p.includes("drake") || p.includes("dragon") ||
+      p.includes("hatchling") || p.includes("ulv") || p.includes("bat") || p.includes("stonegolem")) return "Mountain";
+  if (p.includes("draugr") || p.includes("blob") || p.includes("wraith") || p.includes("leech") ||
+      p.includes("surtling") || p.includes("bonemass") || p.includes("abomination") ||
+      p.includes("bogwitch") || p.includes("kvastur")) return "Swamp";
+  if (p.includes("troll") || p.includes("greydwarf") || p.includes("skeleton") || p.includes("gdking") ||
+      p.includes("ghost")) return "Black Forest";
+  if (p.includes("boar") || p.includes("deer") || p.includes("neck") || p.includes("greyling") ||
+      p.includes("eikthyr") || p.includes("chicken") || p.includes("hive")) return "Meadows";
+  if (p.includes("serpent") || p.includes("leviathan")) return "Ocean";
+  return "";
+}
+
+function mapPieceCategory(cat) {
+  switch (cat) {
+    case "BuildingWorkbench": return "Building";
+    case "BuildingStonecutter": return "Stone Building";
+    case "Furniture": return "Furniture";
+    case "Crafting": return "Crafting Station";
+    case "Food": return "Food Station";
+    case "Meads": return "Fermenter";
+    case "Misc": return "Misc";
+    case "Feasts": return "Feast";
+    case "All": return "Misc";
+    default: return cat;
+  }
+}
+
+// ── Build piece biome resolution ─────────────────────────────
+// Build pieces aren't in recipeMap, so getItemBiomeTier can't resolve them.
+// Use max-tier of ingredients (same logic as crafted items).
+for (const entry of converted) {
+  if (entry.type !== "BuildPiece") continue;
+  if (entry.biomes.length > 0 && entry.biomes.length === 1) continue; // Already set by override
+  if (entry.recipe.length === 0) continue;
+  
+  let maxTier = -1;
+  // Check piece crafting station
+  const piece = pieces.find(p => p.prefab === entry.id);
+  if (piece && piece.craftingStation && STATION_BIOME[piece.craftingStation]) {
+    const stationTier = BIOME_TIER[STATION_BIOME[piece.craftingStation]] ?? -1;
+    if (stationTier > maxTier) maxTier = stationTier;
+  }
+  // Check ingredient tiers
+  for (const ing of entry.recipe) {
+    const ingTier = getItemBiomeTier(ing.id);
+    if (ingTier > maxTier) maxTier = ingTier;
+  }
+  if (maxTier >= 0 && maxTier < BIOME_PROGRESSION.length) {
+    entry.biomes = [BIOME_PROGRESSION[maxTier]];
+  }
+}
+
+// ── Biome inheritance pass ──────────────────────────────────
+// For items with no biome that have a recipe, inherit the max-tier biome from ingredients
+const convertedMap = {};
+for (const e of converted) convertedMap[e.id] = e;
+
+let inherited = 0;
+for (const entry of converted) {
+  if (entry.biomes.length > 0) continue;
+  if (entry.recipe.length === 0) continue;
+  // Use max-tier logic (consistent with crafted items) instead of union
+  let maxTier = -1;
+  for (const ing of entry.recipe) {
+    const ingTier = getItemBiomeTier(ing.id);
+    if (ingTier > maxTier) maxTier = ingTier;
+  }
+  if (maxTier >= 0 && maxTier < BIOME_PROGRESSION.length) {
+    entry.biomes = [BIOME_PROGRESSION[maxTier]];
+    inherited++;
+  }
+}
+console.log(`Inherited biomes for ${inherited} items from their ingredients`);
+
+// ── Sort: Materials, Weapons, Armor, Food, Potions, Tools, Ammo, Creatures, BuildPieces, Misc
+const TYPE_ORDER = ["Material", "Weapon", "Armor", "Food", "Potion", "Tool", "Ammo", "Creature", "BuildPiece", "Misc"];
+converted.sort((a, b) => {
+  const ta = TYPE_ORDER.indexOf(a.type);
+  const tb = TYPE_ORDER.indexOf(b.type);
+  if (ta !== tb) return ta - tb;
+  return a.name.localeCompare(b.name);
+});
+
+// ── Generate TypeScript ──
+console.log(`\nConverted ${converted.length} entries`);
+const typeCounts = {};
+for (const e of converted) {
+  typeCounts[e.type] = (typeCounts[e.type] || 0) + 1;
+}
+console.log("Type breakdown:", typeCounts);
+
+let ts = `// ── Valheim Item Database ──────────────────────────────────
+// Auto-generated from game data dump (assembly_valheim.dll via MegaDataExtractor)
+// ${converted.length} items extracted from Valheim ${new Date().toISOString().split("T")[0]}
+// DO NOT EDIT MANUALLY — re-run convert-dump.cjs to regenerate
+
+export interface RecipeIngredient {
+  id: string;
+  name: string;
+  amount: number;
+}
+
+export interface ItemDrop {
+  id: string;
+  name: string;
+  chance: number; // 0-1
+  min: number;
+  max: number;
+}
+
+export interface ItemStat {
+  label: string;
+  value: string;
+}
+
+export interface UpgradeCost {
+  level: number;
+  stationLevel: number;
+  resources: RecipeIngredient[];
+}
+
+export type ItemType =
+  | "Material"
+  | "Weapon"
+  | "Armor"
+  | "Food"
+  | "Potion"
+  | "Tool"
+  | "Ammo"
+  | "BuildPiece"
+  | "Creature"
+  | "Misc";
+
+export interface ValheimItem {
+  id: string;           // Internal prefab name (for console commands)
+  name: string;         // Display name
+  type: ItemType;
+  subcategory: string;  // e.g. "Ore", "Ingot", "Trophy", "Sword", "Chest"
+  description: string;
+  biomes: string[];     // Biomes where found (can be multiple)
+  source: string[];     // How to obtain: "Mining", "Looting", "Crafting", etc.
+  station: string;      // Crafting station: "Forge", "Workbench", "Cauldron", ""
+  stationLevel: number; // Min station level required (0 = none)
+  maxQuality: number;   // Max upgrade level (1 = no upgrades)
+  stack: number;        // Max stack size
+  weight: number;       // Weight per unit
+  value: number;        // Trader value (0 = not tradeable)
+  recipe: RecipeIngredient[];
+  upgradeCosts: UpgradeCost[]; // Resources needed per upgrade level (level 2+)
+  drops: ItemDrop[];    // What this creature/source drops (for Creature type)
+  stats: ItemStat[];    // Flexible stats (damage, armor, duration, etc.)
+  wikiUrl: string;      // Verified wiki URL (empty if no page exists)
+  wikiGroup: string;    // Wiki group page name (empty if item has its own page)
+}
+
+export const VALHEIM_ITEMS: ValheimItem[] = [\n`;
+
+for (let i = 0; i < converted.length; i++) {
+  const e = converted[i];
+  ts += `  ${JSON.stringify(e)}${i < converted.length - 1 ? "," : ""}\n`;
+}
+
+ts += `];\n`;
+
+fs.writeFileSync(OUTPUT_PATH, ts, "utf-8");
+console.log(`\nWritten to: ${OUTPUT_PATH}`);
+console.log(`File size: ${(fs.statSync(OUTPUT_PATH).size / 1024).toFixed(1)} KB`);

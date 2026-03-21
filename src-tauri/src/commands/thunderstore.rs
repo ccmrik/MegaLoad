@@ -142,8 +142,8 @@ fn fetch_packages() -> Result<Vec<ThunderstorePackage>, String> {
     }
 
     app_log("Fetching Thunderstore package list...");
-    let resp = ureq::get(TS_API_URL)
-        .set("User-Agent", "MegaLoad/0.13.13")
+    let resp = crate::commands::http::agent().get(TS_API_URL)
+        .set("User-Agent", "MegaLoad/0.13.15")
         .set("Accept", "application/json")
         .call()
         .map_err(|e| format!("Thunderstore API error: {}", e))?;
@@ -440,8 +440,8 @@ pub fn uninstall_thunderstore_mod(
 // ── Helpers ────────────────────────────────────────────────
 
 fn download_ts_file(url: &str) -> Result<Vec<u8>, String> {
-    let resp = ureq::get(url)
-        .set("User-Agent", "MegaLoad/0.13.13")
+    let resp = crate::commands::http::agent().get(url)
+        .set("User-Agent", "MegaLoad/0.13.15")
         .call()
         .map_err(|e| format!("Download error: {}", e))?;
 

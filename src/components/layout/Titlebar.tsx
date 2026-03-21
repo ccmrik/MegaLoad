@@ -1,6 +1,8 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Minus, Square, X, Download, Loader2 } from "lucide-react";
+import { Minus, Square, X, Download, Loader2, ShoppingCart } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { useAppUpdateStore } from "../../stores/appUpdateStore";
+import { useValheimDataStore } from "../../stores/valheimDataStore";
 
 const appWindow = getCurrentWindow();
 
@@ -61,7 +63,8 @@ export function Titlebar() {
         )}
       </div>
 
-      <div className="flex h-full">
+      <div className="flex h-full items-center">
+        <CartIndicator />
         <button
           onClick={() => appWindow.minimize()}
           className="h-full px-4 hover:bg-zinc-800 transition-colors duration-150"
@@ -82,5 +85,23 @@ export function Titlebar() {
         </button>
       </div>
     </div>
+  );
+}
+
+function CartIndicator() {
+  const { cartItems } = useValheimDataStore();
+  const navigate = useNavigate();
+  if (cartItems.length === 0) return null;
+  return (
+    <button
+      onClick={() => navigate("/cart")}
+      className="relative h-full px-3 hover:bg-zinc-800 transition-colors duration-150"
+      title="Shopping Cart"
+    >
+      <ShoppingCart className="w-3.5 h-3.5 text-zinc-400" />
+      <span className="absolute -top-0 right-1 min-w-[14px] h-[14px] rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center px-0.5">
+        {cartItems.length}
+      </span>
+    </button>
   );
 }

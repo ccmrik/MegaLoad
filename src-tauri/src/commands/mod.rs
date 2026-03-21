@@ -1,6 +1,7 @@
 pub mod app_log;
 pub mod bepinex;
 pub mod config;
+pub mod http;
 pub mod import;
 pub mod launcher;
 pub mod logs;

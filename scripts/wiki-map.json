@@ -1,0 +1,3675 @@
+{
+  "Acorn": [
+    "https://valheim.fandom.com/wiki/Acorns"
+  ],
+  "Amber": [
+    "https://valheim.fandom.com/wiki/Amber"
+  ],
+  "AmberPearl": [
+    "https://valheim.fandom.com/wiki/Amber_pearl"
+  ],
+  "ElderBark": [
+    "https://valheim.fandom.com/wiki/Ancient_bark"
+  ],
+  "Flametal": [
+    "https://valheim.fandom.com/wiki/Glowing_metal",
+    "Glowing metal"
+  ],
+  "Fish9": [
+    "https://valheim.fandom.com/wiki/Anglerfish"
+  ],
+  "FeastAshlands_Material": [
+    "https://valheim.fandom.com/wiki/Ashlands_gourmet_bowl"
+  ],
+  "Blackwood": [
+    "https://valheim.fandom.com/wiki/Ashwood"
+  ],
+  "AskBladder": [
+    "https://valheim.fandom.com/wiki/Asksvin_bladder"
+  ],
+  "AskHide": [
+    "https://valheim.fandom.com/wiki/Asksvin_hide"
+  ],
+  "AsksvinCarrionNeck": [
+    "https://valheim.fandom.com/wiki/Asksvin_neck"
+  ],
+  "AsksvinCarrionPelvic": [
+    "https://valheim.fandom.com/wiki/Asksvin_pelvis"
+  ],
+  "AsksvinCarrionRibcage": [
+    "https://valheim.fandom.com/wiki/Asksvin_ribcage"
+  ],
+  "AsksvinCarrionSkull": [
+    "https://valheim.fandom.com/wiki/Asksvin_skull"
+  ],
+  "AsksvinMeat": [
+    "https://valheim.fandom.com/wiki/Asksvin_tail"
+  ],
+  "Barley": [
+    "https://valheim.fandom.com/wiki/Barley"
+  ],
+  "BarleyWineBase": [
+    "https://valheim.fandom.com/wiki/Barley_wine_base:_fire_resistance"
+  ],
+  "FireworksRocket_White": [
+    "https://valheim.fandom.com/wiki/Basic_fireworks"
+  ],
+  "BjornHide": [
+    "https://valheim.fandom.com/wiki/Bear_hide"
+  ],
+  "BjornMeat": [
+    "https://valheim.fandom.com/wiki/Bear_meat"
+  ],
+  "BjornPaw": [
+    "https://valheim.fandom.com/wiki/Bear_paw"
+  ],
+  "BeechSeeds": [
+    "https://valheim.fandom.com/wiki/Beech_seeds"
+  ],
+  "BellFragment": [
+    "https://valheim.fandom.com/wiki/Bell_fragment"
+  ],
+  "Bilebag": [
+    "https://valheim.fandom.com/wiki/Bilebag"
+  ],
+  "BirchSeeds": [
+    "https://valheim.fandom.com/wiki/Birch_seeds"
+  ],
+  "BlackCore": [
+    "https://valheim.fandom.com/wiki/Black_core"
+  ],
+  "FeastBlackforest_Material": [
+    "https://valheim.fandom.com/wiki/Black_Forest_buffet_platter",
+    "Black Forest buffet platter"
+  ],
+  "BlackMarble": [
+    "https://valheim.fandom.com/wiki/Black_marble"
+  ],
+  "BlackMetal": [
+    "https://valheim.fandom.com/wiki/Black_metal"
+  ],
+  "BlackMetalScrap": [
+    "https://valheim.fandom.com/wiki/Black_metal_scrap"
+  ],
+  "GiantBloodSack": [
+    "https://valheim.fandom.com/wiki/Blood_clot"
+  ],
+  "Bloodbag": [
+    "https://valheim.fandom.com/wiki/Bloodbag"
+  ],
+  "GemstoneRed": [
+    "https://valheim.fandom.com/wiki/Bloodstone"
+  ],
+  "FireworksRocket_Blue": [
+    "https://valheim.fandom.com/wiki/Blue_fireworks"
+  ],
+  "JuteBlue": [
+    "https://valheim.fandom.com/wiki/Blue_jute"
+  ],
+  "BoneFragments": [
+    "https://valheim.fandom.com/wiki/Bone_fragments"
+  ],
+  "BoneMawSerpentMeat": [
+    "https://valheim.fandom.com/wiki/Bonemaw_meat"
+  ],
+  "BonemawSerpentTooth": [
+    "https://valheim.fandom.com/wiki/Bonemaw_tooth"
+  ],
+  "BreadDough": [
+    "https://valheim.fandom.com/wiki/Bread",
+    "Bread"
+  ],
+  "Bronze": [
+    "https://valheim.fandom.com/wiki/Bronze"
+  ],
+  "BronzeNails": [
+    "https://valheim.fandom.com/wiki/Bronze_nails"
+  ],
+  "CandleWick": [
+    "https://valheim.fandom.com/wiki/Candle_wick"
+  ],
+  "Carapace": [
+    "https://valheim.fandom.com/wiki/Carapace"
+  ],
+  "CarrotSeeds": [
+    "https://valheim.fandom.com/wiki/Carrot_seeds"
+  ],
+  "CelestialFeather": [
+    "https://valheim.fandom.com/wiki/Celestial_feather"
+  ],
+  "CeramicPlate": [
+    "https://valheim.fandom.com/wiki/Ceramic_plate"
+  ],
+  "Chain": [
+    "https://valheim.fandom.com/wiki/Chain"
+  ],
+  "CharcoalResin": [
+    "https://valheim.fandom.com/wiki/Charcoal_resin"
+  ],
+  "CharredBone": [
+    "https://valheim.fandom.com/wiki/Charred_bone"
+  ],
+  "CharredCogwheel": [
+    "https://valheim.fandom.com/wiki/Charred_cogwheel"
+  ],
+  "Charredskull": [
+    "https://valheim.fandom.com/wiki/Charred_skull"
+  ],
+  "ChickenMeat": [
+    "https://valheim.fandom.com/wiki/Chicken_meat"
+  ],
+  "Chitin": [
+    "https://valheim.fandom.com/wiki/Chitin"
+  ],
+  "Coal": [
+    "https://valheim.fandom.com/wiki/Coal"
+  ],
+  "Coins": [
+    "https://valheim.fandom.com/wiki/Coins"
+  ],
+  "Copper": [
+    "https://valheim.fandom.com/wiki/Copper"
+  ],
+  "CopperOre": [
+    "https://valheim.fandom.com/wiki/Copper_ore"
+  ],
+  "CopperScrap": [
+    "https://valheim.fandom.com/wiki/Copper_scrap"
+  ],
+  "Fish8": [
+    "https://valheim.fandom.com/wiki/Coral_cod"
+  ],
+  "RoundLog": [
+    "https://valheim.fandom.com/wiki/Corewood"
+  ],
+  "BlobVial": [
+    "https://valheim.fandom.com/wiki/Corked_vial"
+  ],
+  "Crystal": [
+    "https://valheim.fandom.com/wiki/Crystal"
+  ],
+  "CuredSquirrelHamstring": [
+    "https://valheim.fandom.com/wiki/Cured_squirrel_hamstring"
+  ],
+  "AxeHead1": [
+    "https://valheim.fandom.com/wiki/Early_axes",
+    "Early axes"
+  ],
+  "FireworksRocket_Cyan": [
+    "https://valheim.fandom.com/wiki/Cyan_fireworks"
+  ],
+  "Dandelion": [
+    "https://valheim.fandom.com/wiki/Dandelion"
+  ],
+  "DvergrNeedle": [
+    "https://valheim.fandom.com/wiki/Dvergr_extractor"
+  ],
+  "DyrnwynBladeFragment": [
+    "https://valheim.fandom.com/wiki/Dyrnwyn",
+    "Dyrnwyn"
+  ],
+  "DyrnwynHiltFragment": [
+    "https://valheim.fandom.com/wiki/Dyrnwyn",
+    "Dyrnwyn"
+  ],
+  "DyrnwynTipFragment": [
+    "https://valheim.fandom.com/wiki/Dyrnwyn",
+    "Dyrnwyn"
+  ],
+  "Ectoplasm": [
+    "https://valheim.fandom.com/wiki/Ectoplasm"
+  ],
+  "Entrails": [
+    "https://valheim.fandom.com/wiki/Entrails"
+  ],
+  "BombSiege": [
+    "https://valheim.fandom.com/wiki/Explosive_payload"
+  ],
+  "FaderDrop": [
+    "https://valheim.fandom.com/wiki/Fader_relic"
+  ],
+  "Feathers": [
+    "https://valheim.fandom.com/wiki/Feathers"
+  ],
+  "WolfClaw": [
+    "https://valheim.fandom.com/wiki/Fenris_claw"
+  ],
+  "WolfHairBundle": [
+    "https://valheim.fandom.com/wiki/Fenris_hair"
+  ],
+  "SpiceAshlands": [
+    "https://valheim.fandom.com/wiki/Fiery_spice_powder"
+  ],
+  "FineWood": [
+    "https://valheim.fandom.com/wiki/Finewood"
+  ],
+  "FirCone": [
+    "https://valheim.fandom.com/wiki/Fir_cone"
+  ],
+  "FlametalNew": [
+    "https://valheim.fandom.com/wiki/Flametal"
+  ],
+  "FlametalOreNew": [
+    "https://valheim.fandom.com/wiki/Flametal_ore"
+  ],
+  "Flax": [
+    "https://valheim.fandom.com/wiki/Flax"
+  ],
+  "Flint": [
+    "https://valheim.fandom.com/wiki/Flint"
+  ],
+  "FragrantBundle": [
+    "https://valheim.fandom.com/wiki/Fragrant_bundle"
+  ],
+  "FreezeGland": [
+    "https://valheim.fandom.com/wiki/Freeze_gland"
+  ],
+  "FreshSeaweed": [
+    "https://valheim.fandom.com/wiki/Fresh_seaweed"
+  ],
+  "Fish6": [
+    "https://valheim.fandom.com/wiki/Giant_herring"
+  ],
+  "FlametalOre": [
+    "https://valheim.fandom.com/wiki/Glowing_metal_ore"
+  ],
+  "SpicePlains": [
+    "https://valheim.fandom.com/wiki/Grasslands_herbalist_harvest"
+  ],
+  "Grausten": [
+    "https://valheim.fandom.com/wiki/Grausten"
+  ],
+  "Catapult_ammo": [
+    "https://valheim.fandom.com/wiki/Grausten_payload"
+  ],
+  "GreydwarfEye": [
+    "https://valheim.fandom.com/wiki/Greydwarf_eye"
+  ],
+  "Fish7": [
+    "https://valheim.fandom.com/wiki/Grouper"
+  ],
+  "Guck": [
+    "https://valheim.fandom.com/wiki/Guck"
+  ],
+  "HardAntler": [
+    "https://valheim.fandom.com/wiki/Hard_antler"
+  ],
+  "HareMeat": [
+    "https://valheim.fandom.com/wiki/Hare_meat"
+  ],
+  "FeastMountains_Material": [
+    "https://valheim.fandom.com/wiki/Hearty_Mountain_logger's_stew",
+    "Hearty Mountain logger's stew"
+  ],
+  "SpiceMistlands": [
+    "https://valheim.fandom.com/wiki/Herbs_of_the_hidden_hills"
+  ],
+  "GemstoneBlue": [
+    "https://valheim.fandom.com/wiki/Iolite"
+  ],
+  "Iron": [
+    "https://valheim.fandom.com/wiki/Iron"
+  ],
+  "IronNails": [
+    "https://valheim.fandom.com/wiki/Iron_nails"
+  ],
+  "IronOre": [
+    "https://valheim.fandom.com/wiki/Iron_ore"
+  ],
+  "Ironpit": [
+    "https://valheim.fandom.com/wiki/Iron_pit"
+  ],
+  "VineGreenSeeds": [
+    "https://valheim.fandom.com/wiki/Ivy_seeds"
+  ],
+  "GemstoneGreen": [
+    "https://valheim.fandom.com/wiki/Jade"
+  ],
+  "LeatherScraps": [
+    "https://valheim.fandom.com/wiki/Leather_scraps"
+  ],
+  "LinenThread": [
+    "https://valheim.fandom.com/wiki/Linen_thread"
+  ],
+  "Fish11": [
+    "https://valheim.fandom.com/wiki/Magmafish"
+  ],
+  "QueenDrop": [
+    "https://valheim.fandom.com/wiki/Majestic_carapace"
+  ],
+  "Mandible": [
+    "https://valheim.fandom.com/wiki/Mandible"
+  ],
+  "MeadBaseTamer": [
+    "https://valheim.fandom.com/wiki/Mead_base:_animal_whispers"
+  ],
+  "MeadBaseBugRepellent": [
+    "https://valheim.fandom.com/wiki/Mead_base:_anti-sting"
+  ],
+  "MeadBaseBzerker": [
+    "https://valheim.fandom.com/wiki/Mead_base:_berserkir"
+  ],
+  "MeadBaseFrostResist": [
+    "https://valheim.fandom.com/wiki/Mead_base:_frost_resistance"
+  ],
+  "MeadBaseLightFoot": [
+    "https://valheim.fandom.com/wiki/Mead_base:_lightfoot"
+  ],
+  "MeadBaseEitrLingering": [
+    "https://valheim.fandom.com/wiki/Mead_base:_lingering_eitr"
+  ],
+  "MeadBaseHealthLingering": [
+    "https://valheim.fandom.com/wiki/Mead_base:_lingering_health"
+  ],
+  "MeadBaseStaminaLingering": [
+    "https://valheim.fandom.com/wiki/Mead_base:_lingering_stamina"
+  ],
+  "MeadBaseHealthMajor": [
+    "https://valheim.fandom.com/wiki/Mead_base:_major_healing"
+  ],
+  "MeadBaseHealthMedium": [
+    "https://valheim.fandom.com/wiki/Mead_base:_medium_healing"
+  ],
+  "MeadBaseStaminaMedium": [
+    "https://valheim.fandom.com/wiki/Mead_base:_medium_stamina"
+  ],
+  "MeadBaseEitrMinor": [
+    "https://valheim.fandom.com/wiki/Mead_base:_minor_eitr"
+  ],
+  "MeadBaseHealthMinor": [
+    "https://valheim.fandom.com/wiki/Mead_base:_minor_healing"
+  ],
+  "MeadBaseStaminaMinor": [
+    "https://valheim.fandom.com/wiki/Mead_base:_minor_stamina"
+  ],
+  "MeadBasePoisonResist": [
+    "https://valheim.fandom.com/wiki/Mead_base:_poison_resistance"
+  ],
+  "MeadBaseHasty": [
+    "https://valheim.fandom.com/wiki/Mead_base:_ratatosk"
+  ],
+  "MeadBaseTasty": [
+    "https://valheim.fandom.com/wiki/Mead_base:_tasty"
+  ],
+  "MeadBaseStrength": [
+    "https://valheim.fandom.com/wiki/Mead_base:_troll_endurance"
+  ],
+  "MeadBaseSwimmer": [
+    "https://valheim.fandom.com/wiki/Mead_base:_vananidir"
+  ],
+  "MechanicalSpring": [
+    "https://valheim.fandom.com/wiki/Mechanical_spring"
+  ],
+  "MoltenCore": [
+    "https://valheim.fandom.com/wiki/Molten_core"
+  ],
+  "MorgenHeart": [
+    "https://valheim.fandom.com/wiki/Morgen_heart"
+  ],
+  "MorgenSinew": [
+    "https://valheim.fandom.com/wiki/Morgen_sinew"
+  ],
+  "SpiceMountains": [
+    "https://valheim.fandom.com/wiki/Mountain_peak_pepper_powder"
+  ],
+  "FeastMistlands_Material": [
+    "https://valheim.fandom.com/wiki/Mushrooms_galore_á_la_Mistlands",
+    "Mushrooms galore á la Mistlands"
+  ],
+  "AxeHead2": [
+    "https://valheim.fandom.com/wiki/Early_axes",
+    "Early axes"
+  ],
+  "Needle": [
+    "https://valheim.fandom.com/wiki/Needle"
+  ],
+  "Fish10": [
+    "https://valheim.fandom.com/wiki/Northern_salmon"
+  ],
+  "Obsidian": [
+    "https://valheim.fandom.com/wiki/Obsidian"
+  ],
+  "OnionSeeds": [
+    "https://valheim.fandom.com/wiki/Onion_seeds"
+  ],
+  "Ooze": [
+    "https://valheim.fandom.com/wiki/Ooze"
+  ],
+  "Fish1": [
+    "https://valheim.fandom.com/wiki/Perch"
+  ],
+  "Fish2": [
+    "https://valheim.fandom.com/wiki/Pike"
+  ],
+  "PineCone": [
+    "https://valheim.fandom.com/wiki/Pine_cone"
+  ],
+  "FeastPlains_Material": [
+    "https://valheim.fandom.com/wiki/Plains_pie_picnic"
+  ],
+  "Pot_Shard_Green": [
+    "https://valheim.fandom.com/wiki/Pot_shard"
+  ],
+  "PowderedDragonEgg": [
+    "https://valheim.fandom.com/wiki/Powdered_dragon_eggshells"
+  ],
+  "ProustitePowder": [
+    "https://valheim.fandom.com/wiki/Proustite_powder"
+  ],
+  "Fish12": [
+    "https://valheim.fandom.com/wiki/Pufferfish"
+  ],
+  "PungentPebbles": [
+    "https://valheim.fandom.com/wiki/Pungent_pebbles"
+  ],
+  "FireworksRocket_Purple": [
+    "https://valheim.fandom.com/wiki/Purple_fireworks"
+  ],
+  "QueenBee": [
+    "https://valheim.fandom.com/wiki/Queen_bee"
+  ],
+  "FishAnglerRaw": [
+    "https://valheim.fandom.com/wiki/Raw_fish"
+  ],
+  "FishRaw": [
+    "https://valheim.fandom.com/wiki/Raw_fish"
+  ],
+  "FireworksRocket_Red": [
+    "https://valheim.fandom.com/wiki/Red_fireworks"
+  ],
+  "JuteRed": [
+    "https://valheim.fandom.com/wiki/Red_jute"
+  ],
+  "Eitr": [
+    "https://valheim.fandom.com/wiki/Refined_eitr"
+  ],
+  "Resin": [
+    "https://valheim.fandom.com/wiki/Resin"
+  ],
+  "Root": [
+    "https://valheim.fandom.com/wiki/Root"
+  ],
+  "Ruby": [
+    "https://valheim.fandom.com/wiki/Ruby"
+  ],
+  "FeastOceans_Material": [
+    "https://valheim.fandom.com/wiki/Sailor's_bounty"
+  ],
+  "Sap": [
+    "https://valheim.fandom.com/wiki/Sap"
+  ],
+  "ScaleHide": [
+    "https://valheim.fandom.com/wiki/Scale_hide"
+  ],
+  "BronzeScrap": [
+    "https://valheim.fandom.com/wiki/Scrap_bronze"
+  ],
+  "IronScrap": [
+    "https://valheim.fandom.com/wiki/Scrap_iron"
+  ],
+  "SpiceOceans": [
+    "https://valheim.fandom.com/wiki/Seafarer's_herbs"
+  ],
+  "DvergrKeyFragment": [
+    "https://valheim.fandom.com/wiki/Sealbreaker_fragment"
+  ],
+  "BugMeat": [
+    "https://valheim.fandom.com/wiki/Seeker_meat"
+  ],
+  "SerpentMeat": [
+    "https://valheim.fandom.com/wiki/Serpent_meat"
+  ],
+  "SerpentScale": [
+    "https://valheim.fandom.com/wiki/Serpent_scale"
+  ],
+  "SharpeningStone": [
+    "https://valheim.fandom.com/wiki/Sharpening_stone"
+  ],
+  "ShieldCore": [
+    "https://valheim.fandom.com/wiki/Shield_core"
+  ],
+  "Silver": [
+    "https://valheim.fandom.com/wiki/Silver"
+  ],
+  "SilverNecklace": [
+    "https://valheim.fandom.com/wiki/Silver_necklace"
+  ],
+  "SilverOre": [
+    "https://valheim.fandom.com/wiki/Silver_ore"
+  ],
+  "Softtissue": [
+    "https://valheim.fandom.com/wiki/Soft_tissue"
+  ],
+  "Stone": [
+    "https://valheim.fandom.com/wiki/Stone"
+  ],
+  "SulfurStone": [
+    "https://valheim.fandom.com/wiki/Sulfur"
+  ],
+  "SurtlingCore": [
+    "https://valheim.fandom.com/wiki/Surtling_core"
+  ],
+  "FeastSwamps_Material": [
+    "https://valheim.fandom.com/wiki/Swamp_dweller's_delight"
+  ],
+  "Tar": [
+    "https://valheim.fandom.com/wiki/Tar"
+  ],
+  "Fish4_cave": [
+    "https://valheim.fandom.com/wiki/Tetra"
+  ],
+  "Thistle": [
+    "https://valheim.fandom.com/wiki/Thistle"
+  ],
+  "Thunderstone": [
+    "https://valheim.fandom.com/wiki/Thunder_stone"
+  ],
+  "Tin": [
+    "https://valheim.fandom.com/wiki/Tin"
+  ],
+  "TinOre": [
+    "https://valheim.fandom.com/wiki/Tin_ore"
+  ],
+  "TrollHide": [
+    "https://valheim.fandom.com/wiki/Troll_hide"
+  ],
+  "Fish5": [
+    "https://valheim.fandom.com/wiki/Trollfish"
+  ],
+  "Fish3": [
+    "https://valheim.fandom.com/wiki/Tuna"
+  ],
+  "Turnip": [
+    "https://valheim.fandom.com/wiki/Turnip"
+  ],
+  "TurnipSeeds": [
+    "https://valheim.fandom.com/wiki/Turnip_seeds"
+  ],
+  "LoxPieUncooked": [
+    "https://valheim.fandom.com/wiki/Lox_meat_pie",
+    "Lox meat pie"
+  ],
+  "VikingCupcakeUncooked": [
+    "https://valheim.fandom.com/wiki/Frosted_sweetbread",
+    "Frosted sweetbread"
+  ],
+  "FishAndBreadUncooked": [
+    "https://valheim.fandom.com/wiki/Uncooked_fish_'n'_bread"
+  ],
+  "HoneyGlazedChickenUncooked": [
+    "https://valheim.fandom.com/wiki/Honey_glazed_chicken",
+    "Honey glazed chicken"
+  ],
+  "MeatPlatterUncooked": [
+    "https://valheim.fandom.com/wiki/Meat_platter",
+    "Meat platter"
+  ],
+  "MisthareSupremeUncooked": [
+    "https://valheim.fandom.com/wiki/Misthare_supreme",
+    "Misthare supreme"
+  ],
+  "PiquantPieUncooked": [
+    "https://valheim.fandom.com/wiki/Piquant_pie",
+    "Piquant pie"
+  ],
+  "RoastedCrustPieUncooked": [
+    "https://valheim.fandom.com/wiki/Roasted_crust_pie",
+    "Roasted crust pie"
+  ],
+  "MagicallyStuffedShroomUncooked": [
+    "https://valheim.fandom.com/wiki/Stuffed_mushroom",
+    "Stuffed mushroom"
+  ],
+  "UndeadBjornRibcage": [
+    "https://valheim.fandom.com/wiki/Vile_ribcage"
+  ],
+  "VineberrySeeds": [
+    "https://valheim.fandom.com/wiki/Vineberry_seeds"
+  ],
+  "VoltureMeat": [
+    "https://valheim.fandom.com/wiki/Volture_meat"
+  ],
+  "FeastMeadows_Material": [
+    "https://valheim.fandom.com/wiki/Whole_roasted_Meadow_boar",
+    "Whole roasted Meadow boar"
+  ],
+  "Wisp": [
+    "https://valheim.fandom.com/wiki/Wisp"
+  ],
+  "WitheredBone": [
+    "https://valheim.fandom.com/wiki/Withered_bone"
+  ],
+  "Wood": [
+    "https://valheim.fandom.com/wiki/Wood"
+  ],
+  "SpiceForests": [
+    "https://valheim.fandom.com/wiki/Woodland_herb_blend"
+  ],
+  "VegvisirShard_Bonemass": [
+    "https://valheim.fandom.com/wiki/Torn_spirit",
+    "Torn spirit"
+  ],
+  "FireworksRocket_Yellow": [
+    "https://valheim.fandom.com/wiki/Yellow_fireworks"
+  ],
+  "YggdrasilWood": [
+    "https://valheim.fandom.com/wiki/Yggdrasil_wood"
+  ],
+  "YmirRemains": [
+    "https://valheim.fandom.com/wiki/Ymir_flesh"
+  ],
+  "SpearChitin": [
+    "https://valheim.fandom.com/wiki/Abyssal_harpoon"
+  ],
+  "KnifeChitin": [
+    "https://valheim.fandom.com/wiki/Abyssal_razor"
+  ],
+  "SpearElderbark": [
+    "https://valheim.fandom.com/wiki/Ancient_bark_spear"
+  ],
+  "PickaxeAntler": [
+    "https://valheim.fandom.com/wiki/Antler_pickaxe"
+  ],
+  "CrossbowArbalest": [
+    "https://valheim.fandom.com/wiki/Arbalest"
+  ],
+  "BowAshlands": [
+    "https://valheim.fandom.com/wiki/Ash_Fang",
+    "Ash Fang"
+  ],
+  "BombLava": [
+    "https://valheim.fandom.com/wiki/Basalt_bomb"
+  ],
+  "Battleaxe": [
+    "https://valheim.fandom.com/wiki/Battleaxe"
+  ],
+  "AxeBerzerkr": [
+    "https://valheim.fandom.com/wiki/Berserkir_axes"
+  ],
+  "BombBile": [
+    "https://valheim.fandom.com/wiki/Bile_bomb"
+  ],
+  "AtgeirBlackmetal": [
+    "https://valheim.fandom.com/wiki/Black_metal_atgeir"
+  ],
+  "AxeBlackMetal": [
+    "https://valheim.fandom.com/wiki/Black_metal_axe"
+  ],
+  "BattleaxeBlackmetal": [
+    "https://valheim.fandom.com/wiki/Black_metal_battleaxe"
+  ],
+  "KnifeBlackMetal": [
+    "https://valheim.fandom.com/wiki/Black_metal_knife"
+  ],
+  "PickaxeBlackMetal": [
+    "https://valheim.fandom.com/wiki/Black_metal_pickaxe"
+  ],
+  "SwordBlackmetal": [
+    "https://valheim.fandom.com/wiki/Black_metal_sword"
+  ],
+  "BombBlob_PoisonElite": [
+    "https://valheim.fandom.com/wiki/Blob_bomb:_elite_poison"
+  ],
+  "BombBlob_Frost": [
+    "https://valheim.fandom.com/wiki/Blob_bomb:_frost"
+  ],
+  "BombBlob_Lava": [
+    "https://valheim.fandom.com/wiki/Blob_bomb:_lava"
+  ],
+  "BombBlob_Poison": [
+    "https://valheim.fandom.com/wiki/Blob_bomb:_poison"
+  ],
+  "BombBlob_Tar": [
+    "https://valheim.fandom.com/wiki/Blob_bomb:_tar"
+  ],
+  "BowAshlandsBlood": [
+    "https://valheim.fandom.com/wiki/Blood_fang"
+  ],
+  "MaceEldnerBlood": [
+    "https://valheim.fandom.com/wiki/Bloodgeon"
+  ],
+  "AtgeirBronze": [
+    "https://valheim.fandom.com/wiki/Bronze_atgeir"
+  ],
+  "AxeBronze": [
+    "https://valheim.fandom.com/wiki/Bronze_axe"
+  ],
+  "MaceBronze": [
+    "https://valheim.fandom.com/wiki/Bronze_mace"
+  ],
+  "PickaxeBronze": [
+    "https://valheim.fandom.com/wiki/Bronze_pickaxe"
+  ],
+  "SpearBronze": [
+    "https://valheim.fandom.com/wiki/Bronze_spear"
+  ],
+  "SwordBronze": [
+    "https://valheim.fandom.com/wiki/Bronze_sword"
+  ],
+  "THSwordSlayerBlood": [
+    "https://valheim.fandom.com/wiki/Brutal_slayer"
+  ],
+  "KnifeButcher": [
+    "https://valheim.fandom.com/wiki/Butcher_knife"
+  ],
+  "SpearCarapace": [
+    "https://valheim.fandom.com/wiki/Carapace_spear"
+  ],
+  "Club": [
+    "https://valheim.fandom.com/wiki/Club"
+  ],
+  "KnifeCopper": [
+    "https://valheim.fandom.com/wiki/Copper_knife"
+  ],
+  "Bow": [
+    "https://valheim.fandom.com/wiki/Crude_bow"
+  ],
+  "BattleaxeCrystal": [
+    "https://valheim.fandom.com/wiki/Crystal_battleaxe"
+  ],
+  "StaffSkeleton": [
+    "https://valheim.fandom.com/wiki/Dead_Raiser",
+    "Dead Raiser"
+  ],
+  "SledgeDemolisher": [
+    "https://valheim.fandom.com/wiki/Demolisher"
+  ],
+  "BowDraugrFang": [
+    "https://valheim.fandom.com/wiki/Draugr_Fang",
+    "Draugr Fang"
+  ],
+  "StaffLightning": [
+    "https://valheim.fandom.com/wiki/Dundr"
+  ],
+  "SwordDyrnwyn": [
+    "https://valheim.fandom.com/wiki/Dyrnwyn"
+  ],
+  "AxeEarly": [
+    "https://valheim.fandom.com/wiki/Early_axes"
+  ],
+  "SpearWolfFang": [
+    "https://valheim.fandom.com/wiki/Fang_spear"
+  ],
+  "BowFineWood": [
+    "https://valheim.fandom.com/wiki/Finewood_bow"
+  ],
+  "MaceEldner": [
+    "https://valheim.fandom.com/wiki/Flametal_mace"
+  ],
+  "FistFenrirClaw": [
+    "https://valheim.fandom.com/wiki/Flesh_Rippers",
+    "Flesh Rippers"
+  ],
+  "AxeFlint": [
+    "https://valheim.fandom.com/wiki/Flint_axe"
+  ],
+  "KnifeFlint": [
+    "https://valheim.fandom.com/wiki/Flint_knife"
+  ],
+  "SpearFlint": [
+    "https://valheim.fandom.com/wiki/Flint_spear"
+  ],
+  "MaceSilver": [
+    "https://valheim.fandom.com/wiki/Frostner"
+  ],
+  "AtgeirHimminAfl": [
+    "https://valheim.fandom.com/wiki/Himminafl"
+  ],
+  "TankardAnniversary": [
+    "https://valheim.fandom.com/wiki/Horn_of_celebration"
+  ],
+  "BowHuntsman": [
+    "https://valheim.fandom.com/wiki/Huntsman_bow"
+  ],
+  "AtgeirIron": [
+    "https://valheim.fandom.com/wiki/Iron_atgeir"
+  ],
+  "AxeIron": [
+    "https://valheim.fandom.com/wiki/Iron_axe"
+  ],
+  "MaceIron": [
+    "https://valheim.fandom.com/wiki/Iron_mace"
+  ],
+  "PickaxeIron": [
+    "https://valheim.fandom.com/wiki/Iron_pickaxe"
+  ],
+  "SledgeIron": [
+    "https://valheim.fandom.com/wiki/Iron_sledge"
+  ],
+  "SwordIron": [
+    "https://valheim.fandom.com/wiki/Iron_sword"
+  ],
+  "AxeJotunBane": [
+    "https://valheim.fandom.com/wiki/Jotun_Bane",
+    "Jotun Bane"
+  ],
+  "MaceEldnerNature": [
+    "https://valheim.fandom.com/wiki/Klossen"
+  ],
+  "THSwordKrom": [
+    "https://valheim.fandom.com/wiki/Krom"
+  ],
+  "SwordMistwalker": [
+    "https://valheim.fandom.com/wiki/Mistwalker"
+  ],
+  "SwordNiedhogg": [
+    "https://valheim.fandom.com/wiki/Nidhögg"
+  ],
+  "SwordNiedhoggBlood": [
+    "https://valheim.fandom.com/wiki/Nidhögg_the_bleeding"
+  ],
+  "SwordNiedhoggNature": [
+    "https://valheim.fandom.com/wiki/Nidhögg_the_primal"
+  ],
+  "SwordNiedhoggLightning": [
+    "https://valheim.fandom.com/wiki/Nidhögg_the_thundering"
+  ],
+  "BombOoze": [
+    "https://valheim.fandom.com/wiki/Ooze_bomb"
+  ],
+  "FistBjornClaw": [
+    "https://valheim.fandom.com/wiki/Paws_of_the_bear"
+  ],
+  "MaceNeedle": [
+    "https://valheim.fandom.com/wiki/Porcupine"
+  ],
+  "AxeBerzerkrNature": [
+    "https://valheim.fandom.com/wiki/Primal_berserkir_axes"
+  ],
+  "THSwordSlayerNature": [
+    "https://valheim.fandom.com/wiki/Primal_slayer"
+  ],
+  "CrossbowRipper": [
+    "https://valheim.fandom.com/wiki/Ripper"
+  ],
+  "BowAshlandsRoot": [
+    "https://valheim.fandom.com/wiki/Root_fang"
+  ],
+  "CrossbowRipperNature": [
+    "https://valheim.fandom.com/wiki/Root_ripper"
+  ],
+  "THSwordSlayerLightning": [
+    "https://valheim.fandom.com/wiki/Scourging_slayer"
+  ],
+  "Scythe": [
+    "https://valheim.fandom.com/wiki/Scythe"
+  ],
+  "KnifeSilver": [
+    "https://valheim.fandom.com/wiki/Silver_knife"
+  ],
+  "SwordSilver": [
+    "https://valheim.fandom.com/wiki/Silver_sword"
+  ],
+  "KnifeSkollAndHati": [
+    "https://valheim.fandom.com/wiki/Skoll_and_hati"
+  ],
+  "BattleaxeSkullSplittur": [
+    "https://valheim.fandom.com/wiki/Skull_splittur"
+  ],
+  "THSwordSlayer": [
+    "https://valheim.fandom.com/wiki/Slayer"
+  ],
+  "BombSmoke": [
+    "https://valheim.fandom.com/wiki/Smoke_bomb"
+  ],
+  "BowSpineSnap": [
+    "https://valheim.fandom.com/wiki/Spinesnap"
+  ],
+  "SpearSplitner": [
+    "https://valheim.fandom.com/wiki/Splitnir"
+  ],
+  "SpearSplitner_Blood": [
+    "https://valheim.fandom.com/wiki/Splitnir_the_bleeding"
+  ],
+  "SpearSplitner_Nature": [
+    "https://valheim.fandom.com/wiki/Splitnir_the_primal"
+  ],
+  "SpearSplitner_Lightning": [
+    "https://valheim.fandom.com/wiki/Splitnir_the_storming"
+  ],
+  "StaffFireball": [
+    "https://valheim.fandom.com/wiki/Staff_of_Embers",
+    "Staff of Embers"
+  ],
+  "StaffClusterbomb": [
+    "https://valheim.fandom.com/wiki/Staff_of_Fracturing",
+    "Staff of Fracturing"
+  ],
+  "StaffIceShards": [
+    "https://valheim.fandom.com/wiki/Staff_of_Frost",
+    "Staff of Frost"
+  ],
+  "StaffShield": [
+    "https://valheim.fandom.com/wiki/Staff_of_Protection",
+    "Staff of Protection"
+  ],
+  "StaffGreenRoots": [
+    "https://valheim.fandom.com/wiki/Staff_of_the_Wild",
+    "Staff of the Wild"
+  ],
+  "SledgeStagbreaker": [
+    "https://valheim.fandom.com/wiki/Stagbreaker"
+  ],
+  "AxeStone": [
+    "https://valheim.fandom.com/wiki/Stone_axe"
+  ],
+  "PickaxeStone": [
+    "https://valheim.fandom.com/wiki/Stone_pickaxe"
+  ],
+  "CrossbowRipperLightning": [
+    "https://valheim.fandom.com/wiki/Storm_ripper"
+  ],
+  "MaceEldnerLightning": [
+    "https://valheim.fandom.com/wiki/Storm_star"
+  ],
+  "Tankard": [
+    "https://valheim.fandom.com/wiki/Tankard"
+  ],
+  "AxeBerzerkrLightning": [
+    "https://valheim.fandom.com/wiki/Thundering_berserkir_axes"
+  ],
+  "StaffRedTroll": [
+    "https://valheim.fandom.com/wiki/Trollstav"
+  ],
+  "FistBjornUndeadClaw": [
+    "https://valheim.fandom.com/wiki/Vilebone_maulclaws"
+  ],
+  "AtgeirWood": [
+    "https://valheim.fandom.com/wiki/Wooden_weapons",
+    "Wooden weapons"
+  ],
+  "AxeWood": [
+    "https://valheim.fandom.com/wiki/Wooden_weapons",
+    "Wooden weapons"
+  ],
+  "BattleaxeWood": [
+    "https://valheim.fandom.com/wiki/Wooden_weapons",
+    "Wooden weapons"
+  ],
+  "THSwordWood": [
+    "https://valheim.fandom.com/wiki/Wooden_weapons",
+    "Wooden weapons"
+  ],
+  "KnifeWood": [
+    "https://valheim.fandom.com/wiki/Wooden_weapons",
+    "Wooden weapons"
+  ],
+  "MaceWood": [
+    "https://valheim.fandom.com/wiki/Wooden_weapons",
+    "Wooden weapons"
+  ],
+  "SledgeWood": [
+    "https://valheim.fandom.com/wiki/Wooden_weapons",
+    "Wooden weapons"
+  ],
+  "SpearWood": [
+    "https://valheim.fandom.com/wiki/Wooden_weapons",
+    "Wooden weapons"
+  ],
+  "SwordWood": [
+    "https://valheim.fandom.com/wiki/Wooden_weapons",
+    "Wooden weapons"
+  ],
+  "CrossbowRipperBlood": [
+    "https://valheim.fandom.com/wiki/Wound_ripper"
+  ],
+  "DvergerArbalest": [
+    "https://valheim.fandom.com/wiki/Arbalest"
+  ],
+  "CapeAsh": [
+    "https://valheim.fandom.com/wiki/Ashen_cape"
+  ],
+  "CapeAsksvin": [
+    "https://valheim.fandom.com/wiki/Asksvin_cloak"
+  ],
+  "ShieldBanded": [
+    "https://valheim.fandom.com/wiki/Banded_shield"
+  ],
+  "ShieldBlackmetal": [
+    "https://valheim.fandom.com/wiki/Black_metal_shield"
+  ],
+  "ShieldBlackmetalTower": [
+    "https://valheim.fandom.com/wiki/Black_metal_tower_shield"
+  ],
+  "ArmorDress6": [
+    "https://valheim.fandom.com/wiki/Blue_dress_with_beads"
+  ],
+  "ArmorDress5": [
+    "https://valheim.fandom.com/wiki/Blue_dress_with_shawl"
+  ],
+  "HelmetHat1": [
+    "https://valheim.fandom.com/wiki/Blue_tied_headscarf"
+  ],
+  "ArmorTunic3": [
+    "https://valheim.fandom.com/wiki/Blue_tunic_with_beads"
+  ],
+  "ArmorTunic2": [
+    "https://valheim.fandom.com/wiki/Blue_tunic_with_cape"
+  ],
+  "ShieldBoneTower": [
+    "https://valheim.fandom.com/wiki/Bone_tower_shield"
+  ],
+  "TrinketBlackDamageHealth": [
+    "https://valheim.fandom.com/wiki/Bracelets_of_the_brave"
+  ],
+  "ArmorAshlandsMediumChest": [
+    "https://valheim.fandom.com/wiki/Breastplate_of_ask"
+  ],
+  "TrinketFlametalStaminaHealth": [
+    "https://valheim.fandom.com/wiki/Brimstone"
+  ],
+  "ShieldBronzeBuckler": [
+    "https://valheim.fandom.com/wiki/Bronze_buckler"
+  ],
+  "HelmetBronze": [
+    "https://valheim.fandom.com/wiki/Bronze_Armor",
+    "Bronze Armor"
+  ],
+  "TrinketBronzeStamina": [
+    "https://valheim.fandom.com/wiki/Bronze_pendant"
+  ],
+  "ArmorBronzeLegs": [
+    "https://valheim.fandom.com/wiki/Bronze_Armor",
+    "Bronze Armor"
+  ],
+  "ArmorBronzeChest": [
+    "https://valheim.fandom.com/wiki/Bronze_plate_tunic"
+  ],
+  "ArmorDress3": [
+    "https://valheim.fandom.com/wiki/Brown_dress_with_beads"
+  ],
+  "ArmorDress2": [
+    "https://valheim.fandom.com/wiki/Brown_dress_with_shawl"
+  ],
+  "HelmetHat3": [
+    "https://valheim.fandom.com/wiki/Brown_fur_cap"
+  ],
+  "CapeOdin": [
+    "https://valheim.fandom.com/wiki/Cape_of_odin"
+  ],
+  "CapeTest": [
+    "https://valheim.fandom.com/wiki/CAPE_test"
+  ],
+  "ArmorCarapaceChest": [
+    "https://valheim.fandom.com/wiki/Carapace_Armor",
+    "Carapace Armor"
+  ],
+  "ShieldCarapaceBuckler": [
+    "https://valheim.fandom.com/wiki/Carapace_buckler"
+  ],
+  "ArmorCarapaceLegs": [
+    "https://valheim.fandom.com/wiki/Carapace_Armor",
+    "Carapace Armor"
+  ],
+  "HelmetCarapace": [
+    "https://valheim.fandom.com/wiki/Carapace_Armor",
+    "Carapace Armor"
+  ],
+  "ShieldCarapace": [
+    "https://valheim.fandom.com/wiki/Carapace_shield"
+  ],
+  "HelmetCelebration": [
+    "https://valheim.fandom.com/wiki/Celebratory_cap"
+  ],
+  "HelmetDrake": [
+    "https://valheim.fandom.com/wiki/Wolf_Armor",
+    "Wolf Armor"
+  ],
+  "HelmetDverger": [
+    "https://valheim.fandom.com/wiki/Dverger_circlet"
+  ],
+  "HelmetMage": [
+    "https://valheim.fandom.com/wiki/Eitr-weave_Set",
+    "Eitr-weave Set"
+  ],
+  "ArmorMageChest": [
+    "https://valheim.fandom.com/wiki/Eitr-weave_Set",
+    "Eitr-weave Set"
+  ],
+  "ArmorMageLegs": [
+    "https://valheim.fandom.com/wiki/Eitr-weave_Set",
+    "Eitr-weave Set"
+  ],
+  "TrinketBlackStamina": [
+    "https://valheim.fandom.com/wiki/Evasion_mantle"
+  ],
+  "HelmetHat4": [
+    "https://valheim.fandom.com/wiki/Extravagant_green_cap"
+  ],
+  "HelmetHat9": [
+    "https://valheim.fandom.com/wiki/Extravagant_orange_cap"
+  ],
+  "CapeFeather": [
+    "https://valheim.fandom.com/wiki/Feather_cape"
+  ],
+  "ArmorFenringChest": [
+    "https://valheim.fandom.com/wiki/Fenris_Set",
+    "Fenris Set"
+  ],
+  "HelmetFenring": [
+    "https://valheim.fandom.com/wiki/Fenris_Set",
+    "Fenris Set"
+  ],
+  "ArmorFenringLegs": [
+    "https://valheim.fandom.com/wiki/Fenris_Set",
+    "Fenris Set"
+  ],
+  "HelmetFishingHat": [
+    "https://valheim.fandom.com/wiki/Fishing_hat"
+  ],
+  "ArmorFlametalChest": [
+    "https://valheim.fandom.com/wiki/Flametal_Armor",
+    "Flametal Armor"
+  ],
+  "ArmorFlametalLegs": [
+    "https://valheim.fandom.com/wiki/Flametal_Armor",
+    "Flametal Armor"
+  ],
+  "HelmetFlametal": [
+    "https://valheim.fandom.com/wiki/Flametal_Armor",
+    "Flametal Armor"
+  ],
+  "ShieldFlametal": [
+    "https://valheim.fandom.com/wiki/Flametal_shield"
+  ],
+  "ShieldFlametalTower": [
+    "https://valheim.fandom.com/wiki/Flametal_tower_shield"
+  ],
+  "HelmetHat2": [
+    "https://valheim.fandom.com/wiki/Green_twisted_headscarf"
+  ],
+  "HelmetHat8": [
+    "https://valheim.fandom.com/wiki/Grey_fur_cap"
+  ],
+  "ArmorHarvester2": [
+    "https://valheim.fandom.com/wiki/Harvest_dress"
+  ],
+  "ArmorHarvester1": [
+    "https://valheim.fandom.com/wiki/Harvest_tunic"
+  ],
+  "HelmetSweatBand": [
+    "https://valheim.fandom.com/wiki/Headband"
+  ],
+  "HelmetBerserkerHood": [
+    "https://valheim.fandom.com/wiki/Headdress_of_the_bear"
+  ],
+  "TrinketBronzeHealth": [
+    "https://valheim.fandom.com/wiki/Heart_of_the_forest"
+  ],
+  "HelmetMage_Ashlands": [
+    "https://valheim.fandom.com/wiki/Hood_of_embla"
+  ],
+  "HelmetOdin": [
+    "https://valheim.fandom.com/wiki/Hood_of_odin"
+  ],
+  "TrinketIronHealth": [
+    "https://valheim.fandom.com/wiki/Iron_brooch"
+  ],
+  "ShieldIronBuckler": [
+    "https://valheim.fandom.com/wiki/Iron_buckler"
+  ],
+  "ArmorIronLegs": [
+    "https://valheim.fandom.com/wiki/Iron_Armor",
+    "Iron Armor"
+  ],
+  "HelmetIron": [
+    "https://valheim.fandom.com/wiki/Iron_Armor",
+    "Iron Armor"
+  ],
+  "ArmorIronChest": [
+    "https://valheim.fandom.com/wiki/Iron_Armor",
+    "Iron Armor"
+  ],
+  "ShieldIronSquare": [
+    "https://valheim.fandom.com/wiki/Iron_shield"
+  ],
+  "ShieldIronTower": [
+    "https://valheim.fandom.com/wiki/Iron_tower_shield"
+  ],
+  "TrinketFlametalEitr": [
+    "https://valheim.fandom.com/wiki/Jörmundling"
+  ],
+  "ShieldKnight": [
+    "https://valheim.fandom.com/wiki/Knight_shield_unused"
+  ],
+  "HelmetLeather": [
+    "https://valheim.fandom.com/wiki/Leather_Armor",
+    "Leather Armor"
+  ],
+  "ArmorLeatherChest": [
+    "https://valheim.fandom.com/wiki/Leather_Armor",
+    "Leather Armor"
+  ],
+  "CapeLinen": [
+    "https://valheim.fandom.com/wiki/Linen_cape"
+  ],
+  "ArmorBerserkerLegs": [
+    "https://valheim.fandom.com/wiki/Loincloth_of_the_bear"
+  ],
+  "BeltStrength": [
+    "https://valheim.fandom.com/wiki/Megingjord"
+  ],
+  "HelmetMidsummerCrown": [
+    "https://valheim.fandom.com/wiki/Midsummer_crown"
+  ],
+  "TrinketIronStamina": [
+    "https://valheim.fandom.com/wiki/Nimble_anklet"
+  ],
+  "ArmorPaddedCuirass": [
+    "https://valheim.fandom.com/wiki/Padded_Armor",
+    "Padded Armor"
+  ],
+  "ArmorPaddedGreaves": [
+    "https://valheim.fandom.com/wiki/Padded_Armor",
+    "Padded Armor"
+  ],
+  "HelmetPadded": [
+    "https://valheim.fandom.com/wiki/Padded_Armor",
+    "Padded Armor"
+  ],
+  "ArmorDress4": [
+    "https://valheim.fandom.com/wiki/Plain_blue_dress"
+  ],
+  "ArmorTunic1": [
+    "https://valheim.fandom.com/wiki/Plain_blue_tunic"
+  ],
+  "ArmorDress1": [
+    "https://valheim.fandom.com/wiki/Plain_brown_dress"
+  ],
+  "ArmorTunic4": [
+    "https://valheim.fandom.com/wiki/Plain_red_tunic"
+  ],
+  "ArmorDress7": [
+    "https://valheim.fandom.com/wiki/Plain_yellow_dress"
+  ],
+  "ArmorTunic7": [
+    "https://valheim.fandom.com/wiki/Plain_yellow_tunic"
+  ],
+  "HelmetPointyHat": [
+    "https://valheim.fandom.com/wiki/Pointy_hat"
+  ],
+  "TrinketCarapaceEitr": [
+    "https://valheim.fandom.com/wiki/Pulsating_earrings"
+  ],
+  "ArmorRagsLegs": [
+    "https://valheim.fandom.com/wiki/Rag_trousers"
+  ],
+  "ArmorRagsChest": [
+    "https://valheim.fandom.com/wiki/Rag_Armor",
+    "Rag Armor"
+  ],
+  "ArmorTunic6": [
+    "https://valheim.fandom.com/wiki/Red_tunic_with_beads"
+  ],
+  "ArmorTunic5": [
+    "https://valheim.fandom.com/wiki/Red_tunic_with_cape"
+  ],
+  "HelmetHat7": [
+    "https://valheim.fandom.com/wiki/Red_twisted_headscarf"
+  ],
+  "TrinketScaleStaminaDamage": [
+    "https://valheim.fandom.com/wiki/Resounding_shackle"
+  ],
+  "ArmorMageChest_Ashlands": [
+    "https://valheim.fandom.com/wiki/Robes_of_embla"
+  ],
+  "ArmorRootChest": [
+    "https://valheim.fandom.com/wiki/Root_Set",
+    "Root Set"
+  ],
+  "ArmorRootLegs": [
+    "https://valheim.fandom.com/wiki/Root_Set",
+    "Root Set"
+  ],
+  "HelmetRoot": [
+    "https://valheim.fandom.com/wiki/Root_Set",
+    "Root Set"
+  ],
+  "ShieldSerpentscale": [
+    "https://valheim.fandom.com/wiki/Serpent_scale_shield"
+  ],
+  "ShieldSilver": [
+    "https://valheim.fandom.com/wiki/Silver_shield"
+  ],
+  "HelmetHat10": [
+    "https://valheim.fandom.com/wiki/Simple_purple_cap"
+  ],
+  "HelmetHat5": [
+    "https://valheim.fandom.com/wiki/Simple_red_cap"
+  ],
+  "ArmorDress10": [
+    "https://valheim.fandom.com/wiki/Simple_undyed_dress"
+  ],
+  "ArmorTunic10": [
+    "https://valheim.fandom.com/wiki/Simple_undyed_tunic"
+  ],
+  "HelmetStrawHat": [
+    "https://valheim.fandom.com/wiki/Straw_hat"
+  ],
+  "CapeTrollHide": [
+    "https://valheim.fandom.com/wiki/Troll_hide_cape"
+  ],
+  "ArmorTrollLeatherLegs": [
+    "https://valheim.fandom.com/wiki/Troll_leather_trousers"
+  ],
+  "ArmorTrollLeatherChest": [
+    "https://valheim.fandom.com/wiki/Troll_Set",
+    "Troll Set"
+  ],
+  "ArmorAshlandsMediumlegs": [
+    "https://valheim.fandom.com/wiki/Trousers_of_ask"
+  ],
+  "ArmorMageLegs_Ashlands": [
+    "https://valheim.fandom.com/wiki/Trousers_of_embla"
+  ],
+  "ArmorBerserkerUndeadChest": [
+    "https://valheim.fandom.com/wiki/Vilebone_Set",
+    "Vilebone Set"
+  ],
+  "ArmorBerserkerUndeadLegs": [
+    "https://valheim.fandom.com/wiki/Vilebone_Set",
+    "Vilebone Set"
+  ],
+  "HelmetBerserkerUndead": [
+    "https://valheim.fandom.com/wiki/Vilebone_Set",
+    "Vilebone Set"
+  ],
+  "Wishbone": [
+    "https://valheim.fandom.com/wiki/Wishbone"
+  ],
+  "Demister": [
+    "https://valheim.fandom.com/wiki/Wisplight"
+  ],
+  "ShieldWood": [
+    "https://valheim.fandom.com/wiki/Wood_shield"
+  ],
+  "ShieldWoodTower": [
+    "https://valheim.fandom.com/wiki/Wood_tower_shield"
+  ],
+  "ArmorDress9": [
+    "https://valheim.fandom.com/wiki/Yellow_dress_with_beads"
+  ],
+  "ArmorDress8": [
+    "https://valheim.fandom.com/wiki/Yellow_dress_with_shawl"
+  ],
+  "HelmetHat6": [
+    "https://valheim.fandom.com/wiki/Yellow_tied_headscarf"
+  ],
+  "ArmorTunic9": [
+    "https://valheim.fandom.com/wiki/Yellow_tunic_with_beads"
+  ],
+  "ArmorTunic8": [
+    "https://valheim.fandom.com/wiki/Yellow_tunic_with_cape"
+  ],
+  "HelmetYule": [
+    "https://valheim.fandom.com/wiki/Yule_hat"
+  ],
+  "FeastAshlands": [
+    "https://valheim.fandom.com/wiki/Ashlands_gourmet_bowl"
+  ],
+  "FeastBlackforest": [
+    "https://valheim.fandom.com/wiki/Black_Forest_buffet_platter",
+    "Black Forest buffet platter"
+  ],
+  "BlackSoup": [
+    "https://valheim.fandom.com/wiki/Black_soup"
+  ],
+  "BloodPudding": [
+    "https://valheim.fandom.com/wiki/Blood_pudding"
+  ],
+  "MushroomBlue": [
+    "https://valheim.fandom.com/wiki/Blue_mushroom"
+  ],
+  "Blueberries": [
+    "https://valheim.fandom.com/wiki/Blueberries"
+  ],
+  "HealthUpgrade_Bonemass": [
+    "https://valheim.fandom.com/wiki/Bonemass_heart"
+  ],
+  "Bread": [
+    "https://valheim.fandom.com/wiki/Bread"
+  ],
+  "Pukeberries": [
+    "https://valheim.fandom.com/wiki/Bukeperries"
+  ],
+  "Carrot": [
+    "https://valheim.fandom.com/wiki/Carrot"
+  ],
+  "CarrotSoup": [
+    "https://valheim.fandom.com/wiki/Carrot_soup"
+  ],
+  "Cloudberry": [
+    "https://valheim.fandom.com/wiki/Cloudberries"
+  ],
+  "CookedAsksvinMeat": [
+    "https://valheim.fandom.com/wiki/Asksvin_tail",
+    "Asksvin tail"
+  ],
+  "CookedBjornMeat": [
+    "https://valheim.fandom.com/wiki/Bear_meat",
+    "Bear meat"
+  ],
+  "CookedMeat": [
+    "https://valheim.fandom.com/wiki/Boar_meat",
+    "Boar meat"
+  ],
+  "CookedBoneMawSerpentMeat": [
+    "https://valheim.fandom.com/wiki/Bonemaw_meat",
+    "Bonemaw meat"
+  ],
+  "CookedChickenMeat": [
+    "https://valheim.fandom.com/wiki/Chicken_meat",
+    "Chicken meat"
+  ],
+  "CookedDeerMeat": [
+    "https://valheim.fandom.com/wiki/Deer_meat",
+    "Deer meat"
+  ],
+  "CookedEgg": [
+    "https://valheim.fandom.com/wiki/Egg",
+    "Egg"
+  ],
+  "FishCooked": [
+    "https://valheim.fandom.com/wiki/Raw_fish",
+    "Raw fish"
+  ],
+  "CookedHareMeat": [
+    "https://valheim.fandom.com/wiki/Hare_meat",
+    "Hare meat"
+  ],
+  "CookedLoxMeat": [
+    "https://valheim.fandom.com/wiki/Lox_meat",
+    "Lox meat"
+  ],
+  "CookedBugMeat": [
+    "https://valheim.fandom.com/wiki/Seeker_meat",
+    "Seeker meat"
+  ],
+  "SerpentMeatCooked": [
+    "https://valheim.fandom.com/wiki/Serpent_meat",
+    "Serpent meat"
+  ],
+  "CookedVoltureMeat": [
+    "https://valheim.fandom.com/wiki/Volture_meat",
+    "Volture meat"
+  ],
+  "CookedWolfMeat": [
+    "https://valheim.fandom.com/wiki/Wolf_meat",
+    "Wolf meat"
+  ],
+  "HealthUpgrade_GDKing": [
+    "https://valheim.fandom.com/wiki/Elder_heart"
+  ],
+  "Eyescream": [
+    "https://valheim.fandom.com/wiki/Eyescream"
+  ],
+  "Fiddleheadfern": [
+    "https://valheim.fandom.com/wiki/Fiddlehead"
+  ],
+  "FierySvinstew": [
+    "https://valheim.fandom.com/wiki/Fiery_svinstew"
+  ],
+  "FishAndBread": [
+    "https://valheim.fandom.com/wiki/Fish_'n'_bread"
+  ],
+  "FishWraps": [
+    "https://valheim.fandom.com/wiki/Fish_wraps"
+  ],
+  "VikingCupcake": [
+    "https://valheim.fandom.com/wiki/Frosted_sweetbread"
+  ],
+  "NeckTailGrilled": [
+    "https://valheim.fandom.com/wiki/Neck_tail",
+    "Neck tail"
+  ],
+  "FeastMountains": [
+    "https://valheim.fandom.com/wiki/Hearty_Mountain_logger's_stew",
+    "Hearty Mountain logger's stew"
+  ],
+  "Honey": [
+    "https://valheim.fandom.com/wiki/Honey"
+  ],
+  "HoneyGlazedChicken": [
+    "https://valheim.fandom.com/wiki/Honey_glazed_chicken"
+  ],
+  "MushroomJotunPuffs": [
+    "https://valheim.fandom.com/wiki/Jotun_puffs"
+  ],
+  "MushroomMagecap": [
+    "https://valheim.fandom.com/wiki/Magecap"
+  ],
+  "MarinatedGreens": [
+    "https://valheim.fandom.com/wiki/Marinated_greens"
+  ],
+  "MashedMeat": [
+    "https://valheim.fandom.com/wiki/Mashed_meat"
+  ],
+  "MeatPlatter": [
+    "https://valheim.fandom.com/wiki/Meat_platter"
+  ],
+  "MinceMeatSauce": [
+    "https://valheim.fandom.com/wiki/Minced_meat_sauce"
+  ],
+  "MisthareSupreme": [
+    "https://valheim.fandom.com/wiki/Misthare_supreme"
+  ],
+  "ShocklateSmoothie": [
+    "https://valheim.fandom.com/wiki/Muckshake"
+  ],
+  "Mushroom": [
+    "https://valheim.fandom.com/wiki/Mushroom"
+  ],
+  "MushroomOmelette": [
+    "https://valheim.fandom.com/wiki/Mushroom_omelette"
+  ],
+  "FeastMistlands": [
+    "https://valheim.fandom.com/wiki/Mushrooms_galore_á_la_Mistlands",
+    "Mushrooms galore á la Mistlands"
+  ],
+  "Onion": [
+    "https://valheim.fandom.com/wiki/Onion"
+  ],
+  "OnionSoup": [
+    "https://valheim.fandom.com/wiki/Onion_soup"
+  ],
+  "PiquantPie": [
+    "https://valheim.fandom.com/wiki/Piquant_pie"
+  ],
+  "FeastPlains": [
+    "https://valheim.fandom.com/wiki/Plains_pie_picnic"
+  ],
+  "QueensJam": [
+    "https://valheim.fandom.com/wiki/Queen's_jam"
+  ],
+  "Raspberry": [
+    "https://valheim.fandom.com/wiki/Raspberries"
+  ],
+  "RoastedCrustPie": [
+    "https://valheim.fandom.com/wiki/Roasted_crust_pie"
+  ],
+  "RottenMeat": [
+    "https://valheim.fandom.com/wiki/Rotten_meat"
+  ],
+  "RoyalJelly": [
+    "https://valheim.fandom.com/wiki/Royal_jelly"
+  ],
+  "FeastOceans": [
+    "https://valheim.fandom.com/wiki/Sailor's_bounty"
+  ],
+  "Salad": [
+    "https://valheim.fandom.com/wiki/Salad"
+  ],
+  "Sausages": [
+    "https://valheim.fandom.com/wiki/Sausages"
+  ],
+  "ScorchingMedley": [
+    "https://valheim.fandom.com/wiki/Scorching_medley"
+  ],
+  "SeekerAspic": [
+    "https://valheim.fandom.com/wiki/Seeker_aspic"
+  ],
+  "SerpentStew": [
+    "https://valheim.fandom.com/wiki/Serpent_stew"
+  ],
+  "SizzlingBerryBroth": [
+    "https://valheim.fandom.com/wiki/Sizzling_berry_broth"
+  ],
+  "MushroomSmokePuff": [
+    "https://valheim.fandom.com/wiki/Smoke_puff"
+  ],
+  "SparklingShroomshake": [
+    "https://valheim.fandom.com/wiki/Sparkling_shroomshake"
+  ],
+  "SpicyMarmalade": [
+    "https://valheim.fandom.com/wiki/Spicy_marmalade"
+  ],
+  "StaminaUpgrade_Greydwarf": [
+    "https://valheim.fandom.com/wiki/Stamina_greydwarf"
+  ],
+  "StaminaUpgrade_Troll": [
+    "https://valheim.fandom.com/wiki/Stamina_troll"
+  ],
+  "StaminaUpgrade_Wraith": [
+    "https://valheim.fandom.com/wiki/Stamina_wraith"
+  ],
+  "MagicallyStuffedShroom": [
+    "https://valheim.fandom.com/wiki/Stuffed_mushroom"
+  ],
+  "FeastSwamps": [
+    "https://valheim.fandom.com/wiki/Swamp_dweller's_delight"
+  ],
+  "MushroomBzerker": [
+    "https://valheim.fandom.com/wiki/Toadstool"
+  ],
+  "TurnipStew": [
+    "https://valheim.fandom.com/wiki/Turnip_stew"
+  ],
+  "Vineberry": [
+    "https://valheim.fandom.com/wiki/Vineberry_cluster"
+  ],
+  "FeastMeadows": [
+    "https://valheim.fandom.com/wiki/Whole_roasted_Meadow_boar",
+    "Whole roasted Meadow boar"
+  ],
+  "MushroomYellow": [
+    "https://valheim.fandom.com/wiki/Yellow_mushroom"
+  ],
+  "YggdrasilPorridge": [
+    "https://valheim.fandom.com/wiki/Yggdrasil_porridge"
+  ],
+  "MeadBzerker": [
+    "https://valheim.fandom.com/wiki/Berserkir_mead"
+  ],
+  "MeadTamer": [
+    "https://valheim.fandom.com/wiki/Brew_of_animal_whispers"
+  ],
+  "MeadSwimmer": [
+    "https://valheim.fandom.com/wiki/Draught_of_vananidir"
+  ],
+  "BarleyWine": [
+    "https://valheim.fandom.com/wiki/Fire_resistance_barley_wine"
+  ],
+  "MeadFrostResist": [
+    "https://valheim.fandom.com/wiki/Frost_resistance_mead"
+  ],
+  "MeadLightfoot": [
+    "https://valheim.fandom.com/wiki/Lightfoot_mead"
+  ],
+  "MeadEitrLingering": [
+    "https://valheim.fandom.com/wiki/Lingering_eitr_mead"
+  ],
+  "MeadHealthLingering": [
+    "https://valheim.fandom.com/wiki/Lingering_healing_mead"
+  ],
+  "MeadStaminaLingering": [
+    "https://valheim.fandom.com/wiki/Lingering_stamina_mead"
+  ],
+  "MeadTrollPheromones": [
+    "https://valheim.fandom.com/wiki/Love_potion"
+  ],
+  "MeadHealthMajor": [
+    "https://valheim.fandom.com/wiki/Major_healing_mead"
+  ],
+  "MeadStrength": [
+    "https://valheim.fandom.com/wiki/Mead_of_troll_endurance"
+  ],
+  "MeadHealthMedium": [
+    "https://valheim.fandom.com/wiki/Medium_healing_mead"
+  ],
+  "MeadStaminaMedium": [
+    "https://valheim.fandom.com/wiki/Medium_stamina_mead"
+  ],
+  "MeadEitrMinor": [
+    "https://valheim.fandom.com/wiki/Minor_eitr_mead"
+  ],
+  "MeadHealthMinor": [
+    "https://valheim.fandom.com/wiki/Minor_healing_mead"
+  ],
+  "MeadStaminaMinor": [
+    "https://valheim.fandom.com/wiki/Minor_stamina_mead"
+  ],
+  "MeadPoisonResist": [
+    "https://valheim.fandom.com/wiki/Poison_resistance_mead"
+  ],
+  "MeadTasty": [
+    "https://valheim.fandom.com/wiki/Tasty_mead"
+  ],
+  "MeadHasty": [
+    "https://valheim.fandom.com/wiki/Tonic_of_ratatosk"
+  ],
+  "Cultivator": [
+    "https://valheim.fandom.com/wiki/Cultivator"
+  ],
+  "Lantern": [
+    "https://valheim.fandom.com/wiki/Dvergr_lantern"
+  ],
+  "FishingRod": [
+    "https://valheim.fandom.com/wiki/Fishing_rod"
+  ],
+  "Hammer": [
+    "https://valheim.fandom.com/wiki/Hammer"
+  ],
+  "Hoe": [
+    "https://valheim.fandom.com/wiki/Hoe"
+  ],
+  "Feaster": [
+    "https://valheim.fandom.com/wiki/Serving_tray"
+  ],
+  "Sparkler": [
+    "https://valheim.fandom.com/wiki/Sparkler"
+  ],
+  "Torch": [
+    "https://valheim.fandom.com/wiki/Torch"
+  ],
+  "BoltBlackmetal": [
+    "https://valheim.fandom.com/wiki/Black_metal_bolt"
+  ],
+  "TurretBolt": [
+    "https://valheim.fandom.com/wiki/Black_metal_missile"
+  ],
+  "BoltBone": [
+    "https://valheim.fandom.com/wiki/Bone_bolt"
+  ],
+  "ArrowBronze": [
+    "https://valheim.fandom.com/wiki/Bronzehead_arrow"
+  ],
+  "ArrowCarapace": [
+    "https://valheim.fandom.com/wiki/Carapace_arrow"
+  ],
+  "BoltCarapace": [
+    "https://valheim.fandom.com/wiki/Carapace_bolt"
+  ],
+  "ArrowCharred": [
+    "https://valheim.fandom.com/wiki/Charred_arrow"
+  ],
+  "BoltCharred": [
+    "https://valheim.fandom.com/wiki/Charred_bolt"
+  ],
+  "FishingBaitCave": [
+    "https://valheim.fandom.com/wiki/Bait",
+    "Bait"
+  ],
+  "ArrowFire": [
+    "https://valheim.fandom.com/wiki/Fire_arrow"
+  ],
+  "FishingBait": [
+    "https://valheim.fandom.com/wiki/Bait",
+    "Bait"
+  ],
+  "TurretBoltFlametal": [
+    "https://valheim.fandom.com/wiki/Flametal_missile"
+  ],
+  "ArrowFlint": [
+    "https://valheim.fandom.com/wiki/Flinthead_arrow"
+  ],
+  "ArrowFrost": [
+    "https://valheim.fandom.com/wiki/Frost_arrow"
+  ],
+  "FishingBaitDeepNorth": [
+    "https://valheim.fandom.com/wiki/Bait",
+    "Bait"
+  ],
+  "FishingBaitOcean": [
+    "https://valheim.fandom.com/wiki/Bait",
+    "Bait"
+  ],
+  "FishingBaitAshlands": [
+    "https://valheim.fandom.com/wiki/Bait",
+    "Bait"
+  ],
+  "BoltIron": [
+    "https://valheim.fandom.com/wiki/Iron_bolt"
+  ],
+  "ArrowIron": [
+    "https://valheim.fandom.com/wiki/Ironhead_arrow"
+  ],
+  "FishingBaitMistlands": [
+    "https://valheim.fandom.com/wiki/Bait",
+    "Bait"
+  ],
+  "FishingBaitForest": [
+    "https://valheim.fandom.com/wiki/Bait",
+    "Bait"
+  ],
+  "ArrowNeedle": [
+    "https://valheim.fandom.com/wiki/Needle_arrow"
+  ],
+  "ArrowObsidian": [
+    "https://valheim.fandom.com/wiki/Obsidian_arrow"
+  ],
+  "ArrowPoison": [
+    "https://valheim.fandom.com/wiki/Poison_arrow"
+  ],
+  "ArrowSilver": [
+    "https://valheim.fandom.com/wiki/Silver_arrow"
+  ],
+  "FishingBaitSwamp": [
+    "https://valheim.fandom.com/wiki/Bait",
+    "Bait"
+  ],
+  "FishingBaitPlains": [
+    "https://valheim.fandom.com/wiki/Bait",
+    "Bait"
+  ],
+  "ArrowWood": [
+    "https://valheim.fandom.com/wiki/Wood_arrow"
+  ],
+  "TurretBoltWood": [
+    "https://valheim.fandom.com/wiki/Wooden_missile"
+  ],
+  "Abomination": [
+    "https://valheim.fandom.com/wiki/Abomination"
+  ],
+  "Asksvin": [
+    "https://valheim.fandom.com/wiki/Asksvin"
+  ],
+  "Bat": [
+    "https://valheim.fandom.com/wiki/Bat"
+  ],
+  "Bjorn": [
+    "https://valheim.fandom.com/wiki/Bear"
+  ],
+  "Blob": [
+    "https://valheim.fandom.com/wiki/Blob"
+  ],
+  "Boar": [
+    "https://valheim.fandom.com/wiki/Boar"
+  ],
+  "Bonemass": [
+    "https://valheim.fandom.com/wiki/Bonemass"
+  ],
+  "BonemawSerpent": [
+    "https://valheim.fandom.com/wiki/Bonemaw"
+  ],
+  "Skeleton_Hildir": [
+    "https://valheim.fandom.com/wiki/Brenna"
+  ],
+  "Charred_Archer": [
+    "https://valheim.fandom.com/wiki/Charred_marksman"
+  ],
+  "Charred_Twitcher": [
+    "https://valheim.fandom.com/wiki/Charred_twitcher"
+  ],
+  "Charred_Mage": [
+    "https://valheim.fandom.com/wiki/Charred_warlock"
+  ],
+  "Fenring_Cultist": [
+    "https://valheim.fandom.com/wiki/Cultist"
+  ],
+  "Deathsquito": [
+    "https://valheim.fandom.com/wiki/Deathsquito"
+  ],
+  "Deer": [
+    "https://valheim.fandom.com/wiki/Deer"
+  ],
+  "Hatchling": [
+    "https://valheim.fandom.com/wiki/Drake"
+  ],
+  "Draugr": [
+    "https://valheim.fandom.com/wiki/Draugr"
+  ],
+  "Draugr_Ranged": [
+    "https://valheim.fandom.com/wiki/Draugr_archer"
+  ],
+  "Draugr_Elite": [
+    "https://valheim.fandom.com/wiki/Draugr_elite"
+  ],
+  "DvergerMage": [
+    "https://valheim.fandom.com/wiki/Dvergr_mage"
+  ],
+  "DvergerMageIce": [
+    "https://valheim.fandom.com/wiki/Dvergr_mage"
+  ],
+  "DvergerMageFire": [
+    "https://valheim.fandom.com/wiki/Dvergr_mage"
+  ],
+  "DvergerMageSupport": [
+    "https://valheim.fandom.com/wiki/Dvergr_mage"
+  ],
+  "DvergerAshlands": [
+    "https://valheim.fandom.com/wiki/Dvergr_rogue"
+  ],
+  "Dverger": [
+    "https://valheim.fandom.com/wiki/Dvergr_rogue"
+  ],
+  "Eikthyr": [
+    "https://valheim.fandom.com/wiki/Eikthyr"
+  ],
+  "Fader": [
+    "https://valheim.fandom.com/wiki/Fader"
+  ],
+  "FallenValkyrie": [
+    "https://valheim.fandom.com/wiki/Fallen_valkyrie"
+  ],
+  "Fenring": [
+    "https://valheim.fandom.com/wiki/Fenring"
+  ],
+  "Goblin": [
+    "https://valheim.fandom.com/wiki/Fuling"
+  ],
+  "GoblinArcher": [
+    "https://valheim.fandom.com/wiki/Fuling_archer"
+  ],
+  "GoblinBrute": [
+    "https://valheim.fandom.com/wiki/Fuling_berserker"
+  ],
+  "GoblinShaman": [
+    "https://valheim.fandom.com/wiki/Fuling_shaman"
+  ],
+  "Fenring_Cultist_Hildir": [
+    "https://valheim.fandom.com/wiki/Geirrhafa"
+  ],
+  "Ghost": [
+    "https://valheim.fandom.com/wiki/Ghost"
+  ],
+  "Gjall": [
+    "https://valheim.fandom.com/wiki/Gjall"
+  ],
+  "GoblinShaman_Hildir": [
+    "https://valheim.fandom.com/wiki/Goblin_shaman"
+  ],
+  "Greydwarf": [
+    "https://valheim.fandom.com/wiki/Greydwarf"
+  ],
+  "Greydwarf_Elite": [
+    "https://valheim.fandom.com/wiki/Greydwarf_brute"
+  ],
+  "Greydwarf_Shaman": [
+    "https://valheim.fandom.com/wiki/Greydwarf_shaman"
+  ],
+  "Greyling": [
+    "https://valheim.fandom.com/wiki/Greyling"
+  ],
+  "BlobTar": [
+    "https://valheim.fandom.com/wiki/Growth"
+  ],
+  "Hare": [
+    "https://valheim.fandom.com/wiki/Hare"
+  ],
+  "BogWitchKvastur": [
+    "https://valheim.fandom.com/wiki/Kvastur"
+  ],
+  "BlobLava": [
+    "https://valheim.fandom.com/wiki/Lava_blob"
+  ],
+  "Leech": [
+    "https://valheim.fandom.com/wiki/Leech"
+  ],
+  "Lox": [
+    "https://valheim.fandom.com/wiki/Lox"
+  ],
+  "Dragon": [
+    "https://valheim.fandom.com/wiki/Moder"
+  ],
+  "Morgen": [
+    "https://valheim.fandom.com/wiki/Morgen"
+  ],
+  "Neck": [
+    "https://valheim.fandom.com/wiki/Neck"
+  ],
+  "BlobElite": [
+    "https://valheim.fandom.com/wiki/Oozer"
+  ],
+  "Skeleton_Poison": [
+    "https://valheim.fandom.com/wiki/Rancid_remains"
+  ],
+  "Seeker": [
+    "https://valheim.fandom.com/wiki/Seeker"
+  ],
+  "SeekerBrood": [
+    "https://valheim.fandom.com/wiki/Seeker_brood"
+  ],
+  "SeekerBrute": [
+    "https://valheim.fandom.com/wiki/Seeker_soldier"
+  ],
+  "Serpent": [
+    "https://valheim.fandom.com/wiki/Serpent"
+  ],
+  "Skeleton": [
+    "https://valheim.fandom.com/wiki/Skeleton"
+  ],
+  "Skeleton_NoArcher": [
+    "https://valheim.fandom.com/wiki/Skeleton"
+  ],
+  "StoneGolem": [
+    "https://valheim.fandom.com/wiki/Stone_golem"
+  ],
+  "Charred_Archer_Fader": [
+    "https://valheim.fandom.com/wiki/Summoned_charred_marksman"
+  ],
+  "Surtling": [
+    "https://valheim.fandom.com/wiki/Surtling"
+  ],
+  "TheHive": [
+    "https://valheim.fandom.com/wiki/The_hive"
+  ],
+  "Hive": [
+    "https://valheim.fandom.com/wiki/The_hive"
+  ],
+  "SeekerQueen": [
+    "https://valheim.fandom.com/wiki/The_queen"
+  ],
+  "GoblinBrute_Hildir": [
+    "https://valheim.fandom.com/wiki/Zil_&_Thungr",
+    "Zil & Thungr"
+  ],
+  "Tick": [
+    "https://valheim.fandom.com/wiki/Tick"
+  ],
+  "Troll": [
+    "https://valheim.fandom.com/wiki/Troll"
+  ],
+  "Ulv": [
+    "https://valheim.fandom.com/wiki/Ulv"
+  ],
+  "Unbjorn": [
+    "https://valheim.fandom.com/wiki/Vile"
+  ],
+  "Volture": [
+    "https://valheim.fandom.com/wiki/Volture"
+  ],
+  "Wolf": [
+    "https://valheim.fandom.com/wiki/Wolf"
+  ],
+  "Wraith": [
+    "https://valheim.fandom.com/wiki/Wraith"
+  ],
+  "GoblinKing": [
+    "https://valheim.fandom.com/wiki/Yagluth"
+  ],
+  "piece_workbench_ext3": [
+    "https://valheim.fandom.com/wiki/Adze"
+  ],
+  "forge_ext2": [
+    "https://valheim.fandom.com/wiki/Anvils"
+  ],
+  "piece_ArcheryTarget": [
+    "https://valheim.fandom.com/wiki/Archery_target"
+  ],
+  "ArmorStand": [
+    "https://valheim.fandom.com/wiki/Armour_stand"
+  ],
+  "ArmorStand_Female": [
+    "https://valheim.fandom.com/wiki/Armour_stand"
+  ],
+  "artisan_ext1": [
+    "https://valheim.fandom.com/wiki/Artisan_table",
+    "Artisan table"
+  ],
+  "piece_artisanstation": [
+    "https://valheim.fandom.com/wiki/Artisan_table"
+  ],
+  "VineAsh_sapling": [
+    "https://valheim.fandom.com/wiki/Ashvine"
+  ],
+  "ashwood_arch_big": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_arch": [
+    "https://valheim.fandom.com/wiki/Ashwood_arched_wall"
+  ],
+  "ashwood_beam_1m": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_beam_2m": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_beam_26_alt": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_beam_26": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_beam_45_alt": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_beam_45": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_bed": [
+    "https://valheim.fandom.com/wiki/Ashwood_bed"
+  ],
+  "piece_blackwood_bench01": [
+    "https://valheim.fandom.com/wiki/Chairs",
+    "Chairs"
+  ],
+  "ashwood_arch_bottom": [
+    "https://valheim.fandom.com/wiki/Ashwood_bottom_arch"
+  ],
+  "ashwood_deco_floor": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_decowall_2x2": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_decowall_tree": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_decowall_divider": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_door": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_floor_1x1": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_floor_2x2": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_halfwall_1x2": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_pole_1m": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_pole_2m": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_quarterwall_1x1": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_cross_26_alt": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_cross_26": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_cross_45": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_cross_45_alt": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "blackwood_stack": [
+    "https://valheim.fandom.com/wiki/Ashwood_stack"
+  ],
+  "ashwood_stair": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "piece_stakewall_blackwood": [
+    "https://valheim.fandom.com/wiki/Ashwood_stakewall"
+  ],
+  "ashwood_arch_top": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_2x2": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_roof_26": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_roof_26_upsidedown": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_roof_45": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "ashwood_wall_roof_45_upsidedown": [
+    "https://valheim.fandom.com/wiki/Ashwood_structures",
+    "Ashwood structures"
+  ],
+  "rug_asksvin": [
+    "https://valheim.fandom.com/wiki/Rugs",
+    "Rugs"
+  ],
+  "piece_asksvinskeleton": [
+    "https://valheim.fandom.com/wiki/Asksvin_skeleton"
+  ],
+  "piece_turret": [
+    "https://valheim.fandom.com/wiki/Ballista"
+  ],
+  "fuling_turret": [
+    "https://valheim.fandom.com/wiki/Ballista"
+  ],
+  "piece_barber": [
+    "https://valheim.fandom.com/wiki/Barber_station"
+  ],
+  "sapling_barley": [
+    "https://valheim.fandom.com/wiki/Barley"
+  ],
+  "piece_chest_barrel": [
+    "https://valheim.fandom.com/wiki/Barrel"
+  ],
+  "BatteringRam": [
+    "https://valheim.fandom.com/wiki/Battering_ram"
+  ],
+  "rug_Bjorn": [
+    "https://valheim.fandom.com/wiki/Rugs",
+    "Rugs"
+  ],
+  "bed": [
+    "https://valheim.fandom.com/wiki/Bed"
+  ],
+  "Beech_Sapling": [
+    "https://valheim.fandom.com/wiki/Beech_sapling"
+  ],
+  "piece_beehive": [
+    "https://valheim.fandom.com/wiki/Beehive"
+  ],
+  "piece_banner01": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "blackforge": [
+    "https://valheim.fandom.com/wiki/Black_forge"
+  ],
+  "blackforge_ext1": [
+    "https://valheim.fandom.com/wiki/Black_forge_cooler"
+  ],
+  "blackmarble_1x1": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "metalbar_1x2": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_2x1x1": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_creep_4x1x1": [
+    "https://valheim.fandom.com/wiki/Black_marble_2x2x1"
+  ],
+  "blackmarble_2x2x1": [
+    "https://valheim.fandom.com/wiki/Black_marble_2x2x1"
+  ],
+  "blackmarble_creep_4x2x1": [
+    "https://valheim.fandom.com/wiki/Black_marble_2x2x1"
+  ],
+  "blackmarble_2x2x2": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_arch": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "piece_blackmarble_bench": [
+    "https://valheim.fandom.com/wiki/Chairs",
+    "Chairs"
+  ],
+  "blackmarble_column_1": [
+    "https://valheim.fandom.com/wiki/Black_marble_column_small"
+  ],
+  "blackmarble_column_3": [
+    "https://valheim.fandom.com/wiki/Black_marble_column_tall"
+  ],
+  "blackmarble_column_2": [
+    "https://valheim.fandom.com/wiki/Black_marble_column_wide"
+  ],
+  "blackmarble_creep_slope_inverted_1x1x2": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_creep_slope_inverted_2x2x1": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_out_1": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_outcorner": [
+    "https://valheim.fandom.com/wiki/Black_marble_cornice_corner"
+  ],
+  "blackmarble_out_2": [
+    "https://valheim.fandom.com/wiki/Black_marble_cornice_wide"
+  ],
+  "blackmarble_floor": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_floor_large": [
+    "https://valheim.fandom.com/wiki/Black_marble_floor_4x4"
+  ],
+  "blackmarble_tile_floor_2x2": [
+    "https://valheim.fandom.com/wiki/Black_marble_floor_tile_large"
+  ],
+  "blackmarble_tile_floor_1x1": [
+    "https://valheim.fandom.com/wiki/Black_marble_floor_tile_small"
+  ],
+  "blackmarble_floor_triangle": [
+    "https://valheim.fandom.com/wiki/Black_marble_floor_triangle"
+  ],
+  "blackmarble_head_big01": [
+    "https://valheim.fandom.com/wiki/Black_marble_large_head_1"
+  ],
+  "blackmarble_head_big02": [
+    "https://valheim.fandom.com/wiki/Black_marble_large_head_2"
+  ],
+  "blackmarble_pile": [
+    "https://valheim.fandom.com/wiki/Black_marble_pile"
+  ],
+  "blackmarble_base_1": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_basecorner": [
+    "https://valheim.fandom.com/wiki/Black_marble_plinth_corner"
+  ],
+  "blackmarble_tip": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_slope_1x2": [
+    "https://valheim.fandom.com/wiki/Black_marble_slope"
+  ],
+  "blackmarble_slope_inverted_1x2": [
+    "https://valheim.fandom.com/wiki/Black_marble_slope_(inverted)"
+  ],
+  "blackmarble_stair": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_creep_stair": [
+    "https://valheim.fandom.com/wiki/Black_marble_structures",
+    "Black marble structures"
+  ],
+  "blackmarble_stair_corner_left": [
+    "https://valheim.fandom.com/wiki/Black_marble_stair_left"
+  ],
+  "blackmarble_stair_corner": [
+    "https://valheim.fandom.com/wiki/Black_marble_stair_right"
+  ],
+  "piece_blackmarble_table": [
+    "https://valheim.fandom.com/wiki/Tables",
+    "Tables"
+  ],
+  "piece_blackmarble_throne": [
+    "https://valheim.fandom.com/wiki/Chairs",
+    "Chairs"
+  ],
+  "blackmarble_tile_wall_2x2": [
+    "https://valheim.fandom.com/wiki/Black_marble_wall_tile_large"
+  ],
+  "blackmarble_tile_wall_1x1": [
+    "https://valheim.fandom.com/wiki/Black_marble_wall_tile_small"
+  ],
+  "blackmarble_tile_wall_2x4": [
+    "https://valheim.fandom.com/wiki/Black_marble_wall_tile_tall"
+  ],
+  "blackmarble_base_2": [
+    "https://valheim.fandom.com/wiki/Black_marble_wide_plinth"
+  ],
+  "piece_chest_blackmetal": [
+    "https://valheim.fandom.com/wiki/Black_metal_chest"
+  ],
+  "blastfurnace": [
+    "https://valheim.fandom.com/wiki/Blast_furnace"
+  ],
+  "piece_banner02": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "jute_carpet_blue": [
+    "https://valheim.fandom.com/wiki/Rugs",
+    "Rugs"
+  ],
+  "piece_cloth_hanging_door_blue2": [
+    "https://valheim.fandom.com/wiki/Blue_jute_curtain"
+  ],
+  "piece_cloth_hanging_door_blue": [
+    "https://valheim.fandom.com/wiki/Blue_jute_drapes"
+  ],
+  "piece_brazierfloor02": [
+    "https://valheim.fandom.com/wiki/Blue_standing_brazier"
+  ],
+  "piece_banner06": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "BoarJerky": [
+    "https://valheim.fandom.com/wiki/Boar_jerky"
+  ],
+  "bone_stack": [
+    "https://valheim.fandom.com/wiki/Bone_stack"
+  ],
+  "piece_bone_throne": [
+    "https://valheim.fandom.com/wiki/Chairs",
+    "Chairs"
+  ],
+  "bonfire": [
+    "https://valheim.fandom.com/wiki/Bonfire"
+  ],
+  "blackmarble_head01": [
+    "https://valheim.fandom.com/wiki/Bronze_head_1"
+  ],
+  "blackmarble_head02": [
+    "https://valheim.fandom.com/wiki/Bronze_head_2"
+  ],
+  "cauldron_ext3_butchertable": [
+    "https://valheim.fandom.com/wiki/Butcher's_table"
+  ],
+  "iron_floor_1x1_v2": [
+    "https://valheim.fandom.com/wiki/Cage_structures",
+    "Cage structures"
+  ],
+  "iron_floor_1x1": [
+    "https://valheim.fandom.com/wiki/Cage_structures",
+    "Cage structures"
+  ],
+  "iron_floor_2x2": [
+    "https://valheim.fandom.com/wiki/Cage_structures",
+    "Cage structures"
+  ],
+  "iron_wall_1x1": [
+    "https://valheim.fandom.com/wiki/Cage_structures",
+    "Cage structures"
+  ],
+  "iron_wall_1x1_rusty": [
+    "https://valheim.fandom.com/wiki/Cage_structures",
+    "Cage structures"
+  ],
+  "iron_wall_2x2": [
+    "https://valheim.fandom.com/wiki/Cage_structures",
+    "Cage structures"
+  ],
+  "fire_pit": [
+    "https://valheim.fandom.com/wiki/Campfire"
+  ],
+  "fire_pit_haldor": [
+    "https://valheim.fandom.com/wiki/Campfire"
+  ],
+  "fire_pit_hildir": [
+    "https://valheim.fandom.com/wiki/Campfire"
+  ],
+  "BogWitch_Fire_Pit": [
+    "https://valheim.fandom.com/wiki/Campfire"
+  ],
+  "sapling_carrot": [
+    "https://valheim.fandom.com/wiki/Carrot"
+  ],
+  "Cart": [
+    "https://valheim.fandom.com/wiki/Cart"
+  ],
+  "piece_cartographytable": [
+    "https://valheim.fandom.com/wiki/Cartography_table"
+  ],
+  "darkwood_decowall": [
+    "https://valheim.fandom.com/wiki/Darkwood_structures",
+    "Darkwood structures"
+  ],
+  "Catapult": [
+    "https://valheim.fandom.com/wiki/Catapult"
+  ],
+  "piece_cauldron": [
+    "https://valheim.fandom.com/wiki/Cauldron"
+  ],
+  "charcoal_kiln": [
+    "https://valheim.fandom.com/wiki/Charcoal_kiln"
+  ],
+  "piece_chest_wood": [
+    "https://valheim.fandom.com/wiki/Chest"
+  ],
+  "piece_workbench_ext1": [
+    "https://valheim.fandom.com/wiki/Chopping_block"
+  ],
+  "coal_pile": [
+    "https://valheim.fandom.com/wiki/Coal_pile"
+  ],
+  "treasure_pile": [
+    "https://valheim.fandom.com/wiki/Coin_pile"
+  ],
+  "treasure_stack": [
+    "https://valheim.fandom.com/wiki/Coin_stack"
+  ],
+  "piece_cookingstation": [
+    "https://valheim.fandom.com/wiki/Cooking_station"
+  ],
+  "wood_core_stack": [
+    "https://valheim.fandom.com/wiki/Corewood_stack"
+  ],
+  "crystal_wall_1x1": [
+    "https://valheim.fandom.com/wiki/Crystal_wall_1x1"
+  ],
+  "darkwood_arch": [
+    "https://valheim.fandom.com/wiki/Darkwood_structures",
+    "Darkwood structures"
+  ],
+  "darkwood_beam": [
+    "https://valheim.fandom.com/wiki/Darkwood_beam_2_m"
+  ],
+  "darkwood_beam_26": [
+    "https://valheim.fandom.com/wiki/Darkwood_structures",
+    "Darkwood structures"
+  ],
+  "darkwood_beam4x4": [
+    "https://valheim.fandom.com/wiki/Darkwood_beam_4_m"
+  ],
+  "darkwood_beam_45": [
+    "https://valheim.fandom.com/wiki/Darkwood_structures",
+    "Darkwood structures"
+  ],
+  "piece_chair03": [
+    "https://valheim.fandom.com/wiki/Chairs",
+    "Chairs"
+  ],
+  "darkwood_gate": [
+    "https://valheim.fandom.com/wiki/Darkwood_structures",
+    "Darkwood structures"
+  ],
+  "darkwood_pole": [
+    "https://valheim.fandom.com/wiki/Darkwood_structures",
+    "Darkwood structures"
+  ],
+  "darkwood_pole4": [
+    "https://valheim.fandom.com/wiki/Darkwood_structures",
+    "Darkwood structures"
+  ],
+  "rug_deer": [
+    "https://valheim.fandom.com/wiki/Rugs",
+    "Rugs"
+  ],
+  "DeerStew": [
+    "https://valheim.fandom.com/wiki/Deer_stew"
+  ],
+  "piece_bed02": [
+    "https://valheim.fandom.com/wiki/Dragon_bed"
+  ],
+  "VikingShip_Ashlands": [
+    "https://valheim.fandom.com/wiki/Drakkar"
+  ],
+  "piece_dvergr_metal_wall_2x2": [
+    "https://valheim.fandom.com/wiki/Dvergr_metal_wall"
+  ],
+  "piece_dvergr_pole": [
+    "https://valheim.fandom.com/wiki/Dvergr_pole"
+  ],
+  "piece_dvergr_lantern_pole": [
+    "https://valheim.fandom.com/wiki/Dvergr_pole_lantern"
+  ],
+  "piece_dvergr_sharpstakes": [
+    "https://valheim.fandom.com/wiki/Dvergr_sharp_stakes"
+  ],
+  "piece_dvergr_spiralstair": [
+    "https://valheim.fandom.com/wiki/Dvergr_spiral_staircase_left"
+  ],
+  "piece_dvergr_spiralstair_right": [
+    "https://valheim.fandom.com/wiki/Dvergr_spiral_staircase_right"
+  ],
+  "piece_dvergr_stake_wall": [
+    "https://valheim.fandom.com/wiki/Dvergr_stakewall"
+  ],
+  "piece_dvergr_wood_wall": [
+    "https://valheim.fandom.com/wiki/Dvergr_wall"
+  ],
+  "piece_dvergr_lantern": [
+    "https://valheim.fandom.com/wiki/Dvergr_wall_lantern"
+  ],
+  "eitrrefinery": [
+    "https://valheim.fandom.com/wiki/Eitr_refinery"
+  ],
+  "blackmarble_2x2_enforced": [
+    "https://valheim.fandom.com/wiki/Enforced_black_marble"
+  ],
+  "piece_magetable_ext3": [
+    "https://valheim.fandom.com/wiki/Feathery_wreath"
+  ],
+  "fermenter": [
+    "https://valheim.fandom.com/wiki/Fermenter"
+  ],
+  "piece_FairylightGarland": [
+    "https://valheim.fandom.com/wiki/Fey_lights"
+  ],
+  "wood_fine_stack": [
+    "https://valheim.fandom.com/wiki/Finewood_stack"
+  ],
+  "FirTree_Sapling": [
+    "https://valheim.fandom.com/wiki/Fir_sapling"
+  ],
+  "Piece_flametal_beam": [
+    "https://valheim.fandom.com/wiki/Flametal_structures",
+    "Flametal structures"
+  ],
+  "flametal_gate": [
+    "https://valheim.fandom.com/wiki/Flametal_structures",
+    "Flametal structures"
+  ],
+  "Piece_flametal_pillar": [
+    "https://valheim.fandom.com/wiki/Flametal_structures",
+    "Flametal structures"
+  ],
+  "sapling_flax": [
+    "https://valheim.fandom.com/wiki/Flax"
+  ],
+  "piece_CelebrationGarland": [
+    "https://valheim.fandom.com/wiki/Flower_garland"
+  ],
+  "piece_preptable": [
+    "https://valheim.fandom.com/wiki/Food_preparation_table"
+  ],
+  "forge": [
+    "https://valheim.fandom.com/wiki/Forge"
+  ],
+  "forge_ext1": [
+    "https://valheim.fandom.com/wiki/Forge_bellows"
+  ],
+  "forge_ext5": [
+    "https://valheim.fandom.com/wiki/Forge_cooler"
+  ],
+  "forge_ext6": [
+    "https://valheim.fandom.com/wiki/Forge_tool_rack"
+  ],
+  "piece_magetable": [
+    "https://valheim.fandom.com/wiki/Galdr_table"
+  ],
+  "blackforge_ext4_gemcutter": [
+    "https://valheim.fandom.com/wiki/Gem_cutter"
+  ],
+  "piece_grausten_roof_45_arch": [
+    "https://valheim.fandom.com/wiki/Grausten_roofs",
+    "Grausten roofs"
+  ],
+  "piece_grausten_roof_45_arch_corner2": [
+    "https://valheim.fandom.com/wiki/Grausten_roofs",
+    "Grausten roofs"
+  ],
+  "piece_grausten_roof_45_arch_corner": [
+    "https://valheim.fandom.com/wiki/Grausten_roofs",
+    "Grausten roofs"
+  ],
+  "Piece_grausten_floor_1x1": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_floor_2x2": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_floor_4x4": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_pillar_arch": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_pillarbeam_medium": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_pillarbase_medium": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "grausten_pile": [
+    "https://valheim.fandom.com/wiki/Grausten_pile"
+  ],
+  "piece_grausten_roof_45": [
+    "https://valheim.fandom.com/wiki/Grausten_roofs",
+    "Grausten roofs"
+  ],
+  "piece_grausten_roof_45_corner": [
+    "https://valheim.fandom.com/wiki/Grausten_roofs",
+    "Grausten roofs"
+  ],
+  "piece_grausten_roof_45_corner2": [
+    "https://valheim.fandom.com/wiki/Grausten_roofs",
+    "Grausten roofs"
+  ],
+  "Piece_grausten_pillar_arch_small": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_pillarbeam_small": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_pillarbase_small": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "piece_grausten_stonestair": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_stone_ladder": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_pillarbase_tapered": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_pillarbase_tapered_inverted": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_wall_1x2": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_wall_2x2": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_wall_4x2": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_wall_arch": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_wall_arch_inverted": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_window_2x2": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "Piece_grausten_window_4x2": [
+    "https://valheim.fandom.com/wiki/Grausten_structures",
+    "Grausten structures"
+  ],
+  "piece_banner05": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "forge_ext3": [
+    "https://valheim.fandom.com/wiki/Grinding_wheel"
+  ],
+  "guard_stone_test": [
+    "https://valheim.fandom.com/wiki/Guard_stone"
+  ],
+  "piece_brazierceiling01": [
+    "https://valheim.fandom.com/wiki/Hanging_brazier"
+  ],
+  "rug_hare": [
+    "https://valheim.fandom.com/wiki/Rugs",
+    "Rugs"
+  ],
+  "hearth": [
+    "https://valheim.fandom.com/wiki/Hearth"
+  ],
+  "piece_hexagonal_door": [
+    "https://valheim.fandom.com/wiki/Hexagonal_gate"
+  ],
+  "piece_bathtub": [
+    "https://valheim.fandom.com/wiki/Hot_tub"
+  ],
+  "piece_cookingstation_iron": [
+    "https://valheim.fandom.com/wiki/Iron_cooking_station"
+  ],
+  "fire_pit_iron": [
+    "https://valheim.fandom.com/wiki/Iron_fire_pit"
+  ],
+  "iron_grate": [
+    "https://valheim.fandom.com/wiki/Cage_structures",
+    "Cage structures"
+  ],
+  "itemstandh": [
+    "https://valheim.fandom.com/wiki/Item_stand"
+  ],
+  "itemstand": [
+    "https://valheim.fandom.com/wiki/Item_stand"
+  ],
+  "VineGreen_sapling": [
+    "https://valheim.fandom.com/wiki/Ivy"
+  ],
+  "piece_jackoturnip": [
+    "https://valheim.fandom.com/wiki/Jack-o-turnip"
+  ],
+  "sapling_jotunpuffs": [
+    "https://valheim.fandom.com/wiki/Jotun_puffs"
+  ],
+  "Karve": [
+    "https://valheim.fandom.com/wiki/Karve"
+  ],
+  "piece_pot2_cracked": [
+    "https://valheim.fandom.com/wiki/Large_clay_pot"
+  ],
+  "piece_pot2": [
+    "https://valheim.fandom.com/wiki/Pots",
+    "Pots"
+  ],
+  "piece_pot2_red": [
+    "https://valheim.fandom.com/wiki/Large_red_pot"
+  ],
+  "piece_Lavalantern": [
+    "https://valheim.fandom.com/wiki/Lava_lantern"
+  ],
+  "wood_wall_log": [
+    "https://valheim.fandom.com/wiki/Log_beam_2_m"
+  ],
+  "wood_log_26": [
+    "https://valheim.fandom.com/wiki/Log_structures",
+    "Log structures"
+  ],
+  "wood_wall_log_4x0.5": [
+    "https://valheim.fandom.com/wiki/Log_beam_4_m"
+  ],
+  "wood_log_45": [
+    "https://valheim.fandom.com/wiki/Log_structures",
+    "Log structures"
+  ],
+  "wood_pole_log": [
+    "https://valheim.fandom.com/wiki/Log_pole_2_m"
+  ],
+  "wood_pole_log_4": [
+    "https://valheim.fandom.com/wiki/Log_pole_4_m"
+  ],
+  "piece_table_oak": [
+    "https://valheim.fandom.com/wiki/Tables",
+    "Tables"
+  ],
+  "Trailership": [
+    "https://valheim.fandom.com/wiki/Longship"
+  ],
+  "VikingShip": [
+    "https://valheim.fandom.com/wiki/Longship"
+  ],
+  "LoxPie": [
+    "https://valheim.fandom.com/wiki/Lox_meat_pie"
+  ],
+  "rug_fur": [
+    "https://valheim.fandom.com/wiki/Rugs",
+    "Rugs"
+  ],
+  "sapling_magecap": [
+    "https://valheim.fandom.com/wiki/Magecap"
+  ],
+  "piece_maypole": [
+    "https://valheim.fandom.com/wiki/Maypole"
+  ],
+  "piece_MeadCauldron": [
+    "https://valheim.fandom.com/wiki/Mead_ketill"
+  ],
+  "piece_pot1_cracked": [
+    "https://valheim.fandom.com/wiki/Medium_clay_pot"
+  ],
+  "piece_pot1": [
+    "https://valheim.fandom.com/wiki/Pots",
+    "Pots"
+  ],
+  "piece_pot1_red": [
+    "https://valheim.fandom.com/wiki/Medium_red_pot"
+  ],
+  "blackforge_ext3_metalcutter": [
+    "https://valheim.fandom.com/wiki/Metal_cutter"
+  ],
+  "piece_mistletoe": [
+    "https://valheim.fandom.com/wiki/Mistletoe"
+  ],
+  "cauldron_ext5_mortarandpestle": [
+    "https://valheim.fandom.com/wiki/Mortar_and_pestle"
+  ],
+  "Oak_Sapling": [
+    "https://valheim.fandom.com/wiki/Oak_sapling"
+  ],
+  "incinerator": [
+    "https://valheim.fandom.com/wiki/Obliterator"
+  ],
+  "sapling_onion": [
+    "https://valheim.fandom.com/wiki/Onion"
+  ],
+  "piece_banner10": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "paved_road": [
+    "https://valheim.fandom.com/wiki/Paved_road"
+  ],
+  "paved_road_v2": [
+    "https://valheim.fandom.com/wiki/Paved_road"
+  ],
+  "piece_chest_private": [
+    "https://valheim.fandom.com/wiki/Personal_chest"
+  ],
+  "skull_pile": [
+    "https://valheim.fandom.com/wiki/Pile_of_skulls"
+  ],
+  "PineTree_Sapling": [
+    "https://valheim.fandom.com/wiki/Pine_sapling"
+  ],
+  "portal": [
+    "https://valheim.fandom.com/wiki/Portal"
+  ],
+  "portal_wood": [
+    "https://valheim.fandom.com/wiki/Portal"
+  ],
+  "portal_stone": [
+    "https://valheim.fandom.com/wiki/Portal_–_stone"
+  ],
+  "cauldron_ext4_pots": [
+    "https://valheim.fandom.com/wiki/Pots_and_pans"
+  ],
+  "piece_banner09": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "Raft": [
+    "https://valheim.fandom.com/wiki/Raft"
+  ],
+  "darkwood_raven": [
+    "https://valheim.fandom.com/wiki/Adornments",
+    "Adornments"
+  ],
+  "piece_throne01": [
+    "https://valheim.fandom.com/wiki/Chairs",
+    "Chairs"
+  ],
+  "piece_banner04": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "jute_carpet": [
+    "https://valheim.fandom.com/wiki/Rugs",
+    "Rugs"
+  ],
+  "piece_cloth_hanging_door": [
+    "https://valheim.fandom.com/wiki/Red_jute_curtain"
+  ],
+  "piece_chest": [
+    "https://valheim.fandom.com/wiki/Reinforced_chest"
+  ],
+  "Candle_resin": [
+    "https://valheim.fandom.com/wiki/Resin_candle"
+  ],
+  "Candle_resin_bogwitch": [
+    "https://valheim.fandom.com/wiki/Resin_candle"
+  ],
+  "cauldron_ext6_rollingpins": [
+    "https://valheim.fandom.com/wiki/Rolling_pins_and_cutting_boards"
+  ],
+  "piece_table_round": [
+    "https://valheim.fandom.com/wiki/Tables",
+    "Tables"
+  ],
+  "wood_fence": [
+    "https://valheim.fandom.com/wiki/Roundpole_fence"
+  ],
+  "piece_magetable_ext": [
+    "https://valheim.fandom.com/wiki/Rune_table"
+  ],
+  "piece_sapcollector": [
+    "https://valheim.fandom.com/wiki/Sap_extractor"
+  ],
+  "piece_walltorch": [
+    "https://valheim.fandom.com/wiki/Sconce"
+  ],
+  "sapling_seedonion": [
+    "https://valheim.fandom.com/wiki/Seed-onion"
+  ],
+  "sapling_seedturnip": [
+    "https://valheim.fandom.com/wiki/Seed-turnip"
+  ],
+  "piece_sharpstakes": [
+    "https://valheim.fandom.com/wiki/Sharp_stakes"
+  ],
+  "charred_shieldgenerator": [
+    "https://valheim.fandom.com/wiki/Shield_generator"
+  ],
+  "piece_shieldgenerator": [
+    "https://valheim.fandom.com/wiki/Shield_generator"
+  ],
+  "darkwood_roof": [
+    "https://valheim.fandom.com/wiki/Shingle_roofs",
+    "Shingle roofs"
+  ],
+  "darkwood_roof_45": [
+    "https://valheim.fandom.com/wiki/Shingle_roofs",
+    "Shingle roofs"
+  ],
+  "darkwood_roof_icorner": [
+    "https://valheim.fandom.com/wiki/Shingle_roof_inner_corner_26°"
+  ],
+  "darkwood_roof_icorner_45": [
+    "https://valheim.fandom.com/wiki/Shingle_roof_inner_corner_45°"
+  ],
+  "darkwood_roof_ocorner": [
+    "https://valheim.fandom.com/wiki/Shingle_roof_outer_corner_26°"
+  ],
+  "darkwood_roof_ocorner_45": [
+    "https://valheim.fandom.com/wiki/Shingle_roof_outer_corner_45°"
+  ],
+  "darkwood_roof_top": [
+    "https://valheim.fandom.com/wiki/Shingle_roofs",
+    "Shingle roofs"
+  ],
+  "darkwood_roof_top_45": [
+    "https://valheim.fandom.com/wiki/Shingle_roofs",
+    "Shingle roofs"
+  ],
+  "ship_construction": [
+    "https://valheim.fandom.com/wiki/Ship_construction"
+  ],
+  "sign_notext": [
+    "https://valheim.fandom.com/wiki/Sign"
+  ],
+  "sign": [
+    "https://valheim.fandom.com/wiki/Sign"
+  ],
+  "piece_logbench01": [
+    "https://valheim.fandom.com/wiki/Chairs",
+    "Chairs"
+  ],
+  "piece_pot3": [
+    "https://valheim.fandom.com/wiki/Pots",
+    "Pots"
+  ],
+  "piece_pot3_red": [
+    "https://valheim.fandom.com/wiki/Small_red_pot"
+  ],
+  "smelter": [
+    "https://valheim.fandom.com/wiki/Smelter"
+  ],
+  "forge_ext4": [
+    "https://valheim.fandom.com/wiki/Smith's_anvil"
+  ],
+  "cauldron_ext1_spice": [
+    "https://valheim.fandom.com/wiki/Spice_rack"
+  ],
+  "piece_spinningwheel": [
+    "https://valheim.fandom.com/wiki/Spinning_wheel"
+  ],
+  "stake_wall": [
+    "https://valheim.fandom.com/wiki/Stakewall"
+  ],
+  "piece_groundtorch_blue": [
+    "https://valheim.fandom.com/wiki/Standing_blue-burning_iron_torch"
+  ],
+  "piece_brazierfloor01": [
+    "https://valheim.fandom.com/wiki/Standing_brazier"
+  ],
+  "piece_groundtorch_green": [
+    "https://valheim.fandom.com/wiki/Standing_green-burning_iron_torch"
+  ],
+  "piece_groundtorch": [
+    "https://valheim.fandom.com/wiki/Standing_iron_torch"
+  ],
+  "piece_groundtorch_wood": [
+    "https://valheim.fandom.com/wiki/Standing_wood_torch"
+  ],
+  "Placeable_Stone": [
+    "https://valheim.fandom.com/wiki/Stone"
+  ],
+  "stone_arch": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "stone_floor_2x2": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "stone_floor": [
+    "https://valheim.fandom.com/wiki/Stone_floor_4x4"
+  ],
+  "piece_oven": [
+    "https://valheim.fandom.com/wiki/Stone_oven"
+  ],
+  "stone_pile": [
+    "https://valheim.fandom.com/wiki/Stone_pile"
+  ],
+  "stone_pillar": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "stone_stair": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "piece_throne02": [
+    "https://valheim.fandom.com/wiki/Chairs",
+    "Chairs"
+  ],
+  "Ashlands_Arch2": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "Ashlands_WallBlock_base": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "Ashlands_Arch1": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "Ashlands_WallBlock_1x2x2": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "stone_wall_1x1": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "stone_wall_2x1": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "stone_wall_4x2": [
+    "https://valheim.fandom.com/wiki/Stone_structures",
+    "Stone structures"
+  ],
+  "piece_stonecutter": [
+    "https://valheim.fandom.com/wiki/Stonecutter"
+  ],
+  "piece_chair": [
+    "https://valheim.fandom.com/wiki/Chairs",
+    "Chairs"
+  ],
+  "rug_straw": [
+    "https://valheim.fandom.com/wiki/Rugs",
+    "Rugs"
+  ],
+  "piece_TrainingDummy": [
+    "https://valheim.fandom.com/wiki/T.W.I.G."
+  ],
+  "piece_table": [
+    "https://valheim.fandom.com/wiki/Tables",
+    "Tables"
+  ],
+  "piece_workbench_ext2": [
+    "https://valheim.fandom.com/wiki/Tanning_rack"
+  ],
+  "siege_wall_1x1": [
+    "https://valheim.fandom.com/wiki/Temp_siege_wall"
+  ],
+  "wood_roof": [
+    "https://valheim.fandom.com/wiki/Thatch_roofs",
+    "Thatch roofs"
+  ],
+  "wood_roof_45": [
+    "https://valheim.fandom.com/wiki/Thatch_roofs",
+    "Thatch roofs"
+  ],
+  "wood_roof_icorner": [
+    "https://valheim.fandom.com/wiki/Thatch_roof_inner_corner_26°"
+  ],
+  "wood_roof_icorner_45": [
+    "https://valheim.fandom.com/wiki/Thatch_roof_inner_corner_45°"
+  ],
+  "wood_roof_ocorner": [
+    "https://valheim.fandom.com/wiki/Thatch_roof_outer_corner_26°"
+  ],
+  "wood_roof_ocorner_45": [
+    "https://valheim.fandom.com/wiki/Thatch_roof_outer_corner_45°"
+  ],
+  "wood_roof_top": [
+    "https://valheim.fandom.com/wiki/Thatch_roofs",
+    "Thatch roofs"
+  ],
+  "wood_roof_top_45": [
+    "https://valheim.fandom.com/wiki/Thatch_roofs",
+    "Thatch roofs"
+  ],
+  "piece_workbench_ext4": [
+    "https://valheim.fandom.com/wiki/Tool_shelf"
+  ],
+  "fuling_trap": [
+    "https://valheim.fandom.com/wiki/Trap"
+  ],
+  "piece_trap_troll": [
+    "https://valheim.fandom.com/wiki/Trap"
+  ],
+  "piece_chest_treasure": [
+    "https://valheim.fandom.com/wiki/Treasure_chest"
+  ],
+  "sapling_turnip": [
+    "https://valheim.fandom.com/wiki/Turnip"
+  ],
+  "piece_magetable_ext2": [
+    "https://valheim.fandom.com/wiki/Unfading_candles"
+  ],
+  "blackforge_ext2_vise": [
+    "https://valheim.fandom.com/wiki/Vice"
+  ],
+  "guard_stone": [
+    "https://valheim.fandom.com/wiki/Ward"
+  ],
+  "dverger_guardstone": [
+    "https://valheim.fandom.com/wiki/Ward"
+  ],
+  "piece_banner07": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "piece_banner03": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "piece_banner11": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "windmill": [
+    "https://valheim.fandom.com/wiki/Windmill"
+  ],
+  "piece_wisplure": [
+    "https://valheim.fandom.com/wiki/Wisp_fountain"
+  ],
+  "piece_groundtorch_mist": [
+    "https://valheim.fandom.com/wiki/Wisp_torch"
+  ],
+  "darkwood_wolf": [
+    "https://valheim.fandom.com/wiki/Adornments",
+    "Adornments"
+  ],
+  "WolfJerky": [
+    "https://valheim.fandom.com/wiki/Wolf_jerky"
+  ],
+  "rug_wolf": [
+    "https://valheim.fandom.com/wiki/Rugs",
+    "Rugs"
+  ],
+  "WolfMeatSkewer": [
+    "https://valheim.fandom.com/wiki/Wolf_skewer"
+  ],
+  "wood_beam": [
+    "https://valheim.fandom.com/wiki/Wood_beam_2_m"
+  ],
+  "wood_beam_26": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_beam_45": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "piece_bench01": [
+    "https://valheim.fandom.com/wiki/Wood_bench"
+  ],
+  "piece_blackwood_bench": [
+    "https://valheim.fandom.com/wiki/Wood_bench"
+  ],
+  "piece_chair02": [
+    "https://valheim.fandom.com/wiki/Wood_chair"
+  ],
+  "wood_door": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_dragon1": [
+    "https://valheim.fandom.com/wiki/Adornments",
+    "Adornments"
+  ],
+  "wood_floor_1x1": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "dvergrprops_wood_floor": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_floor": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_gate": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "woodiron_beam": [
+    "https://valheim.fandom.com/wiki/Wood_iron_structures",
+    "Wood iron structures"
+  ],
+  "woodiron_beam_26": [
+    "https://valheim.fandom.com/wiki/Wood_iron_structures",
+    "Wood iron structures"
+  ],
+  "woodiron_beam_45": [
+    "https://valheim.fandom.com/wiki/Wood_iron_structures",
+    "Wood iron structures"
+  ],
+  "woodiron_pole": [
+    "https://valheim.fandom.com/wiki/Wood_iron_structures",
+    "Wood iron structures"
+  ],
+  "wood_stepladder": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_ledge": [
+    "https://valheim.fandom.com/wiki/Wood_ledge"
+  ],
+  "wood_pole": [
+    "https://valheim.fandom.com/wiki/Wood_pole_1_m"
+  ],
+  "wood_pole2": [
+    "https://valheim.fandom.com/wiki/Wood_pole_2_m"
+  ],
+  "OLD_wood_roof": [
+    "https://valheim.fandom.com/wiki/Wood_roof"
+  ],
+  "turf_roof": [
+    "https://valheim.fandom.com/wiki/Wood_roof"
+  ],
+  "wood_wall_roof_top": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_wall_roof_top_45": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "OLD_wood_roof_icorner": [
+    "https://valheim.fandom.com/wiki/Wood_roof_icorner"
+  ],
+  "turf_roof_top": [
+    "https://valheim.fandom.com/wiki/Wood_roof_ridge"
+  ],
+  "OLD_wood_roof_top": [
+    "https://valheim.fandom.com/wiki/Wood_roof_ridge"
+  ],
+  "wood_window": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_stack": [
+    "https://valheim.fandom.com/wiki/Wood_stack"
+  ],
+  "wood_stair": [
+    "https://valheim.fandom.com/wiki/Wood_stairs"
+  ],
+  "dvergrprops_wood_stair": [
+    "https://valheim.fandom.com/wiki/Wood_stairs"
+  ],
+  "woodwall": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_wall_quarter": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_wall_roof": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_wall_roof_upsidedown": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_wall_roof_45": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_wall_roof_45_upsidedown": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "wood_wall_half": [
+    "https://valheim.fandom.com/wiki/Wood_structures",
+    "Wood structures"
+  ],
+  "turf_roof_wall": [
+    "https://valheim.fandom.com/wiki/Wood_wall_roof"
+  ],
+  "OLD_wood_wall_roof": [
+    "https://valheim.fandom.com/wiki/Wood_wall_roof"
+  ],
+  "piece_workbench": [
+    "https://valheim.fandom.com/wiki/Workbench"
+  ],
+  "piece_banner08": [
+    "https://valheim.fandom.com/wiki/Banners",
+    "Banners"
+  ],
+  "wood_yggdrasil_stack": [
+    "https://valheim.fandom.com/wiki/Yggdrasil_wood_stack"
+  ],
+  "piece_xmasgarland": [
+    "https://valheim.fandom.com/wiki/Yule_garland"
+  ],
+  "piece_xmastree": [
+    "https://valheim.fandom.com/wiki/Yule_tree"
+  ],
+  "piece_xmascrown": [
+    "https://valheim.fandom.com/wiki/Yule_wreath"
+  ],
+  "piece_gift3": [
+    "https://valheim.fandom.com/wiki/Yuleklapp"
+  ],
+  "piece_gift2": [
+    "https://valheim.fandom.com/wiki/Yuleklapp"
+  ],
+  "piece_gift1": [
+    "https://valheim.fandom.com/wiki/Yuleklapp"
+  ],
+  "TrophyAbomination": [
+    "https://valheim.fandom.com/wiki/Abomination_trophy"
+  ],
+  "AncientSeed": [
+    "https://valheim.fandom.com/wiki/Ancient_seed"
+  ],
+  "AsksvinEgg": [
+    "https://valheim.fandom.com/wiki/Asksvin_egg"
+  ],
+  "SaddleAsksvin": [
+    "https://valheim.fandom.com/wiki/Asksvin_saddle"
+  ],
+  "TrophyAsksvin": [
+    "https://valheim.fandom.com/wiki/Asksvin_trophy"
+  ],
+  "BarberKit": [
+    "https://valheim.fandom.com/wiki/Barber_kit"
+  ],
+  "BarleyFlour": [
+    "https://valheim.fandom.com/wiki/Barley_flour"
+  ],
+  "BarrelRings": [
+    "https://valheim.fandom.com/wiki/Barrel_hoops"
+  ],
+  "TrophyBjorn": [
+    "https://valheim.fandom.com/wiki/Bear_trophy"
+  ],
+  "Bell": [
+    "https://valheim.fandom.com/wiki/Bell"
+  ],
+  "TrophyBlob": [
+    "https://valheim.fandom.com/wiki/Blob_trophy"
+  ],
+  "TrophyBonemass": [
+    "https://valheim.fandom.com/wiki/Bonemass_trophy"
+  ],
+  "TrophyBonemawSerpent": [
+    "https://valheim.fandom.com/wiki/Bonemaw_trophy"
+  ],
+  "TrophySkeletonHildir": [
+    "https://valheim.fandom.com/wiki/Brenna_trophy"
+  ],
+  "TrophyCultist": [
+    "https://valheim.fandom.com/wiki/Cultist_trophy"
+  ],
+  "TrophyDeathsquito": [
+    "https://valheim.fandom.com/wiki/Deathsquito_trophy"
+  ],
+  "DragonEgg": [
+    "https://valheim.fandom.com/wiki/Dragon_egg"
+  ],
+  "DragonTear": [
+    "https://valheim.fandom.com/wiki/Dragon_tear"
+  ],
+  "TrophyHatchling": [
+    "https://valheim.fandom.com/wiki/Drake_trophy"
+  ],
+  "TrophyDraugrElite": [
+    "https://valheim.fandom.com/wiki/Draugr_elite_trophy"
+  ],
+  "TrophyDraugr": [
+    "https://valheim.fandom.com/wiki/Draugr_trophy"
+  ],
+  "TrophyDraugrFem": [
+    "https://valheim.fandom.com/wiki/Draugr_trophy"
+  ],
+  "TrophyDvergr": [
+    "https://valheim.fandom.com/wiki/Dvergr_trophy"
+  ],
+  "ChickenEgg": [
+    "https://valheim.fandom.com/wiki/Egg"
+  ],
+  "TrophyEikthyr": [
+    "https://valheim.fandom.com/wiki/Eikthyr_trophy"
+  ],
+  "TrophyFader": [
+    "https://valheim.fandom.com/wiki/Fader_trophy"
+  ],
+  "TrophyFallenValkyrie": [
+    "https://valheim.fandom.com/wiki/Fallen_valkyrie_trophy"
+  ],
+  "TrophyFenring": [
+    "https://valheim.fandom.com/wiki/Fenring_trophy"
+  ],
+  "TrophyGoblinBrute": [
+    "https://valheim.fandom.com/wiki/Fuling_berserker_trophy"
+  ],
+  "TrophyGoblinShaman": [
+    "https://valheim.fandom.com/wiki/Fuling_shaman_trophy"
+  ],
+  "GoblinTotem": [
+    "https://valheim.fandom.com/wiki/Fuling_totem"
+  ],
+  "TrophyGoblin": [
+    "https://valheim.fandom.com/wiki/Fuling_trophy"
+  ],
+  "TrophyCultist_Hildir": [
+    "https://valheim.fandom.com/wiki/Geirrhafa_trophy"
+  ],
+  "TrophyGhost": [
+    "https://valheim.fandom.com/wiki/Ghost_trophy"
+  ],
+  "TrophyGjall": [
+    "https://valheim.fandom.com/wiki/Gjall_trophy"
+  ],
+  "TrophyGreydwarfBrute": [
+    "https://valheim.fandom.com/wiki/Greydwarf_brute_trophy"
+  ],
+  "TrophyGreydwarfShaman": [
+    "https://valheim.fandom.com/wiki/Greydwarf_Shaman_trophy",
+    "Greydwarf Shaman trophy"
+  ],
+  "TrophyGreydwarf": [
+    "https://valheim.fandom.com/wiki/Greydwarf_trophy"
+  ],
+  "TrophyGrowth": [
+    "https://valheim.fandom.com/wiki/Growth_trophy"
+  ],
+  "TrophyHare": [
+    "https://valheim.fandom.com/wiki/Hare_trophy"
+  ],
+  "chest_hildir1": [
+    "https://valheim.fandom.com/wiki/Hildir's_chests",
+    "Hildir's chests"
+  ],
+  "HildirKey_forestcrypt": [
+    "https://valheim.fandom.com/wiki/Hildir's_brass_key"
+  ],
+  "chest_hildir3": [
+    "https://valheim.fandom.com/wiki/Hildir's_chests",
+    "Hildir's chests"
+  ],
+  "HildirKey_plainsfortress": [
+    "https://valheim.fandom.com/wiki/Hildir's_bronze_key"
+  ],
+  "chest_hildir2": [
+    "https://valheim.fandom.com/wiki/Hildir's_chests",
+    "Hildir's chests"
+  ],
+  "HildirKey_mountaincave": [
+    "https://valheim.fandom.com/wiki/Hildir's_silver_key"
+  ],
+  "TrophyKvastur": [
+    "https://valheim.fandom.com/wiki/Kvastur"
+  ],
+  "TrophyLeech": [
+    "https://valheim.fandom.com/wiki/Leech_trophy"
+  ],
+  "TrophyCharredArcher": [
+    "https://valheim.fandom.com/wiki/Marksman_trophy"
+  ],
+  "TrophyDragonQueen": [
+    "https://valheim.fandom.com/wiki/Moder_trophy"
+  ],
+  "TrophyMorgen": [
+    "https://valheim.fandom.com/wiki/Morgen_trophy"
+  ],
+  "TrophySkeletonPoison": [
+    "https://valheim.fandom.com/wiki/Rancid_remains_trophy"
+  ],
+  "ScytheHandle": [
+    "https://valheim.fandom.com/wiki/Scythe_handle"
+  ],
+  "DvergrKey": [
+    "https://valheim.fandom.com/wiki/Sealbreaker"
+  ],
+  "TrophySeekerBrute": [
+    "https://valheim.fandom.com/wiki/Seeker_soldier_trophy"
+  ],
+  "TrophySeeker": [
+    "https://valheim.fandom.com/wiki/Seeker_trophy"
+  ],
+  "TrophySerpent": [
+    "https://valheim.fandom.com/wiki/Serpent_trophy"
+  ],
+  "TrophySkeleton": [
+    "https://valheim.fandom.com/wiki/Skeleton_trophy"
+  ],
+  "TrophySGolem": [
+    "https://valheim.fandom.com/wiki/Stone_golem_trophy"
+  ],
+  "TrophySurtling": [
+    "https://valheim.fandom.com/wiki/Surtling_trophy"
+  ],
+  "CryptKey": [
+    "https://valheim.fandom.com/wiki/Swamp_key"
+  ],
+  "TrophyTheElder": [
+    "https://valheim.fandom.com/wiki/The_elder_trophy"
+  ],
+  "TrophySeekerQueen": [
+    "https://valheim.fandom.com/wiki/The_queen_trophy"
+  ],
+  "TrophyGoblinBruteBrosBrute": [
+    "https://valheim.fandom.com/wiki/Thungr_trophy"
+  ],
+  "TrophyTick": [
+    "https://valheim.fandom.com/wiki/Tick_trophy"
+  ],
+  "YagluthDrop": [
+    "https://valheim.fandom.com/wiki/Torn_spirit"
+  ],
+  "TrophyForestTroll": [
+    "https://valheim.fandom.com/wiki/Troll_trophy"
+  ],
+  "TrophyFrostTroll": [
+    "https://valheim.fandom.com/wiki/Troll_trophy"
+  ],
+  "TrophyUlv": [
+    "https://valheim.fandom.com/wiki/Ulv_trophy"
+  ],
+  "TrophyBjornUndead": [
+    "https://valheim.fandom.com/wiki/Vile_trophy"
+  ],
+  "VoltureEgg": [
+    "https://valheim.fandom.com/wiki/Volture_egg"
+  ],
+  "TrophyVolture": [
+    "https://valheim.fandom.com/wiki/Volture_trophy"
+  ],
+  "TrophyCharredMage": [
+    "https://valheim.fandom.com/wiki/Warlock_trophy"
+  ],
+  "TrophyCharredMelee": [
+    "https://valheim.fandom.com/wiki/Warrior_trophy"
+  ],
+  "TrophyWraith": [
+    "https://valheim.fandom.com/wiki/Wraith_trophy"
+  ],
+  "TrophyGoblinKing": [
+    "https://valheim.fandom.com/wiki/Yagluth_trophy"
+  ],
+  "TrophyGoblinBruteBrosShaman": [
+    "https://valheim.fandom.com/wiki/Zil_trophy"
+  ]
+}
