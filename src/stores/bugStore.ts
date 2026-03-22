@@ -8,6 +8,7 @@ import {
   submitTicket,
   replyToTicket,
   updateTicketStatus,
+  deleteTicket as apiDeleteTicket,
   type MegaBugsAccess,
   type UserIdentity,
   type TicketSummary,
@@ -69,6 +70,7 @@ interface BugState {
   ) => Promise<void>;
   reply: (ticketId: string, text: string, images: ImageData[]) => Promise<void>;
   setStatus: (ticketId: string, status: string, labels: string[]) => Promise<void>;
+  deleteTicket: (ticketId: string) => Promise<void>;
   markTicketRead: (ticketId: string) => void;
   clearActiveTicket: () => void;
   clearError: () => void;
@@ -213,6 +215,23 @@ export const useBugStore = create<BugState>((set, get) => ({
     } catch (e) {
       const offline = isOfflineError(e);
       set({ error: offline ? "Unable to reach MegaBugs — check your internet connection." : String(e), offline });
+    }
+  },
+
+  deleteTicket: async (ticketId: string) => {
+    // Optimistic removal from UI
+    set((s) => ({
+      tickets: s.tickets.filter((t) => t.id !== ticketId),
+      activeTicket: s.activeTicket?.id === ticketId ? null : s.activeTicket,
+      error: null,
+    }));
+    try {
+      await apiDeleteTicket(ticketId);
+    } catch (e) {
+      const offline = isOfflineError(e);
+      set({ error: offline ? "Unable to reach MegaBugs — check your internet connection." : String(e), offline });
+      // Re-fetch to restore state on failure
+      get().loadTickets();
     }
   },
 

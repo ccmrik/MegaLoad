@@ -120,6 +120,7 @@ pub fn run() {
             submit_ticket,
             reply_to_ticket,
             update_ticket_status,
+            delete_ticket,
             fetch_attachment,
         ])
         .run(tauri::generate_context!())

@@ -580,5 +580,8 @@ export const replyToTicket = (
 export const updateTicketStatus = (ticketId: string, status: string, labels: string[]) =>
   invoke<void>("update_ticket_status", { ticketId, status, labels });
 
+export const deleteTicket = (ticketId: string) =>
+  invoke<void>("delete_ticket", { ticketId });
+
 export const fetchAttachment = (path: string) =>
   invoke<string>("fetch_attachment", { path });

@@ -184,6 +184,53 @@ fn github_put_file(path: &str, content: &[u8], message: &str, sha: Option<&str>)
     Ok(new_sha)
 }
 
+/// List files in a repo directory. Returns vec of (path, sha).
+fn github_list_dir(path: &str) -> Result<Vec<(String, String)>, String> {
+    let token = github_token()?;
+    let url = format!("https://api.github.com/repos/{}/contents/{}", REPO, path);
+    let resp = crate::commands::http::agent()
+        .get(&url)
+        .set("Authorization", &format!("token {}", token))
+        .set("User-Agent", USER_AGENT)
+        .set("Accept", "application/vnd.github+json")
+        .call()
+        .map_err(|e| format!("GitHub API GET dir failed for {}: {}", path, e))?;
+
+    let body = resp.into_string().map_err(|e| format!("Read error: {}", e))?;
+    let items: Vec<serde_json::Value> =
+        serde_json::from_str(&body).map_err(|e| format!("Parse error for dir {}: {}", path, e))?;
+
+    Ok(items
+        .iter()
+        .filter_map(|item| {
+            let p = item["path"].as_str()?.to_string();
+            let s = item["sha"].as_str()?.to_string();
+            Some((p, s))
+        })
+        .collect())
+}
+
+/// Delete a file from the repo.
+fn github_delete_file(path: &str, sha: &str, message: &str) -> Result<(), String> {
+    let token = github_token()?;
+    let url = format!("https://api.github.com/repos/{}/contents/{}", REPO, path);
+
+    let body = serde_json::json!({
+        "message": message,
+        "sha": sha,
+    });
+
+    crate::commands::http::agent()
+        .delete(&url)
+        .set("Authorization", &format!("token {}", token))
+        .set("User-Agent", USER_AGENT)
+        .set("Accept", "application/vnd.github+json")
+        .send_string(&body.to_string())
+        .map_err(|e| format!("GitHub API DELETE failed for {}: {}", path, e))?;
+
+    Ok(())
+}
+
 // ---------------------------------------------------------------------------
 // App data dir helper
 // ---------------------------------------------------------------------------
@@ -676,6 +723,38 @@ pub fn update_ticket_status(
     Ok(())
 }
 
+/// Delete a ticket and all its attachments (admin only).
+#[command]
+pub fn delete_ticket(ticket_id: String) -> Result<(), String> {
+    if !ticket_id
+        .chars()
+        .all(|c| c.is_alphanumeric() || c == '-')
+    {
+        return Err("Invalid ticket ID".to_string());
+    }
+
+    app_log(&format!("MegaBugs: deleting ticket {}", ticket_id));
+
+    // Delete ticket JSON
+    let ticket_path = format!("tickets/{}.json", ticket_id);
+    let (_content, sha) = github_get_file(&ticket_path)?;
+    github_delete_file(&ticket_path, &sha, &format!("Delete ticket {}", ticket_id))?;
+
+    // Delete attachments folder contents (best effort)
+    let attachments_path = format!("attachments/{}", ticket_id);
+    if let Ok(listing) = github_list_dir(&attachments_path) {
+        for (file_path, file_sha) in listing {
+            let _ = github_delete_file(&file_path, &file_sha, &format!("Delete attachment for {}", ticket_id));
+        }
+    }
+
+    // Remove from index
+    update_index_remove(&ticket_id)?;
+
+    app_log(&format!("MegaBugs: ticket {} deleted", ticket_id));
+    Ok(())
+}
+
 // ---------------------------------------------------------------------------
 // Index helpers
 // ---------------------------------------------------------------------------
@@ -724,6 +803,30 @@ where
 
         let json = serde_json::to_string_pretty(&index).map_err(|e| e.to_string())?;
         match github_put_file("index.json", json.as_bytes(), "Update ticket index", Some(&sha)) {
+            Ok(_) => return Ok(()),
+            Err(e) if e.contains("409") && attempt < INDEX_CONFLICT_RETRIES - 1 => {
+                app_log(&format!("MegaBugs: index.json conflict, retry {}", attempt + 1));
+                std::thread::sleep(std::time::Duration::from_millis(300 * (attempt as u64 + 1)));
+                continue;
+            }
+            Err(e) => return Err(e),
+        }
+    }
+    Err("Failed to update index.json after retries".to_string())
+}
+
+/// Remove an entry from index.json with SHA conflict retry.
+fn update_index_remove(ticket_id: &str) -> Result<(), String> {
+    for attempt in 0..INDEX_CONFLICT_RETRIES {
+        let (content, sha) = github_get_file("index.json")?;
+        let mut index: TicketIndex =
+            serde_json::from_str(&content).map_err(|e| format!("Index parse error: {}", e))?;
+
+        index.tickets.retain(|t| t.id != ticket_id);
+        index.last_updated = iso_now();
+
+        let json = serde_json::to_string_pretty(&index).map_err(|e| e.to_string())?;
+        match github_put_file("index.json", json.as_bytes(), "Remove ticket from index", Some(&sha)) {
             Ok(_) => return Ok(()),
             Err(e) if e.contains("409") && attempt < INDEX_CONFLICT_RETRIES - 1 => {
                 app_log(&format!("MegaBugs: index.json conflict, retry {}", attempt + 1));

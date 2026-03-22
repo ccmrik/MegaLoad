@@ -24,6 +24,7 @@ import {
   ChevronDown,
   WifiOff,
   ZoomIn,
+  Trash2,
 } from "lucide-react";
 
 type View = "list" | "new" | "detail";
@@ -103,6 +104,7 @@ export function MegaBugs() {
     submit,
     reply,
     setStatus,
+    deleteTicket,
     markTicketRead,
     clearActiveTicket,
     clearError,
@@ -112,6 +114,7 @@ export function MegaBugs() {
 
   const [view, setView] = useState<View>("list");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Identity setup
   const [nameInput, setNameInput] = useState("");
@@ -421,11 +424,45 @@ export function MegaBugs() {
           </div>
           {/* Admin status controls */}
           {access.is_admin && (
-            <AdminStatusDropdown
-              currentStatus={activeTicket.status}
-              labels={activeTicket.labels}
-              onUpdate={(status, labels) => setStatus(activeTicket.id, status, labels)}
-            />
+            <div className="flex items-center gap-2">
+              <AdminStatusDropdown
+                currentStatus={activeTicket.status}
+                labels={activeTicket.labels}
+                onUpdate={(status, labels) => setStatus(activeTicket.id, status, labels)}
+              />
+              <div className="relative">
+                <button
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-900/20 hover:bg-red-900/40 text-xs text-red-400 hover:text-red-300 transition-colors border border-red-800/30"
+                  onClick={() => setConfirmDelete(true)}
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  Delete
+                </button>
+                {confirmDelete && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-zinc-900 border border-zinc-700/50 rounded-lg shadow-xl z-20 p-3">
+                    <p className="text-xs text-zinc-300 mb-2">Delete this ticket permanently?</p>
+                    <div className="flex gap-2">
+                      <button
+                        className="flex-1 px-2 py-1.5 rounded bg-red-600 hover:bg-red-500 text-xs text-white font-medium transition-colors"
+                        onClick={() => {
+                          setConfirmDelete(false);
+                          deleteTicket(activeTicket.id);
+                          goBack();
+                        }}
+                      >
+                        Delete
+                      </button>
+                      <button
+                        className="flex-1 px-2 py-1.5 rounded bg-zinc-700 hover:bg-zinc-600 text-xs text-zinc-300 transition-colors"
+                        onClick={() => setConfirmDelete(false)}
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           )}
         </div>
 

@@ -1,11 +1,11 @@
 {
-  "version": "0.13.33",
-  "notes": "v0.13.33 - MegaBugs ticket system + 18 biome alignment fixes",
-  "pub_date": "2026-03-22T12:14:37Z",
+  "version": "0.13.34",
+  "notes": "v0.13.34 - Embed MegaBugs token, auto USER_AGENT",
+  "pub_date": "2026-03-22T23:28:31Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOURDZW00QjFnL2tIM3RkQ25CclZRWXFvVWZSRXEyeFFhNXFCYWE0WkJKOXluVDQyemFtY2VUS1hCSHg0RXZ5WG9mVEY3UzhPVXA5enZRZjl0azJxZHc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTgxNjYxCWZpbGU6TWVnYUxvYWRfMC4xMy4zM194NjQtc2V0dXAubnNpcy56aXAKRktVVEZyRUNJbVRmN1FkUGlDc2JNckNYMjBkaWV4bE91dERMSThTU0VHNW42enhYTndjVlZvZkN3ZWkzbDVjSWNEVGRYL05CNGR1UHhnSUkyOXlNQ1E9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.33/MegaLoad_0.13.33_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUhsbE5ad1o4OTNGUmxybzNJTzQ4Nm5pYjJDSkhvWXBTakphbC9JYVAwekt1UFczM0E0a3NzZFVFUnhiTUtUMVVjdTRIc0ZGZ3ZGZ1dOQUkwV1dYbmdJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTgyNDM1CWZpbGU6TWVnYUxvYWRfMC4xMy4zNF94NjQtc2V0dXAubnNpcy56aXAKRENQWTNDU3RZUDdVT09CdTc3TEdqYUpLSlNEVFlrc2E1bHFWV1FxZFExOTJoM1RpMWJLSG1oTjIwaldMWHpZMnZudFZnZURic2Y5N3dHdWRYNEpnQmc9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.34/MegaLoad_0.13.34_x64-setup.nsis.zip"
     }
   }
 }
