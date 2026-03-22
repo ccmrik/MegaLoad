@@ -6,17 +6,36 @@ use std::path::Path;
 use tauri::command;
 
 /// Load the mod manifest to get versions and descriptions for our mods.
-fn load_manifest_info() -> std::collections::HashMap<String, (String, Option<String>)> {
+fn load_manifest_info(bepinex_path: &str) -> std::collections::HashMap<String, (String, Option<String>)> {
     let mut map = std::collections::HashMap::new();
-    if let Some(appdata) = std::env::var("APPDATA").ok() {
-        let versions_path = Path::new(&appdata).join("MegaLoad").join("mod_versions.json");
-        if let Ok(data) = fs::read_to_string(&versions_path) {
+    // Read per-profile mod_versions.json first (matches where updater writes)
+    let profile_versions = Path::new(bepinex_path)
+        .parent()
+        .map(|p| p.join("mod_versions.json"));
+    let versions_loaded = if let Some(ref pv) = profile_versions {
+        if let Ok(data) = fs::read_to_string(pv) {
             if let Ok(versions) = serde_json::from_str::<std::collections::HashMap<String, String>>(&data) {
                 for (name, ver) in versions {
                     map.entry(name).or_insert((ver, None));
                 }
+                true
+            } else { false }
+        } else { false }
+    } else { false };
+    // Fall back to global APPDATA versions if per-profile not found
+    if !versions_loaded {
+        if let Some(ref appdata) = std::env::var("APPDATA").ok() {
+            let versions_path = Path::new(appdata).join("MegaLoad").join("mod_versions.json");
+            if let Ok(data) = fs::read_to_string(&versions_path) {
+                if let Ok(versions) = serde_json::from_str::<std::collections::HashMap<String, String>>(&data) {
+                    for (name, ver) in versions {
+                        map.entry(name).or_insert((ver, None));
+                    }
+                }
             }
         }
+    }
+    if let Some(appdata) = std::env::var("APPDATA").ok() {
         let manifest_path = Path::new(&appdata).join("MegaLoad").join("mod_manifest_cache.json");
         if let Ok(data) = fs::read_to_string(&manifest_path) {
             if let Ok(manifest) = serde_json::from_str::<serde_json::Value>(&data) {
@@ -39,7 +58,7 @@ pub fn get_mods(bepinex_path: String) -> Result<Vec<ModInfo>, String> {
     let plugins_dir = Path::new(&bepinex_path).join("plugins");
     let disabled_dir = plugins_dir.join("_disabled");
     let mut mods = Vec::new();
-    let manifest_info = load_manifest_info();
+    let manifest_info = load_manifest_info(&bepinex_path);
 
     // Scan enabled mods first
     if plugins_dir.exists() {

@@ -4,6 +4,7 @@ import {
   autoUpdateMods,
   type UpdateCheckResult,
 } from "../lib/tauri-api";
+import { useModStore } from "./modStore";
 
 /** Poll every 5 minutes for mod updates (auto-install if game not running) */
 const MOD_POLL_INTERVAL_MS = 5 * 60 * 1000;
@@ -73,6 +74,10 @@ export const useUpdateStore = create<UpdateState>((set, get) => ({
           ...newlyUpdated.filter((n) => !state.sessionUpdatedMods.includes(n)),
         ],
       }));
+      // Refresh mod list so Mods page shows updated versions
+      if (newlyUpdated.length > 0) {
+        useModStore.getState().fetchMods(bepinexPath);
+      }
       return result;
     } catch (e) {
       set({
