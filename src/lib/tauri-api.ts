@@ -478,3 +478,107 @@ export const startPlayerDataWatcher = () =>
 
 export const stopPlayerDataWatcher = () =>
   invoke<void>("stop_player_data_watcher");
+
+// ---------------------------------------------------------------------------
+// MegaBugs
+// ---------------------------------------------------------------------------
+
+export interface MegaBugsAccess {
+  enabled: boolean;
+  is_admin: boolean;
+}
+
+export interface UserIdentity {
+  user_id: string;
+  display_name: string;
+}
+
+export interface ImageData {
+  filename: string;
+  base64_data: string;
+}
+
+export interface TicketMessage {
+  id: string;
+  author_id: string;
+  author_name: string;
+  text: string;
+  images: string[];
+  timestamp: string;
+  is_admin: boolean;
+}
+
+export interface SystemInfo {
+  megaload_version: string;
+  os: string;
+  profile_name: string;
+  installed_mods: string[];
+}
+
+export interface TicketSummary {
+  id: string;
+  type: string;
+  title: string;
+  status: string;
+  author_id: string;
+  author_name: string;
+  created_at: string;
+  updated_at: string;
+  message_count: number;
+  labels: string[];
+}
+
+export interface Ticket {
+  id: string;
+  type: string;
+  title: string;
+  status: string;
+  labels: string[];
+  author_id: string;
+  author_name: string;
+  created_at: string;
+  updated_at: string;
+  system_info: SystemInfo;
+  messages: TicketMessage[];
+  has_log: boolean;
+}
+
+export const checkMegabugsAccess = (bepinexPath: string) =>
+  invoke<MegaBugsAccess>("check_megabugs_access", { bepinexPath });
+
+export const getMegabugsIdentity = () =>
+  invoke<UserIdentity>("get_megabugs_identity");
+
+export const setMegabugsIdentity = (displayName: string) =>
+  invoke<UserIdentity>("set_megabugs_identity", { displayName });
+
+export const fetchTickets = (userId?: string) =>
+  invoke<TicketSummary[]>("fetch_tickets", { userId: userId ?? null });
+
+export const fetchTicketDetail = (ticketId: string) =>
+  invoke<Ticket>("fetch_ticket_detail", { ticketId });
+
+export const submitTicket = (
+  ticketType: string,
+  title: string,
+  description: string,
+  images: ImageData[],
+  bepinexPath: string,
+  userId: string,
+  userName: string,
+) => invoke<TicketSummary>("submit_ticket", { ticketType, title, description, images, bepinexPath, userId, userName });
+
+export const replyToTicket = (
+  ticketId: string,
+  text: string,
+  images: ImageData[],
+  userId: string,
+  userName: string,
+  isAdmin: boolean,
+) => invoke<void>("reply_to_ticket", { ticketId, text, images, userId, userName, isAdmin });
+
+export const updateTicketStatus = (ticketId: string, status: string, labels: string[]) =>
+  invoke<void>("update_ticket_status", { ticketId, status, labels });
+
+export const fetchAttachment = (path: string) =>
+  invoke<string>("fetch_attachment", { path });

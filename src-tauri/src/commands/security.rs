@@ -52,6 +52,7 @@ pub fn validate_download_url(url: &str) -> Result<(), String> {
     let allowed_hosts = [
         "github.com",
         "objects.githubusercontent.com",
+        "api.github.com",
         "gcdn.thunderstore.io",
         "thunderstore.io",
     ];

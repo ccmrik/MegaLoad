@@ -3,6 +3,7 @@ mod models;
 
 use commands::app_log::*;
 use commands::bepinex::*;
+use commands::bugs::*;
 use commands::config::*;
 use commands::import::*;
 use commands::launcher::*;
@@ -110,6 +111,16 @@ pub fn run() {
             read_character,
             start_player_data_watcher,
             stop_player_data_watcher,
+            // MegaBugs
+            check_megabugs_access,
+            get_megabugs_identity,
+            set_megabugs_identity,
+            fetch_tickets,
+            fetch_ticket_detail,
+            submit_ticket,
+            reply_to_ticket,
+            update_ticket_status,
+            fetch_attachment,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

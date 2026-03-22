@@ -12,8 +12,8 @@
     },
     {
       "name": "MegaMegingjord",
-      "version": "1.6.4",
-      "download_url": "https://github.com/ccmrik/MegaMegingjord/releases/download/v1.6.4/MegaMegingjord.dll",
+      "version": "1.6.5",
+      "download_url": "https://github.com/ccmrik/MegaMegingjord/releases/download/v1.6.5/MegaMegingjord.dll",
       "dll_name": "MegaMegingjord.dll",
       "plugin_folder": "MegaMegingjord",
       "description": "Megingjord belt powers — carry weight, headlamp, Eitr bonus, seafloor walk, speed & jump boost"
@@ -52,8 +52,8 @@
     },
     {
       "name": "MegaFactory",
-      "version": "1.1.6",
-      "download_url": "https://github.com/ccmrik/MegaFactory/releases/download/v1.1.6/MegaFactory.dll",
+      "version": "1.1.7",
+      "download_url": "https://github.com/ccmrik/MegaFactory/releases/download/v1.1.7/MegaFactory.dll",
       "dll_name": "MegaFactory.dll",
       "plugin_folder": "MegaFactory",
       "description": "Auto-feed factory stations (Kiln, Smelter, Blast Furnace, Windmill, Spinning Wheel) with work order system"

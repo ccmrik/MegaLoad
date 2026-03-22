@@ -2063,8 +2063,9 @@ checksum = "2532096657941c2fea9c289d370a250971c689d4f143798ff67113ec042024a5"
 
 [[package]]
 name = "megaload"
-version = "0.13.31"
+version = "0.13.32"
 dependencies = [
+ "base64 0.22.1",
  "native-tls",
  "notify",
  "serde",
@@ -2077,6 +2078,7 @@ dependencies = [
  "tauri-plugin-shell",
  "tauri-plugin-updater",
  "ureq",
+ "uuid",
  "walkdir",
  "zip 2.4.2",
 ]

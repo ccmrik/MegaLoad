@@ -20,12 +20,14 @@ import {
   CloudOff,
   Monitor,
   UserCircle,
+  Bug,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useProfileStore } from "../../stores/profileStore";
 import { useUpdateStore } from "../../stores/updateStore";
 import { useToastStore } from "../../stores/toastStore";
 import { usePlayerDataStore } from "../../stores/playerDataStore";
+import { useBugStore } from "../../stores/bugStore";
 import { detectValheimPath, launchValheim, checkGameStatus, startSteam } from "../../lib/tauri-api";
 import type { GameStatus } from "../../lib/tauri-api";
 
@@ -45,6 +47,8 @@ const navItems = [
 export function Sidebar() {
   const { activeProfile } = useProfileStore();
   const profile = activeProfile();
+  const bugAccess = useBugStore((s) => s.access);
+  const checkBugAccess = useBugStore((s) => s.checkAccess);
   const [launching, setLaunching] = useState(false);
   const [launchPhase, setLaunchPhase] = useState<string | null>(null);
   const [valheimPath, setValheimPath] = useState<string | null>(null);
@@ -65,6 +69,13 @@ export function Sidebar() {
   useEffect(() => {
     detectValheimPath().then(setValheimPath).catch(() => {});
   }, []);
+
+  // Check MegaBugs access when profile is available
+  useEffect(() => {
+    if (profile?.bepinex_path) {
+      checkBugAccess(profile.bepinex_path);
+    }
+  }, [profile?.bepinex_path, checkBugAccess]);
 
   // Auto-update on startup when profile is available (re-run on profile switch)
   const lastCheckedProfile = useRef<string | null>(null);
@@ -202,6 +213,22 @@ export function Sidebar() {
             {item.label}
           </NavLink>
         ))}
+        {bugAccess?.enabled && (
+          <NavLink
+            to="/bugs"
+            className={({ isActive }) =>
+              cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                isActive
+                  ? "bg-brand-500/15 text-brand-400 shadow-sm"
+                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+              )
+            }
+          >
+            <Bug className="w-4.5 h-4.5 shrink-0" />
+            MegaBugs
+          </NavLink>
+        )}
       </nav>
 
       {/* Profile indicator */}

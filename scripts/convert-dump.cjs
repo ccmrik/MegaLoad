@@ -363,12 +363,12 @@ BIOME_PROGRESSION.forEach((b, i) => BIOME_TIER[b] = i);
 // Crafting station → minimum biome tier to access it
 const STATION_BIOME = {
   "$piece_workbench": "Meadows",
-  "$piece_cauldron": "Meadows",
-  "$piece_meadcauldron": "Meadows",
-  "$piece_preptable": "Meadows",
+  "$piece_cauldron": "Black Forest",       // 10 Tin (BF), built at Forge
+  "$piece_meadcauldron": "Black Forest",   // 4 Tin + 6 Copper (BF), built at Forge
+  "$piece_preptable": "Swamp",             // 5 Iron (Swamp), built at Workbench
   "$piece_forge": "Black Forest",
-  "$piece_stonecutter": "Black Forest",
-  "$piece_artisanstation": "Plains",
+  "$piece_stonecutter": "Swamp",           // 2 Iron (Swamp), built at Workbench
+  "$piece_artisanstation": "Mountain",     // 2 DragonTear (Mountain), placed freely
   "$piece_blackforge": "Mistlands",
   "$piece_magetable": "Mistlands",
 };
@@ -453,6 +453,7 @@ const RAW_MATERIAL_BIOME = {
   "Turnip": "Swamp",
   "Entrails": "Swamp",
   "Ooze": "Swamp",
+  "MushroomBzerker": "Swamp",
   "Root": "Swamp",
   "ElderBark": "Swamp",
 
@@ -495,6 +496,8 @@ const RAW_MATERIAL_BIOME = {
   "BugMeat": "Mistlands",
   "CookedBugMeat": "Mistlands",
   "RoyalJelly": "Mistlands",
+  "GiantBloodSack": "Mistlands",
+  "MushroomSmokePuff": "Mistlands",
   "Softtissue": "Mistlands",
   "Wisp": "Mistlands",
   "BlackMarble": "Mistlands",
@@ -526,7 +529,8 @@ const RAW_MATERIAL_BIOME = {
   "AsksvinMeat": "Ashlands",
   "CookedAsksvinMeat": "Ashlands",
   // BjornMeat: drops from Bear (Black Forest) AND Vile (Plains)
-  "BjornMeat": ["Black Forest", "Plains"],
+  // Multi-source display handled by BIOME_OVERRIDE; RAW needs single string for tier calc
+  "BjornMeat": "Black Forest",
   "VoltureMeat": "Ashlands",
   "MorgenSinew": "Ashlands",
   "VineBerry": "Ashlands",
@@ -560,7 +564,7 @@ const BIOME_OVERRIDE = {
   "Fish9": ["Mistlands"],         // Anglerfish
   "Fish10": ["Deep North"],       // Northern Salmon
   "Fish11": ["Ashlands"],         // Magmafish
-  "Fish12": ["Plains"],           // Pufferfish
+  "Fish12": ["Mistlands"],          // Pufferfish — caught offshore Mistlands
   "FishRaw": ["Meadows"],
   "FishAnglerRaw": ["Mistlands"],
   // Cooked meats — biome from the raw meat source, not the cooking recipe
@@ -575,6 +579,7 @@ const BIOME_OVERRIDE = {
   "CookedBugMeat": ["Mistlands"],
   "CookedHareMeat": ["Mistlands"],
   "CookedBjornMeat": ["Black Forest", "Plains"],
+  "BjornMeat": ["Black Forest", "Plains"],        // Rule 8: multi-source display (RAW has "BF" for tier calc)
   "CookedAsksvinMeat": ["Ashlands"],
   "CookedVoltureMeat": ["Ashlands"],
   "CookedBoneMawSerpentMeat": ["Ashlands"],
@@ -598,7 +603,7 @@ const BIOME_OVERRIDE = {
   "BarleyWine": ["Plains"],               // Barley/Cloudberry=Plains
   // ── Bog Witch meads (Swamp vendor gate, tier 3 minimum) ──
   "MeadBzerker": ["Swamp"],              // Toadstool=Swamp, BogWitch=Swamp
-  "MeadLightfoot": ["Mountain"],         // WolfPelt=Mountain > Swamp
+  "MeadLightfoot": ["Mistlands"],        // ScaleHide=Mistlands(6), Magecap=Mistlands(6) > Swamp(3)
   "MeadSwimmer": ["Swamp"],              // BogWitch=Swamp(3) > Seaweed=Ocean(2)
   "MeadTamer": ["Ashlands"],             // PungentPebbles=Ashlands > Swamp
   "MeadStrength": ["Mountain"],          // PowderedDragonEgg=Mountain > Swamp
@@ -620,7 +625,7 @@ const BIOME_OVERRIDE = {
   "BlobLava": ["Ashlands"],
   // Special
   "HelmetFishingHat": ["Meadows"],
-  "DeerStew": ["Meadows"],
+  "DeerStew": ["Black Forest"],       // CookedDeerMeat=Meadows, Blueberries=BF(1), Carrot=BF(1)
 
   // ─── Multi-biome loot (found in chests/dungeons across many biomes) ───
   "Amber": ["Meadows", "Black Forest", "Swamp", "Mountain", "Plains"],
@@ -638,17 +643,18 @@ const BIOME_OVERRIDE = {
   ]),
 
   // ─── Cooked/processed foods (no recipe, source=Pickup from cooking station) ───
-  "Bread": ["Meadows"],
-  "SerpentMeatCooked": ["Ocean"],
-  "HoneyGlazedChicken": ["Meadows"],
-  "MeatPlatter": ["Plains"],
-  "FishAndBread": ["Meadows"],
-  "MisthareSupreme": ["Mistlands"],
-  "MagicallyStuffedShroom": ["Mistlands"],
-  "PiquantPie": ["Ashlands"],
-  "RoastedCrustPie": ["Ashlands"],
-  "VikingCupcake": ["Meadows"],
-  "LoxPie": ["Plains"],
+  // Biome = max(ingredient_tiers) of the uncooked recipe
+  "Bread": ["Plains"],               // BarleyFlour=Plains(5)
+  "SerpentMeatCooked": ["Ocean"],     // SerpentMeat=Ocean(2)
+  "HoneyGlazedChicken": ["Mistlands"],// ChickenMeat=Plains, Honey=Meadows, JotunPuffs=Mistlands(6)
+  "MeatPlatter": ["Mistlands"],       // BugMeat=Mistlands(6), LoxMeat=Plains, HareMeat=Mistlands
+  "FishAndBread": ["Mistlands"],      // Fish9(Anglerfish)=Mistlands(6), BreadDough=Plains
+  "MisthareSupreme": ["Mistlands"],   // HareMeat=Mistlands(6), JotunPuffs=Mistlands, Carrot=BF
+  "MagicallyStuffedShroom": ["Mistlands"], // Magecap=Mistlands(6), GiantBloodSack=Mistlands, Turnip=Swamp
+  "PiquantPie": ["Ashlands"],         // Vineberry=Ashlands(7), AsksvinMeat=Ashlands, BarleyFlour=Plains
+  "RoastedCrustPie": ["Ashlands"],    // Vineberry=Ashlands(7), VoltureEgg=Ashlands, BarleyFlour=Plains
+  "VikingCupcake": ["Plains"],        // Cloudberry=Plains(5), ChickenEgg=Plains, BarleyFlour=Plains, Honey=Meadows
+  "LoxPie": ["Plains"],               // Cloudberry=Plains(5), LoxMeat=Plains, BarleyFlour=Plains
 
   // ─── Feast table items (biome in the name) ───
   "FeastMeadows": ["Meadows"],

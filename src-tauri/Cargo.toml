@@ -1,6 +1,6 @@
 [package]
 name = "megaload"
-version = "0.13.32"
+version = "0.13.33"
 description = "MegaLoad - Valheim Mod Manager"
 authors = ["Rik"]
 edition = "2021"
@@ -26,3 +26,5 @@ notify = "7"
 ureq = { version = "2", default-features = false, features = ["native-tls"] }
 native-tls = "0.2"
 zip = "2"
+base64 = "0.22"
+uuid = { version = "1", features = ["v4"] }
