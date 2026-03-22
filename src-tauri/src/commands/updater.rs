@@ -64,16 +64,28 @@ fn megaload_dir() -> Option<PathBuf> {
         .map(|r| PathBuf::from(r).join("MegaLoad"))
 }
 
-fn versions_file_path() -> PathBuf {
-    megaload_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join("mod_versions.json")
+/// Per-profile versions file: stored alongside BepInEx folder in the profile directory.
+fn versions_file_for(bepinex_path: &str) -> PathBuf {
+    PathBuf::from(bepinex_path)
+        .parent()
+        .map(|p| p.join("mod_versions.json"))
+        .unwrap_or_else(|| {
+            megaload_dir()
+                .unwrap_or_else(|| PathBuf::from("."))
+                .join("mod_versions.json")
+        })
 }
 
-fn cache_file_path() -> PathBuf {
-    megaload_dir()
-        .unwrap_or_else(|| PathBuf::from("."))
-        .join("update_cache.json")
+/// Per-profile cache file: stored alongside BepInEx folder in the profile directory.
+fn cache_file_for(bepinex_path: &str) -> PathBuf {
+    PathBuf::from(bepinex_path)
+        .parent()
+        .map(|p| p.join("update_cache.json"))
+        .unwrap_or_else(|| {
+            megaload_dir()
+                .unwrap_or_else(|| PathBuf::from("."))
+                .join("update_cache.json")
+        })
 }
 
 fn now_secs() -> u64 {
@@ -83,42 +95,62 @@ fn now_secs() -> u64 {
         .as_secs()
 }
 
-fn load_installed_versions() -> std::collections::HashMap<String, String> {
-    let path = versions_file_path();
+fn load_installed_versions(bepinex_path: &str) -> std::collections::HashMap<String, String> {
+    let path = versions_file_for(bepinex_path);
     if let Ok(data) = fs::read_to_string(&path) {
-        serde_json::from_str(&data).unwrap_or_default()
-    } else {
-        std::collections::HashMap::new()
+        return serde_json::from_str(&data).unwrap_or_default();
     }
+    // Migrate from legacy global versions file on first access
+    let global = megaload_dir()
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join("mod_versions.json");
+    if let Ok(data) = fs::read_to_string(&global) {
+        if let Ok(versions) =
+            serde_json::from_str::<std::collections::HashMap<String, String>>(&data)
+        {
+            if let Ok(json) = serde_json::to_string_pretty(&versions) {
+                let _ = fs::write(&path, json);
+            }
+            app_log(&format!(
+                "Migrated mod_versions.json to profile: {}",
+                path.display()
+            ));
+            return versions;
+        }
+    }
+    std::collections::HashMap::new()
 }
 
-fn save_installed_versions(versions: &std::collections::HashMap<String, String>) {
-    let path = versions_file_path();
+fn save_installed_versions(
+    bepinex_path: &str,
+    versions: &std::collections::HashMap<String, String>,
+) {
+    let path = versions_file_for(bepinex_path);
     if let Ok(json) = serde_json::to_string_pretty(versions) {
         let _ = fs::write(&path, json);
     }
 }
 
-fn load_cache() -> Option<CachedUpdateCheck> {
-    let path = cache_file_path();
+fn load_cache(bepinex_path: &str) -> Option<CachedUpdateCheck> {
+    let path = cache_file_for(bepinex_path);
     let data = fs::read_to_string(&path).ok()?;
     serde_json::from_str(&data).ok()
 }
 
-fn save_cache(mods: &[ModUpdateInfo]) {
+fn save_cache(bepinex_path: &str, mods: &[ModUpdateInfo]) {
     let cache = CachedUpdateCheck {
         timestamp: now_secs(),
         mods: mods.to_vec(),
     };
     if let Ok(json) = serde_json::to_string_pretty(&cache) {
-        let _ = fs::write(cache_file_path(), json);
+        let _ = fs::write(cache_file_for(bepinex_path), json);
     }
 }
 
 /// Fetch the mod manifest — a single HTTP request for all mod info.
 fn fetch_manifest() -> Result<ModManifest, String> {
     let resp = crate::commands::http::agent().get(MANIFEST_URL)
-        .set("User-Agent", "MegaLoad/0.13.22")
+        .set("User-Agent", "MegaLoad/0.13.23")
         .call()
         .map_err(|e| {
             let msg = format!("{}", e);
@@ -141,10 +173,7 @@ fn evaluate_updates(
     plugins_dir: &PathBuf,
     installed_versions: &std::collections::HashMap<String, String>,
 ) -> Vec<ModUpdateInfo> {
-    // Collect versions we need to seed (installed but no recorded version)
-    let mut versions_to_seed: Vec<(String, String)> = Vec::new();
-
-    let results: Vec<ModUpdateInfo> = manifest
+    manifest
         .mods
         .iter()
         .map(|m| {
@@ -158,24 +187,24 @@ fn evaluate_updates(
             } else {
                 match &iv {
                     Some(v) => v.trim_start_matches('v') != latest,
-                    // Installed but no version recorded — adopt manifest version (up-to-date)
+                    // Installed but no version recorded — flag for update (don't assume current)
                     None => {
-                        versions_to_seed.push((m.name.clone(), latest.clone()));
-                        false
+                        app_log(&format!(
+                            "{}: DLL exists but no version recorded — flagging for update",
+                            m.name
+                        ));
+                        true
                     }
                 }
             };
 
             ModUpdateInfo {
                 name: m.name.clone(),
-                installed_version: if iv.is_none() && is_installed { Some(latest.clone()) } else { iv },
+                installed_version: iv,
                 latest_version: Some(latest),
                 has_update,
-                download_url: if has_update {
-                    Some(m.download_url.clone())
-                } else {
-                    None
-                },
+                // Always include download_url so cached entries have it when re-evaluated
+                download_url: Some(m.download_url.clone()),
                 status: if !is_installed {
                     "not-installed".to_string()
                 } else if has_update {
@@ -186,22 +215,13 @@ fn evaluate_updates(
                 error: None,
             }
         })
-        .collect();
-
-    // Seed mod_versions.json for installed mods that had no recorded version
-    if !versions_to_seed.is_empty() {
-        let mut versions = load_installed_versions();
-        for (name, ver) in &versions_to_seed {
-            versions.insert(name.clone(), ver.clone());
-        }
-        save_installed_versions(&versions);
-        app_log(&format!("Seeded versions for {} pre-existing mods", versions_to_seed.len()));
-    }
-
-    results
+        .collect()
 }
 
-fn clear_caches() {
+fn clear_caches(bepinex_path: &str) {
+    // Clear per-profile cache
+    let _ = fs::remove_file(cache_file_for(bepinex_path));
+    // Also clear legacy global caches
     if let Some(dir) = megaload_dir() {
         let _ = fs::remove_file(dir.join("update_cache.json"));
         let _ = fs::remove_file(dir.join("mod_manifest_cache.json"));
@@ -214,23 +234,22 @@ fn clear_caches() {
 pub fn check_mod_updates(bepinex_path: String, force: bool) -> Result<UpdateCheckResult, String> {
     if force {
         app_log("Force-checking for mod updates (caches cleared)...");
-        clear_caches();
+        clear_caches(&bepinex_path);
     } else {
         app_log("Checking for mod updates...");
     }
     let plugins_dir = PathBuf::from(&bepinex_path).join("plugins");
-    let installed_versions = load_installed_versions();
+    let installed_versions = load_installed_versions(&bepinex_path);
 
     // Check cache first
-    if let Some(cache) = load_cache() {
+    if let Some(cache) = load_cache(&bepinex_path) {
         let age = now_secs().saturating_sub(cache.timestamp);
         if age < CHECK_COOLDOWN_SECS {
             // Re-evaluate from cached latest versions against current installed state
             let mut mods = cache.mods;
             let mut total_updates = 0;
-            let mut versions_to_seed: Vec<(String, String)> = Vec::new();
             for m in &mut mods {
-                let folder = m.name.clone(); // plugin_folder == name for our mods
+                let folder = m.name.clone();
                 let dll_name = format!("{}.dll", m.name);
                 let dll_path = plugins_dir.join(&folder).join(&dll_name);
                 let is_installed = dll_path.exists();
@@ -238,10 +257,8 @@ pub fn check_mod_updates(bepinex_path: String, force: bool) -> Result<UpdateChec
                 m.installed_version = iv.clone();
                 if let Some(latest) = &m.latest_version {
                     if is_installed && iv.is_none() {
-                        // Installed but no version recorded — adopt manifest version
-                        m.has_update = false;
-                        m.installed_version = Some(latest.clone());
-                        versions_to_seed.push((m.name.clone(), latest.trim_start_matches('v').to_string()));
+                        // Installed but no version recorded — flag for update
+                        m.has_update = true;
                     } else {
                         m.has_update = is_installed
                             && iv
@@ -260,14 +277,6 @@ pub fn check_mod_updates(bepinex_path: String, force: bool) -> Result<UpdateChec
                 if m.has_update {
                     total_updates += 1;
                 }
-            }
-            // Seed versions for mods that were installed but had no recorded version
-            if !versions_to_seed.is_empty() {
-                let mut versions = load_installed_versions();
-                for (name, ver) in &versions_to_seed {
-                    versions.insert(name.clone(), ver.clone());
-                }
-                save_installed_versions(&versions);
             }
             return Ok(UpdateCheckResult {
                 mods,
@@ -290,10 +299,9 @@ pub fn check_mod_updates(bepinex_path: String, force: bool) -> Result<UpdateChec
     let results = evaluate_updates(&manifest, &plugins_dir, &installed_versions);
     let total_updates = results.iter().filter(|m| m.has_update).count();
 
-    save_cache(&results);
+    save_cache(&bepinex_path, &results);
 
-    let update_count = results.iter().filter(|m| m.has_update).count();
-    app_log(&format!("Update check complete: {} mods checked, {} updates available", results.len(), update_count));
+    app_log(&format!("Update check complete: {} mods checked, {} updates available", results.len(), total_updates));
 
     Ok(UpdateCheckResult {
         mods: results,
@@ -366,7 +374,7 @@ pub fn install_mod_update(
 
     // Download the DLL (this is a direct file download, not an API call — no rate limit)
     let resp = crate::commands::http::agent().get(&download_url)
-        .set("User-Agent", "MegaLoad/0.13.22")
+        .set("User-Agent", "MegaLoad/0.13.23")
         .call()
         .map_err(|e| format!("Download failed for {}: {}", mod_name, e))?;
 
@@ -380,9 +388,9 @@ pub fn install_mod_update(
     file.write_all(&bytes)
         .map_err(|e| format!("Failed to write file: {}", e))?;
 
-    let mut versions = load_installed_versions();
+    let mut versions = load_installed_versions(&bepinex_path);
     versions.insert(mod_name.clone(), version.clone());
-    save_installed_versions(&versions);
+    save_installed_versions(&bepinex_path, &versions);
     app_log(&format!("Updated {} to v{}", mod_name, version.trim_start_matches('v')));
 
     Ok(format!(
@@ -420,6 +428,11 @@ pub fn auto_update_mods(bepinex_path: String, force: bool) -> Result<UpdateCheck
                         updated_mods[i].error = Some(e);
                     }
                 }
+            } else {
+                app_log(&format!(
+                    "WARNING: {} flagged for update but missing download_url or version — skipping",
+                    mod_info.name
+                ));
             }
         }
     }
@@ -434,9 +447,9 @@ pub fn auto_update_mods(bepinex_path: String, force: bool) -> Result<UpdateCheck
 
 /// Record the current version of a mod (used after manual install/build).
 #[command]
-pub fn set_mod_version(mod_name: String, version: String) -> Result<(), String> {
-    let mut versions = load_installed_versions();
+pub fn set_mod_version(bepinex_path: String, mod_name: String, version: String) -> Result<(), String> {
+    let mut versions = load_installed_versions(&bepinex_path);
     versions.insert(mod_name, version);
-    save_installed_versions(&versions);
+    save_installed_versions(&bepinex_path, &versions);
     Ok(())
 }

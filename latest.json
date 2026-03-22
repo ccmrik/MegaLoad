@@ -1,11 +1,11 @@
 {
-  "version": "0.13.21",
-  "notes": "v0.13.21 - World sources in Dropped By, Feast reclassification",
-  "pub_date": "2026-03-22T02:39:36Z",
+  "version": "0.13.22",
+  "notes": "v0.13.22 - Fix world source labels layout",
+  "pub_date": "2026-03-22T03:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdVNkpWN1hqRFBmN3p1UkJTaHpKWGpPT2dsY0N5ZXBORDh0cm5uc1F0MXNxeWg5VW9DVjlIRlpSNkw2OXgzSkRNWGNRVGZGNytLMWMvZFJROFJQRndJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTQ3MTM5CWZpbGU6TWVnYUxvYWRfMC4xMy4yMV94NjQtc2V0dXAubnNpcy56aXAKeVQ3UmRsRHZLbGdDSm4rTHM3YWhNQW9rL0lnZ3k1NVo4QTV5b1l1T0FHSUdRTTU3TDNKK0pWYTVONW4wWW1MN21HTmRpSzlWSWNyZ2hsV2E2VWhpQmc9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.21/MegaLoad_0.13.21_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU9oeUhVbTljaTFyR3RCV3ZzbWJvRkJzRGFGcGs0NDdaOFdUM2cvNGJRaEdZblJZalNWSzFTb1kwVlVOdjYyU2RpT2FSZEdTNFpjTTVocGlZUTZwcHdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTQ4MzY4CWZpbGU6TWVnYUxvYWRfMC4xMy4yMl94NjQtc2V0dXAubnNpcy56aXAKWFc2Tjg2KzNEemZtUlF1M2VtYzdlNi9OYlhvRWxsREJUQk1iT0ZYSXdReTBFM3VkRlZwRS80VEFlZWpCd1prdUNqM0NTeW9OMDVQbnNob3dBSXVaQVE9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.22/MegaLoad_0.13.22_x64-setup.nsis.zip"
     }
   }
 }

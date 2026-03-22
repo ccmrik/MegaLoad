@@ -250,7 +250,7 @@ function findCreatureName(prefab) {
 function mapItemType(gameType, prefab, shared) {
   // Special cases
   if (prefab === "FishingRod") return "Tool";
-  if ((prefab.startsWith("Feast") && prefab !== "Feaster") || prefab === "MeatPlatterUncooked") return "Food";
+  if ((prefab.startsWith("Feast") && prefab !== "Feaster") || prefab === "MeatPlatter") return "Food";
   
   switch (gameType) {
     case "Material": return "Material";
@@ -288,7 +288,7 @@ function mapItemType(gameType, prefab, shared) {
 function mapSubcategory(gameType, prefab, shared) {
   // Special cases
   if (prefab === "FishingRod") return "Fishing Rod";
-  if ((prefab.startsWith("Feast") && prefab !== "Feaster") || prefab === "MeatPlatterUncooked" || prefab === "MeatPlatter") return "Feast";
+  if ((prefab.startsWith("Feast") && prefab !== "Feaster") || prefab === "MeatPlatter") return "Feast";
   
   const skill = shared.skillType;
   
@@ -1153,6 +1153,28 @@ console.log(`  Localization: ${Object.keys(localization).length}`);
 const converted = [];
 const seenIds = new Set();
 
+// Pre-pass: collect feast material recipe data for merging into base feast entries
+// Feast*_Material items are craft intermediates with the same display name as the base feast.
+// We skip them as standalone entries and merge their recipe/station/description into the base.
+const feastMaterialMap = {};
+for (const item of items) {
+  if (item.prefab.endsWith("_Material") && item.prefab.startsWith("Feast")) {
+    const basePrefab = item.prefab.replace("_Material", "");
+    feastMaterialMap[basePrefab] = {
+      recipe: recipeMap[item.prefab],
+      description: item.description,
+      stack: item.maxStackSize,
+    };
+  }
+  if (item.prefab === "MeatPlatterUncooked") {
+    feastMaterialMap["MeatPlatter"] = {
+      recipe: recipeMap["MeatPlatterUncooked"],
+      description: item.description,
+      stack: item.maxStackSize,
+    };
+  }
+}
+
 // Process items
 for (const item of items) {
   if (isInternalItem(item)) continue;
@@ -1160,6 +1182,10 @@ for (const item of items) {
   
   // Skip DvergerArbalest_shoot variants (these are attack actions, not the actual crossbow)
   if (item.prefab.includes("_shoot")) continue;
+
+  // Skip feast material variants (merged into base feast entries above)
+  if (item.prefab.endsWith("_Material") && item.prefab.startsWith("Feast")) continue;
+  if (item.prefab === "MeatPlatterUncooked") continue;
   
   const name = loc(item.name);
   if (!name || name.startsWith("$")) continue; // Skip if localization failed
@@ -1167,7 +1193,9 @@ for (const item of items) {
   // Skip items with generic creature names 
   if (name.match(/^(lox|boar|wolf|deer|neck)\s/i) && !item.prefab.match(/^(Lox|Boar|Wolf|Deer|Neck)$/)) continue;
 
-  const recipe = recipeMap[item.prefab];
+  // For feast items, use the material variant's recipe/station/description
+  const feastMat = feastMaterialMap[item.prefab];
+  const recipe = feastMat ? feastMat.recipe : recipeMap[item.prefab];
   const itemDrops = dropLookup[item.prefab];
   const biomes = guessBiomes(item.prefab, recipe);
   
@@ -1219,13 +1247,13 @@ for (const item of items) {
     name: name,
     type: mapItemType(item.itemType, item.prefab, item),
     subcategory: mapSubcategory(item.itemType, item.prefab, item),
-    description: loc(item.description),
+    description: loc(item.description) || (feastMat ? loc(feastMat.description) : ""),
     biomes: biomes,
     source: getSource(item.prefab, recipe, itemDrops),
     station: recipe ? mapStation(recipe.craftingStation) : "",
     stationLevel: recipe ? recipe.minStationLevel : 0,
     maxQuality: item.maxQuality,
-    stack: item.maxStackSize,
+    stack: feastMat ? feastMat.stack : item.maxStackSize,
     weight: item.weight,
     value: item.value,
     recipe: recipeIngredients,

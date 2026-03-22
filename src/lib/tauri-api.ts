@@ -208,8 +208,8 @@ export const installModUpdate = (
   invoke<string>("install_mod_update", { bepinexPath, modName, downloadUrl, version });
 export const autoUpdateMods = (bepinexPath: string, force = false) =>
   invoke<UpdateCheckResult>("auto_update_mods", { bepinexPath, force });
-export const setModVersion = (modName: string, version: string) =>
-  invoke<void>("set_mod_version", { modName, version });
+export const setModVersion = (bepinexPath: string, modName: string, version: string) =>
+  invoke<void>("set_mod_version", { bepinexPath, modName, version });
 
 // --- App logging commands ---
 

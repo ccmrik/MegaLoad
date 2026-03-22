@@ -210,32 +210,30 @@ fn ensure_trainer_plugin(app: &AppHandle, bepinex_path: &str) {
     let dest_dir = PathBuf::from(bepinex_path).join("plugins").join("MegaTrainer");
     let dest_dll = dest_dir.join("MegaTrainer.dll");
 
-    // Resolve the bundled resource
+    // If the DLL already exists, don't overwrite — the updater may have installed a newer version
+    if dest_dll.exists() {
+        return;
+    }
+
+    // Resolve the bundled resource (BaseDirectory::Resource already points at the resources dir)
     let resource = app
         .path()
-        .resolve("resources/MegaTrainer.dll", tauri::path::BaseDirectory::Resource);
+        .resolve("MegaTrainer.dll", tauri::path::BaseDirectory::Resource);
     let source = match resource {
         Ok(p) if p.exists() => p,
-        _ => return, // Resource not found (dev mode without bundle), skip
-    };
-
-    // Copy if missing or content differs (size check alone missed same-size updates)
-    let needs_copy = if dest_dll.exists() {
-        let src_bytes = fs::read(&source).unwrap_or_default();
-        let dst_bytes = fs::read(&dest_dll).unwrap_or_default();
-        src_bytes != dst_bytes
-    } else {
-        true
-    };
-
-    if needs_copy {
-        let _ = fs::create_dir_all(&dest_dir);
-        if fs::copy(&source, &dest_dll).is_ok() {
-            app_log(&format!(
-                "Auto-deployed MegaTrainer.dll to {}",
-                dest_dll.display()
-            ));
+        _ => {
+            app_log("MegaTrainer.dll bundled resource not found (dev mode?) — skipping auto-deploy");
+            return;
         }
+    };
+
+    // Only deploy when the DLL is missing (never clobber updater-installed versions)
+    let _ = fs::create_dir_all(&dest_dir);
+    if fs::copy(&source, &dest_dll).is_ok() {
+        app_log(&format!(
+            "Auto-deployed bundled MegaTrainer.dll to {}",
+            dest_dll.display()
+        ));
     }
 }
 

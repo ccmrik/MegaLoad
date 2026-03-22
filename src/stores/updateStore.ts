@@ -5,7 +5,7 @@ import {
   type UpdateCheckResult,
 } from "../lib/tauri-api";
 
-/** Poll every 5 minutes for mod updates (check only, no auto-install) */
+/** Poll every 5 minutes for mod updates (auto-install if game not running) */
 const MOD_POLL_INTERVAL_MS = 5 * 60 * 1000;
 
 interface UpdateState {
@@ -88,9 +88,9 @@ export const useUpdateStore = create<UpdateState>((set, get) => ({
   startLiveCheck: (bepinexPath: string) => {
     if (modPollTimer) return;
     // Don't do an immediate check — the startup autoUpdate handles that.
-    // First periodic check fires after the interval.
+    // Periodic poll auto-updates (check + install) so updates land without user action.
     modPollTimer = setInterval(() => {
-      get().checkUpdates(bepinexPath);
+      get().autoUpdate(bepinexPath);
     }, MOD_POLL_INTERVAL_MS);
   },
 

@@ -65,16 +65,26 @@ export function Sidebar() {
 
   // Auto-update on startup when profile is available (re-run on profile switch)
   const lastCheckedProfile = useRef<string | null>(null);
+  const wasGameRunning = useRef(false);
   useEffect(() => {
-    if (profile?.bepinex_path && profile.bepinex_path !== lastCheckedProfile.current) {
-      lastCheckedProfile.current = profile.bepinex_path;
-      // If game is already running at startup, only check — don't install
+    const bep = profile?.bepinex_path;
+    if (!bep) return;
+
+    // Profile switch — always auto-update unless game is running
+    if (bep !== lastCheckedProfile.current) {
+      lastCheckedProfile.current = bep;
       if (gameStatus?.valheim_running) {
-        checkUpdates(profile.bepinex_path);
+        checkUpdates(bep);
       } else {
-        autoUpdate(profile.bepinex_path);
+        autoUpdate(bep);
       }
     }
+    // Game just stopped — trigger auto-update to install any pending updates
+    else if (wasGameRunning.current && !gameStatus?.valheim_running) {
+      autoUpdate(bep);
+    }
+
+    wasGameRunning.current = !!gameStatus?.valheim_running;
   }, [profile?.bepinex_path, autoUpdate, checkUpdates, gameStatus?.valheim_running]);
 
   useEffect(() => {
