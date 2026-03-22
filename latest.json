@@ -1,1 +1,11 @@
-{"version":"0.13.30","notes":"v0.13.30 - Live Player Data: file watcher + game exit refresh","pub_date":"2026-03-22T17:44:56Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUVNQWhheDB1eWZ4ZUE2bE1RNGhkY0lzUUdoSGF4TmFOdllHeWRKWTA2UVl6RDMvMndkWHNkellaK2RkUFg3czZkNXgxVGhlbkQ0TjFEcjdweitaTkFrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTYxNzU4CWZpbGU6TWVnYUxvYWRfMC4xMy4zMF94NjQtc2V0dXAubnNpcy56aXAKUE52azl4Y2Y4bWdWR3JuS0RvWkZtMWluYVk3WHoxQzRsZ0hEeXQxejE5WVhGcm1tVjRCc2ZGWDcySkY2VDF2c1pYamVRaUtzSE5TZEV1aDlHRm5TRFE9PQo=","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.13.30/MegaLoad_0.13.30_x64-setup.nsis.zip"}}}
+{
+  "version": "0.13.31",
+  "notes": "v0.13.31 - Fix Stone/Stonecutter discovery collision, add MegaFood & MegaShot mod items",
+  "pub_date": "2026-03-22T18:16:13Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUQzRXE1V01XUnBObS9qbEp2UHJOZUZ3WFdndUdVeTEvbXY3c3dtRDUwclJWWVRVN1AyYWVISEZiYi8xZnVBNzRJRjhqbWdDWVlsUUhtelphNFNBd3dNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTYzNjk0CWZpbGU6TWVnYUxvYWRfMC4xMy4zMV94NjQtc2V0dXAubnNpcy56aXAKaEJKK1p0a2U2TTg0UFQ3NmtXUWUyU3J2MVBlcDFUUlB6aVc2c0FEcEZMTkxORGt6RmhJR0hVNEZWM0d6b3IxbmlTa09rcE1sYktkdmllTlIvN2FhQWc9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.31/MegaLoad_0.13.31_x64-setup.nsis.zip"
+    }
+  }
+}

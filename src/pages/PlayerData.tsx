@@ -473,12 +473,14 @@ export function PlayerData() {
 
           {/* ── Knowledge / Discovery Panel ────────────────── */}
           <div className="glass rounded-xl p-5">
+            {/* Title Row */}
+            <h3 className="text-lg font-semibold text-zinc-200 flex items-center gap-2 mb-3">
+              <Eye className="w-5 h-5 text-brand-400" /> Knowledge
+            </h3>
+
+            {/* Controls Row */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-4">
-                <h3 className="text-lg font-semibold text-zinc-200 flex items-center gap-2">
-                  <Eye className="w-5 h-5 text-brand-400" /> Knowledge
-                </h3>
-
                 {/* Tab Toggle */}
                 <div className="flex bg-zinc-800/60 rounded-lg p-0.5">
                   <button
