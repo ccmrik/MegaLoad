@@ -1790,7 +1790,19 @@ for (let i = 0; i < converted.length; i++) {
   ts += `  ${JSON.stringify(e)}${i < converted.length - 1 ? "," : ""}\n`;
 }
 
-ts += `];\n`;
+ts += `];\n\n`;
+
+// Add lookup maps
+ts += `// ── Lookup Maps ─────────────────────────────────────────────
+/** Prefab ID → ValheimItem */
+export const itemMap = new Map<string, ValheimItem>();
+/** Lowercase localization token → ValheimItem (e.g. "$item_axe_stone" → AxeStone item) */
+export const tokenMap = new Map<string, ValheimItem>();
+for (const item of VALHEIM_ITEMS) {
+  itemMap.set(item.id, item);
+  if (item.token) tokenMap.set(item.token.toLowerCase(), item);
+}
+`;
 
 fs.writeFileSync(OUTPUT_PATH, ts, "utf-8");
 console.log(`\nWritten to: ${OUTPUT_PATH}`);

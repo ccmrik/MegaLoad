@@ -1,1 +1,11 @@
-{"version":"0.13.27","notes":"v0.13.27 - Player Data: fix v38-43 character parsing, Steam Cloud support","pub_date":"2026-03-22T16:31:17Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU9KenBhT2tEOFJOa2g5bGY2MGlUNm9rS1FoZS9ZcmJSMStTM21mVFcyeWlKR3ZlZUluTk0zYkRkMzZOTEUrc0ZqL2ZLOExjK090YWxzL3BCbVA1SlE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTU3MzMwCWZpbGU6TWVnYUxvYWRfMC4xMy4yN194NjQtc2V0dXAubnNpcy56aXAKbjkwZG1iVmYzL2ZjUHRmaDExT25HdU1EWjZ3TnA3cHV6c1M5emhENGNBbW9kUExRdm5JU2NMaENHbTNpclhwcjM2eVRSZnB5OXQ0MENaQVVyOEF5QUE9PQo=","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.13.27/MegaLoad_0.13.27_x64-setup.nsis.zip"}}}
+{
+  "version": "0.13.28",
+  "notes": "v0.13.28 - Player Data: fix discoveries, add kills/forsaken stats, link items to Valheim Data",
+  "pub_date": "2026-03-22T16:52:33Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUoycHN3bmhjblB3S0M2RWF5NzZIK1dCVkxzeXBCYi9zbFlMTU9Jb1hIN3Y0bUJNS2RZM3pLcmJHeEhUcVVFVTdTMDBMZGF0aCs0OWpVU3EvNTRzU2c0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTU4NzQ0CWZpbGU6TWVnYUxvYWRfMC4xMy4yOF94NjQtc2V0dXAubnNpcy56aXAKVThaVFY3OTlIK2NwVkl4TlpjZU5maU9hTTJWNUdFNE5XMkVKaDc0YVpMWSt2SEpiWmtDc1hrb0MvOE9yNzVFdVRpdmVzQW1RaEdQOXdxK3hVaUxQQkE9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.28/MegaLoad_0.13.28_x64-setup.nsis.zip"
+    }
+  }
+}

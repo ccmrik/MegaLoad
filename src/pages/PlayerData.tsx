@@ -32,6 +32,8 @@ import { usePlayerDataStore } from "../stores/playerDataStore";
 import { useValheimDataStore } from "../stores/valheimDataStore";
 import {
   VALHEIM_ITEMS,
+  itemMap,
+  tokenMap,
   type ValheimItem,
 } from "../data/valheim-items";
 import type { InventoryItem, SkillData } from "../lib/tauri-api";
@@ -84,15 +86,6 @@ const SKILL_COLORS: Record<string, string> = {
 };
 
 // ── Item Lookup Helpers ────────────────────────────────────
-const itemMap = new Map<string, ValheimItem>();
-const tokenMap = new Map<string, ValheimItem>();
-for (const item of VALHEIM_ITEMS) {
-  itemMap.set(item.id, item);
-  if (item.token) {
-    tokenMap.set(item.token.toLowerCase(), item);
-  }
-}
-
 function getItem(prefabId: string): ValheimItem | undefined {
   return itemMap.get(prefabId);
 }
@@ -157,6 +150,7 @@ export function PlayerData() {
   const [knowledgeTab, setKnowledgeTab] = useState<"discovered" | "all">("discovered");
   const [knowledgeSearch, setKnowledgeSearch] = useState("");
   const [knowledgeFilter, setKnowledgeFilter] = useState<string>("all");
+  const [knowledgeTypeFilter, setKnowledgeTypeFilter] = useState<string>("all");
 
   useEffect(() => {
     fetchCharacters();
@@ -188,9 +182,9 @@ export function PlayerData() {
       }
     }
 
-    // Filter to items that are discoverable (not build pieces, creatures)
+    // Filter to items that are discoverable (not creatures)
     const discoverableItems = VALHEIM_ITEMS.filter(
-      (i) => i.type !== "BuildPiece" && i.type !== "Creature"
+      (i) => i.type !== "Creature"
     );
 
     const discovered = discoverableItems.filter((i) => knownPrefabs.has(i.id));
@@ -207,6 +201,10 @@ export function PlayerData() {
       filtered = filtered.filter((i) => i.biomes.includes(knowledgeFilter));
     }
 
+    if (knowledgeTypeFilter !== "all") {
+      filtered = filtered.filter((i) => i.type === knowledgeTypeFilter);
+    }
+
     if (knowledgeSearch) {
       const q = knowledgeSearch.toLowerCase();
       filtered = filtered.filter(
@@ -219,7 +217,7 @@ export function PlayerData() {
     }
 
     return filtered;
-  }, [knowledgeTab, knowledgeData, knowledgeSearch, knowledgeFilter]);
+  }, [knowledgeTab, knowledgeData, knowledgeSearch, knowledgeFilter, knowledgeTypeFilter]);
 
   const knownPrefabSet = useMemo(() => {
     if (!character) return new Set<string>();
@@ -529,6 +527,17 @@ export function PlayerData() {
                   <option value="all">All Biomes</option>
                   {["Meadows", "Black Forest", "Swamp", "Mountain", "Plains", "Ocean", "Mistlands", "Ashlands", "Deep North"].map((b) => (
                     <option key={b} value={b}>{b}</option>
+                  ))}
+                </select>
+
+                <select
+                  value={knowledgeTypeFilter}
+                  onChange={(e) => setKnowledgeTypeFilter(e.target.value)}
+                  className="px-3 py-1.5 bg-zinc-800/60 border border-zinc-700/50 rounded-lg text-sm text-zinc-200 focus:outline-none focus:border-brand-500/50"
+                >
+                  <option value="all">All Types</option>
+                  {["Material", "Weapon", "Armor", "Food", "Potion", "Tool", "Ammo", "BuildPiece", "Misc"].map((t) => (
+                    <option key={t} value={t}>{t === "BuildPiece" ? "Build Piece" : t}</option>
                   ))}
                 </select>
               </div>

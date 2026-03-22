@@ -40,6 +40,8 @@ import {
   Hand,
   Boxes,
   Archive,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { save } from "@tauri-apps/plugin-dialog";
 import { saveTextFile } from "../lib/tauri-api";
@@ -80,7 +82,8 @@ import {
   type ViewMode,
   type TableSortKey,
 } from "../stores/valheimDataStore";
-import { VALHEIM_ITEMS, type ValheimItem, type ItemType } from "../data/valheim-items";
+import { VALHEIM_ITEMS, type ValheimItem, type ItemType, itemMap, tokenMap } from "../data/valheim-items";
+import { usePlayerDataStore } from "../stores/playerDataStore";
 
 /** Renders a game icon with Lucide fallback */
 function ItemIcon({ id, type, size = 36, className = "" }: { id: string; type?: ItemType; size?: number; className?: string }) {
@@ -1055,6 +1058,7 @@ function ItemTable({
 
 function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void }) {
   const { setSelectedItem, setActiveType, setActiveSubcategory, setActiveBiome, setActiveStation, setSelectedStation, setSelectedFactory, setSelectedVendor, cartItems, addToCart, removeFromCart } = useValheimDataStore();
+  const character = usePlayerDataStore((s) => s.character);
   const [statsLevel, setStatsLevel] = useState(1);
   const [cartLevel, setCartLevel] = useState(item.maxQuality || 1);
   const usedIn = getUsedIn(item.id);
@@ -1065,6 +1069,21 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
   const showLevelTabs = hasPerLevelStats(item);
   const relatedItems = getRelatedItems(item);
   const wikiUrl = getWikiUrl(item);
+
+  // Build set of known prefab IDs from player's discoveries
+  const knownPrefabs = useMemo(() => {
+    if (!character) return new Set<string>();
+    const set = new Set<string>();
+    for (const token of [...character.known_materials, ...character.known_recipes]) {
+      if (itemMap.has(token)) {
+        set.add(token);
+      } else {
+        const resolved = tokenMap.get(token.toLowerCase());
+        if (resolved) set.add(resolved.id);
+      }
+    }
+    return set;
+  }, [character]);
 
   const handleNavigate = (id: string) => {
     const target = getItemById(id);
@@ -1535,6 +1554,11 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                         <ItemIcon id={ing.id} size={24} />
                       </div>
                       <span className="text-xs text-brand-400 hover:underline flex-1">{ing.name}</span>
+                      {knownPrefabs.size > 0 && (
+                        knownPrefabs.has(ing.id)
+                          ? <Eye className="w-3.5 h-3.5 text-brand-400 shrink-0" />
+                          : <EyeOff className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
+                      )}
                       <span className="text-xs text-zinc-400 font-mono">x{ing.amount}</span>
                     </button>
                   ))}
@@ -1568,6 +1592,11 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                               <ItemIcon id={r.id} size={20} />
                             </div>
                             <span className="text-[11px] text-brand-400 hover:underline flex-1">{r.name}</span>
+                            {knownPrefabs.size > 0 && (
+                              knownPrefabs.has(r.id)
+                                ? <Eye className="w-3 h-3 text-brand-400 shrink-0" />
+                                : <EyeOff className="w-3 h-3 text-zinc-600 shrink-0" />
+                            )}
                             <span className="text-[11px] text-zinc-500 font-mono">x{r.amount}</span>
                           </button>
                         ))}
@@ -1609,6 +1638,11 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                           <ItemIcon id={mat.id} size={24} />
                         </div>
                         <span className="text-xs text-brand-400 hover:underline flex-1">{mat.name}</span>
+                        {knownPrefabs.size > 0 && (
+                          knownPrefabs.has(mat.id)
+                            ? <Eye className="w-3.5 h-3.5 text-brand-400 shrink-0" />
+                            : <EyeOff className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
+                        )}
                         <span className="text-xs text-zinc-400 font-mono">x{mat.amount}</span>
                       </button>
                     ))}

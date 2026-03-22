@@ -1196,3 +1196,13 @@ export const VALHEIM_ITEMS: ValheimItem[] = [
   {"id":"TrophyGoblinKing","token":"$item_trophy_goblinking","name":"Yagluth Trophy","type":"Misc","subcategory":"Trophy","description":"The crownless head of a dead king.\n\nOffer it to the Sacrificial Stones.","biomes":["Plains"],"source":["Creature Drop"],"station":"","stationLevel":0,"maxQuality":1,"stack":20,"weight":1,"value":0,"recipe":[],"upgradeCosts":[],"drops":[],"worldSources":[],"stats":[{"label":"Blunt","value":"10"}],"wikiUrl":"https://valheim.fandom.com/wiki/Yagluth_trophy","wikiGroup":""},
   {"id":"TrophyGoblinBruteBrosShaman","token":"$item_trophy_shamanbro","name":"Zil Trophy","type":"Misc","subcategory":"Trophy","description":"In the choice of 'ride or die', he picked the latter.","biomes":["Plains"],"source":["Creature Drop"],"station":"","stationLevel":0,"maxQuality":1,"stack":20,"weight":2,"value":0,"recipe":[],"upgradeCosts":[],"drops":[],"worldSources":[],"stats":[{"label":"Blunt","value":"10"}],"wikiUrl":"https://valheim.fandom.com/wiki/Zil_trophy","wikiGroup":""}
 ];
+
+// ── Lookup Maps ─────────────────────────────────────────────
+/** Prefab ID → ValheimItem */
+export const itemMap = new Map<string, ValheimItem>();
+/** Lowercase localization token → ValheimItem (e.g. "$item_axe_stone" → AxeStone item) */
+export const tokenMap = new Map<string, ValheimItem>();
+for (const item of VALHEIM_ITEMS) {
+  itemMap.set(item.id, item);
+  if (item.token) tokenMap.set(item.token.toLowerCase(), item);
+}
