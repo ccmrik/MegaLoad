@@ -1,11 +1,11 @@
 {
-  "version": "0.13.34",
-  "notes": "v0.13.34 - Embed MegaBugs token, auto USER_AGENT",
-  "pub_date": "2026-03-22T23:28:31Z",
+  "version": "0.13.35",
+  "notes": "v0.13.35 - Admin ticket delete with optimistic UI",
+  "pub_date": "2026-03-22T23:47:58Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUhsbE5ad1o4OTNGUmxybzNJTzQ4Nm5pYjJDSkhvWXBTakphbC9JYVAwekt1UFczM0E0a3NzZFVFUnhiTUtUMVVjdTRIc0ZGZ3ZGZ1dOQUkwV1dYbmdJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTgyNDM1CWZpbGU6TWVnYUxvYWRfMC4xMy4zNF94NjQtc2V0dXAubnNpcy56aXAKRENQWTNDU3RZUDdVT09CdTc3TEdqYUpLSlNEVFlrc2E1bHFWV1FxZFExOTJoM1RpMWJLSG1oTjIwaldMWHpZMnZudFZnZURic2Y5N3dHdWRYNEpnQmc9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.34/MegaLoad_0.13.34_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUpGaXp0YlFVbFZSMitKYzhCWFU0b0hSRkdDcnE4SHJBak1wcGs3WHErYnpPRWNseVlweUZaTTdZdnNJM2U0UW9FN0tvT1BGM3U5ODRiVnFXckJlb2dJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTgzNjUwCWZpbGU6TWVnYUxvYWRfMC4xMy4zNV94NjQtc2V0dXAubnNpcy56aXAKNFFtcFZLNWlUZjdBenA3c2FSbnNUNitaL01rNStGUktSVk9wbU13elJKVkVqcUdtbjRtTWxPUGYrbi9IZzhNVTJCM283bm1VNmtmUU5lVDJ4OFRZRHc9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.35/MegaLoad_0.13.35_x64-setup.nsis.zip"
     }
   }
 }

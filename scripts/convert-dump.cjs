@@ -83,6 +83,11 @@ const BLACKLISTED_PREFABS = new Set([
   "Mistile_kamikaze",    // Creature kamikaze attack
   "PlayerUnarmed",       // Internal bare-hands weapon
 
+  // Deprecated/removed items — not obtainable in current game
+  "Flametal",            // Old "Ancient Metal" — replaced by FlametalNew in Ashlands update
+  "FlametalOre",         // Old "Glowing Metal Ore" — replaced by FlametalOreNew
+  "BonemawSerpentScale", // Bonemaw Scale — not a player-obtainable item
+
   // Boss altar upgrade pickups — not player-usable items
   "HealthUpgrade_Bonemass",
   "HealthUpgrade_GDKing",
@@ -433,6 +438,9 @@ const RAW_MATERIAL_BIOME = {
   "HelmetSweatBand": "Black Forest",
   "Thunderstone": "Black Forest",
   "AncientSeed": "Black Forest",
+  "FireworksRocket_White": "Black Forest", // Haldor vendor — base firework ingredient
+  "CandleWick": "Black Forest",           // Haldor vendor — candle ingredient
+  "Ironpit": "Black Forest",              // Haldor vendor (also found in Ashlands, lowest tier for calc)
   // Amber, AmberPearl, Ruby, SilverNecklace, Coins moved to BIOME_OVERRIDE (multi-biome loot)
   "BirchSeeds": "Meadows",
 
@@ -456,6 +464,7 @@ const RAW_MATERIAL_BIOME = {
   "MushroomBzerker": "Swamp",
   "Root": "Swamp",
   "ElderBark": "Swamp",
+  "BlobVial": "Swamp",  // Bog Witch vendor — blob bomb ingredient
 
   // ─── Mountain (tier 4) ───
   "Silver": "Mountain",
@@ -509,16 +518,14 @@ const RAW_MATERIAL_BIOME = {
   "SpiceMistlands": "Mistlands",
 
   // ─── Ashlands (tier 7) ───
-  "Flametal": "Ashlands",
   "FlametalNew": "Ashlands",
-  "FlametalOre": "Ashlands",
   "Blackwood": "Ashlands",
   "SulfurStone": "Ashlands",
   "GemstoneBlue": "Ashlands",
   "GemstoneGreen": "Ashlands",
   "GemstoneRed": "Ashlands",
   "CharcoalResin": "Ashlands",
-  "CeramicPlate": "Ashlands",
+  "CeramicPlate": "Mistlands",  // Crafted from BlackMarble (Mistlands) at Artisan Station
   "VineberrySeeds": "Ashlands",
   "Fiddleheadfern": "Ashlands",
   "SpiceAshlands": "Ashlands",
@@ -538,11 +545,10 @@ const RAW_MATERIAL_BIOME = {
   "Pot_Shard_Green": "Ashlands",
   "Pot_Shard_Red": "Ashlands",
   "BellFragment": "Ashlands",
-  "VineGreenSeeds": "Ashlands",
+  "VineGreenSeeds": "Black Forest",  // Purchased from Haldor
   "Proustitite": "Ashlands",
   "Grausten": "Ashlands",
   "BoneMawSerpentMeat": "Ashlands",
-  "BonemawSerpentScale": "Ashlands",
   "BonemawSerpentTooth": "Ashlands",
   "CharredBone": "Ashlands",
 
@@ -683,13 +689,12 @@ const BIOME_OVERRIDE = {
   "Bronze": ["Black Forest", "Mountain", "Ashlands"],
   "BlackCore": ["Mistlands"],
   "MoltenCore": ["Ashlands"],
-  "Ironpit": ["Ashlands"],
 
   // ─── Multi-biome foraged/dropped materials ───
   "SurtlingCore": ["Black Forest", "Swamp"],
   "BoneFragments": ["Meadows", "Black Forest", "Swamp"],
   "Thistle": ["Black Forest", "Swamp"],
-  "Acorn": ["Meadows", "Plains"],
+  "Acorn": ["Meadows"],
   "SerpentMeat": ["Ocean"],
   "SerpentScale": ["Ocean"],
 
@@ -730,9 +735,13 @@ const BIOME_OVERRIDE = {
   "Charredskull": ["Ashlands"],
   "AsksvinEgg": ["Ashlands"],
   "PungentPebbles": ["Ashlands"],
-  "CandleWick": ["Ashlands"],
-  "BlobVial": ["Ashlands"],
-  "FireworksRocket_White": ["Ashlands"],
+
+  // ─── Vendor items (biome of the vendor) ───
+  "CandleWick": ["Black Forest"],        // Haldor vendor
+  "BlobVial": ["Swamp"],                  // Bog Witch vendor
+  "FireworksRocket_White": ["Black Forest"], // Haldor vendor
+  "Ironpit": ["Black Forest", "Ashlands"], // Haldor vendor + found in Ashlands
+  "VineGreenSeeds": ["Black Forest"],      // Haldor vendor (Ivy Seeds)
 
   // ─── Trophies (biome of the creature) ───
   "TrophyDraugrFem": ["Swamp"],
@@ -833,7 +842,6 @@ const WORLD_DROPS = {
   ],
   "Acorn": [
     {source: "Oak Tree", biome: "Meadows", type: "Tree"},
-    {source: "Oak Tree", biome: "Plains", type: "Tree"},
   ],
   // ─── Rocks & mining ───
   "Stone": [
@@ -993,9 +1001,6 @@ const WORLD_DROPS = {
     {source: "Herb Node", biome: "Ashlands", type: "Pickup"},
   ],
   "VineberrySeeds": [
-    {source: "Ground Spawn", biome: "Ashlands", type: "Pickup"},
-  ],
-  "VineGreenSeeds": [
     {source: "Ground Spawn", biome: "Ashlands", type: "Pickup"},
   ],
   // ─── Fish (Fishing) ───
