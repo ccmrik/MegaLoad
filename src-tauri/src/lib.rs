@@ -23,6 +23,9 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
+        .manage(ConfigWatcherState {
+            watcher: std::sync::Mutex::new(None),
+        })
         .invoke_handler(tauri::generate_handler![
             // Profiles
             get_profiles,
@@ -43,6 +46,8 @@ pub fn run() {
             save_config_value,
             reset_config_file,
             clean_orphan_configs,
+            start_config_watcher,
+            stop_config_watcher,
             // Logs
             read_log_file,
             read_log_tail,

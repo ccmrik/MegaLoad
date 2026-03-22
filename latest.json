@@ -1,11 +1,11 @@
 {
-  "version": "0.13.16",
-  "notes": "v0.13.16 - Fix update count badge to match toast notification",
-  "pub_date": "2026-03-22T00:27:54Z",
+  "version": "0.13.17",
+  "notes": "v0.13.17 - Update trainer: rename Fly Mode, remove No Skill Drain, fix Always Rested, shift numpad bindings",
+  "pub_date": "2026-03-22T01:24:16Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUlaVXBPRnMyc0VxYWt1eDk1eXpuM3gyTWIzc2NLY3ZwWXZnUDJJRmd3dC9vMUx4TkpRQTBnSnM3VFpwckV1Z053WUtUSDJWSW5WeEFITTBpc0kxTndBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTM5MTk0CWZpbGU6TWVnYUxvYWRfMC4xMy4xNl94NjQtc2V0dXAubnNpcy56aXAKamowZVZOaVlST2VoMXllOWtlNjEzTHRvK1FYWEZTYW9YTWtORkJSam5DSDd3ZU44RUZBdWRlQVorcHl2M1A0dTJCYWkxdS9YUVlmVnZpbHRDT0poRHc9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.16/MegaLoad_0.13.16_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUVyVmdwNktNajlEN2tOZmo4azZCM0dtWnhIU3JBVGpCRHk3MFJNNHlFaWNoaFhoRU53WXlSZmVoUDVQYWNVN2ZyOHNFUit5WmdoaWcxNlYzWjI5ZkE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTQyNjM1CWZpbGU6TWVnYUxvYWRfMC4xMy4xN194NjQtc2V0dXAubnNpcy56aXAKejNENVAraHBEZG9RUW9TY2dmbHQrcFdBcEpCVEtwNVl3RllQYkV0Mmp5cWp3ODhKeWdxTElUZ1ZHWG9xUnh4YUR6ZXhWUm5jQUJ1cVIydmd3Z21wQVE9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.17/MegaLoad_0.13.17_x64-setup.nsis.zip"
     }
   }
 }

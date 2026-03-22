@@ -1,10 +1,13 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from "react";
+import { listen } from "@tauri-apps/api/event";
 import { useProfileStore } from "../stores/profileStore";
 import {
   getConfigFiles,
   saveConfigValue,
   resetConfigFile,
   cleanOrphanConfigs,
+  startConfigWatcher,
+  stopConfigWatcher,
   type ConfigFile,
   type ConfigEntry,
   type ConfigSection,
@@ -20,6 +23,7 @@ import {
   X,
   Undo2,
   List,
+  RefreshCw,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -63,23 +67,63 @@ export function ConfigEditor() {
   const [toast, setToast] = useState<string | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const contentRef = useRef<HTMLDivElement>(null);
+  const selectedModRef = useRef(selectedMod);
+  selectedModRef.current = selectedMod;
 
+  // Reload configs from disk, preserving UI state (selected mod, expanded sections)
+  const reloadConfigs = useCallback(
+    async (isInitial = false) => {
+      if (!profile?.bepinex_path) return;
+      try {
+        const files = await getConfigFiles(profile.bepinex_path);
+        setConfigs(files);
+        // Preserve selectedMod if it still exists; auto-select first on initial load
+        const current = selectedModRef.current;
+        if (current && files.some((f) => f.file_name === current)) {
+          // Keep current selection — no-op
+        } else if (isInitial && files.length > 0) {
+          setSelectedMod(files[0].file_name);
+        }
+      } catch {
+        // silently ignore reload failures
+      }
+    },
+    [profile?.bepinex_path]
+  );
+
+  // Initial load + orphan cleanup
   useEffect(() => {
     if (profile?.bepinex_path) {
       setLoading(true);
-      // Remove config files for uninstalled mods before loading
       cleanOrphanConfigs(profile.bepinex_path)
-        .catch(() => {}) // non-critical — continue loading even if cleanup fails
-        .then(() => getConfigFiles(profile.bepinex_path))
-        .then((files) => {
-          setConfigs(files);
-          if (files.length > 0 && !selectedMod) {
-            setSelectedMod(files[0].file_name);
-          }
-        })
+        .catch(() => {})
+        .then(() => reloadConfigs(true))
         .finally(() => setLoading(false));
     }
-  }, [profile?.bepinex_path]);
+  }, [profile?.bepinex_path, reloadConfigs]);
+
+  // File watcher: watch BepInEx/config for changes and reload
+  useEffect(() => {
+    if (!profile?.bepinex_path) return;
+
+    startConfigWatcher(profile.bepinex_path).catch(() => {});
+
+    const unlistenPromise = listen("config-files-changed", () => {
+      reloadConfigs();
+    });
+
+    return () => {
+      stopConfigWatcher().catch(() => {});
+      unlistenPromise.then((fn) => fn());
+    };
+  }, [profile?.bepinex_path, reloadConfigs]);
+
+  // Reload when window regains focus (catches config changes from game runs, manual edits, etc.)
+  useEffect(() => {
+    const handleFocus = () => reloadConfigs();
+    window.addEventListener("focus", handleFocus);
+    return () => window.removeEventListener("focus", handleFocus);
+  }, [reloadConfigs]);
 
   // Auto-dismiss toast
   useEffect(() => {
@@ -259,8 +303,16 @@ export function ConfigEditor() {
           </p>
         </div>
 
-        {/* Global Search */}
-        <div className="relative w-80">
+        {/* Global Search + Refresh */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => reloadConfigs()}
+            className="p-2.5 rounded-lg glass border border-zinc-800 text-zinc-400 hover:text-brand-400 hover:border-brand-500/50 transition-all"
+            title="Reload configs from disk"
+          >
+            <RefreshCw className="w-4 h-4" />
+          </button>
+          <div className="relative w-80">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <input
             type="text"
@@ -277,6 +329,7 @@ export function ConfigEditor() {
               <X className="w-4 h-4" />
             </button>
           )}
+        </div>
         </div>
       </div>
 

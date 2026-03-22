@@ -1,10 +1,75 @@
 use crate::commands::app_log::app_log;
 use crate::commands::security::validate_config_path;
 use crate::models::{ConfigEntry, ConfigFile, ConfigSection};
+use notify::{Config as NotifyConfig, RecommendedWatcher, RecursiveMode, Watcher};
 use std::collections::HashSet;
 use std::fs;
 use std::path::Path;
-use tauri::command;
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+use tauri::{command, AppHandle, Emitter, State};
+
+pub struct ConfigWatcherState {
+    pub watcher: Mutex<Option<RecommendedWatcher>>,
+}
+
+#[command]
+pub fn start_config_watcher(
+    app: AppHandle,
+    state: State<'_, ConfigWatcherState>,
+    bepinex_path: String,
+) -> Result<(), String> {
+    let config_dir = Path::new(&bepinex_path).join("config");
+    if !config_dir.exists() {
+        return Ok(());
+    }
+
+    let mut guard = state.watcher.lock().map_err(|e| e.to_string())?;
+    // Drop existing watcher before creating new one
+    *guard = None;
+
+    let last_emit = Arc::new(Mutex::new(Instant::now() - Duration::from_secs(10)));
+    let app_handle = app.clone();
+
+    let mut watcher = RecommendedWatcher::new(
+        move |res: Result<notify::Event, notify::Error>| {
+            if let Ok(event) = res {
+                let is_cfg = event
+                    .paths
+                    .iter()
+                    .any(|p| p.extension().and_then(|e| e.to_str()) == Some("cfg"));
+                if !is_cfg {
+                    return;
+                }
+                // Debounce: skip if emitted < 1s ago
+                if let Ok(mut last) = last_emit.lock() {
+                    if last.elapsed() < Duration::from_secs(1) {
+                        return;
+                    }
+                    *last = Instant::now();
+                }
+                let _ = app_handle.emit("config-files-changed", "");
+            }
+        },
+        NotifyConfig::default(),
+    )
+    .map_err(|e| format!("Failed to create config watcher: {}", e))?;
+
+    watcher
+        .watch(&config_dir, RecursiveMode::NonRecursive)
+        .map_err(|e| format!("Failed to watch config dir: {}", e))?;
+
+    *guard = Some(watcher);
+    app_log("Config watcher started");
+    Ok(())
+}
+
+#[command]
+pub fn stop_config_watcher(state: State<'_, ConfigWatcherState>) -> Result<(), String> {
+    let mut guard = state.watcher.lock().map_err(|e| e.to_string())?;
+    *guard = None;
+    Ok(())
+}
 
 #[command]
 pub fn get_config_files(bepinex_path: String) -> Result<Vec<ConfigFile>, String> {
