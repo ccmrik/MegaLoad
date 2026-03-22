@@ -8,6 +8,7 @@ use commands::import::*;
 use commands::launcher::*;
 use commands::logs::*;
 use commands::mods::*;
+use commands::player_data::*;
 use commands::profiles::*;
 use commands::thunderstore::*;
 use commands::trainer::*;
@@ -100,6 +101,9 @@ pub fn run() {
             get_app_log_path,
             open_data_dir,
             open_folder,
+            // Player data
+            list_characters,
+            read_character,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

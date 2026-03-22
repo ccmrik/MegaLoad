@@ -9,6 +9,7 @@ import { Settings } from "./pages/Settings";
 import { LogViewer } from "./pages/LogViewer";
 import { Trainer } from "./pages/Trainer";
 import { ValheimData } from "./pages/ValheimData";
+import { PlayerData } from "./pages/PlayerData";
 import { Cart } from "./pages/Cart";
 
 function App() {
@@ -21,6 +22,7 @@ function App() {
         <Route path="/config" element={<ConfigEditor />} />
         <Route path="/trainer" element={<Trainer />} />
         <Route path="/valheim-data" element={<ValheimData />} />
+        <Route path="/player-data" element={<PlayerData />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/logs" element={<LogViewer />} />
         <Route path="/profiles" element={<Profiles />} />

@@ -388,3 +388,86 @@ export const setTrainerMultiplier = (
   value: number
 ) =>
   invoke<void>("set_trainer_multiplier", { bepinexPath, kind, value });
+
+// --- Player Data types & commands ---
+
+export interface CharacterSummary {
+  name: string;
+  path: string;
+  modified: string;
+  size: number;
+}
+
+export interface SkillData {
+  id: number;
+  name: string;
+  level: number;
+  accumulator: number;
+}
+
+export interface InventoryItem {
+  name: string;
+  stack: number;
+  durability: number;
+  grid_x: number;
+  grid_y: number;
+  equipped: boolean;
+  quality: number;
+  variant: number;
+  crafter_name: string;
+  world_level: number;
+}
+
+export interface StationKnowledge {
+  name: string;
+  level: number;
+}
+
+export interface FoodData {
+  name: string;
+  time: number;
+  health: number;
+  stamina: number;
+}
+
+export interface KnownText {
+  key: string;
+  value: string;
+}
+
+export interface CharacterData {
+  name: string;
+  version: number;
+  kills: number;
+  deaths: number;
+  crafts: number;
+  builds: number;
+  player_id: number;
+  guardian_power: string;
+  max_hp: number;
+  hp: number;
+  stamina: number;
+  max_eitr: number;
+  model: number;
+  beard: string;
+  hair: string;
+  skin_color: [number, number, number];
+  hair_color: [number, number, number];
+  known_biomes: string[];
+  skills: SkillData[];
+  inventory: InventoryItem[];
+  known_recipes: string[];
+  known_stations: StationKnowledge[];
+  known_materials: string[];
+  trophies: string[];
+  uniques: string[];
+  active_foods: FoodData[];
+  known_texts: KnownText[];
+  world_count: number;
+}
+
+export const listCharacters = () =>
+  invoke<CharacterSummary[]>("list_characters");
+
+export const readCharacter = (path: string) =>
+  invoke<CharacterData>("read_character", { path });
