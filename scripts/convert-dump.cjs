@@ -772,6 +772,7 @@ const BIOME_OVERRIDE = {
 // ── World drops: items obtained from trees, rocks, destructibles, etc. ──
 // These are NOT creature drops — they come from environment objects.
 // Format: { item_prefab: [{source, biome, type}] }
+// Types: "Tree", "Rock", "Pickup", "Crafting", "Destructible", "Chest"
 const WORLD_DROPS = {
   // ─── Trees ───
   "Wood": [
@@ -805,6 +806,29 @@ const WORLD_DROPS = {
   "Blackwood": [
     {source: "Blackwood Tree", biome: "Ashlands", type: "Tree"},
   ],
+  "Resin": [
+    {source: "Beech Tree", biome: "Meadows", type: "Tree"},
+    {source: "Fir Tree", biome: "Black Forest", type: "Tree"},
+  ],
+  // ─── Seeds from trees ───
+  "BeechSeeds": [
+    {source: "Beech Tree", biome: "Meadows", type: "Tree"},
+  ],
+  "BirchSeeds": [
+    {source: "Birch Tree", biome: "Meadows", type: "Tree"},
+    {source: "Birch Tree", biome: "Plains", type: "Tree"},
+  ],
+  "PineCone": [
+    {source: "Pine Tree", biome: "Black Forest", type: "Tree"},
+    {source: "Pine Tree", biome: "Mountain", type: "Tree"},
+  ],
+  "FirCone": [
+    {source: "Fir Tree", biome: "Black Forest", type: "Tree"},
+  ],
+  "Acorn": [
+    {source: "Oak Tree", biome: "Meadows", type: "Tree"},
+    {source: "Oak Tree", biome: "Plains", type: "Tree"},
+  ],
   // ─── Rocks & mining ───
   "Stone": [
     {source: "Rock", biome: "Meadows", type: "Rock"},
@@ -812,7 +836,10 @@ const WORLD_DROPS = {
     {source: "Rock", biome: "Swamp", type: "Rock"},
     {source: "Rock", biome: "Mountain", type: "Rock"},
     {source: "Rock", biome: "Plains", type: "Rock"},
+    {source: "Rock", biome: "Mistlands", type: "Rock"},
     {source: "Rock", biome: "Ashlands", type: "Rock"},
+    {source: "Copper Deposit", biome: "Black Forest", type: "Rock"},
+    {source: "Silver Vein", biome: "Mountain", type: "Rock"},
   ],
   "Flint": [
     {source: "Flint Node", biome: "Meadows", type: "Rock"},
@@ -834,39 +861,204 @@ const WORLD_DROPS = {
   "Obsidian": [
     {source: "Obsidian Deposit", biome: "Mountain", type: "Rock"},
   ],
-  "BlackMetalScrap": [
-    {source: "Fuling Camp Chest", biome: "Plains", type: "Destructible"},
-  ],
   "FlametalOre": [
+    {source: "Flametal Deposit", biome: "Ashlands", type: "Rock"},
+  ],
+  "FlametalOreNew": [
     {source: "Flametal Deposit", biome: "Ashlands", type: "Rock"},
   ],
   "Crystal": [
     {source: "Crystal Formation", biome: "Mountain", type: "Rock"},
   ],
-  // ─── Forageables & ground loot ───
-  "Resin": [
-    {source: "Beech Tree", biome: "Meadows", type: "Tree"},
-    {source: "Fir Tree", biome: "Black Forest", type: "Tree"},
+  "Chitin": [
+    {source: "Leviathan", biome: "Ocean", type: "Rock"},
   ],
+  "Grausten": [
+    {source: "Rock", biome: "Ashlands", type: "Rock"},
+  ],
+  "BlackMarble": [
+    {source: "Rock", biome: "Mistlands", type: "Rock"},
+  ],
+  "WitheredBone": [
+    {source: "Muddy Scrap Pile", biome: "Swamp", type: "Rock"},
+  ],
+  // ─── Forageables & ground pickups ───
+  "Mushroom": [
+    {source: "Ground Spawn", biome: "Meadows", type: "Pickup"},
+    {source: "Ground Spawn", biome: "Black Forest", type: "Pickup"},
+  ],
+  "MushroomYellow": [
+    {source: "Ground Spawn", biome: "Black Forest", type: "Pickup"},
+    {source: "Ground Spawn", biome: "Plains", type: "Pickup"},
+  ],
+  "MushroomBlue": [
+    {source: "Dungeon Floor", biome: "Black Forest", type: "Pickup"},
+    {source: "Dungeon Floor", biome: "Swamp", type: "Pickup"},
+    {source: "Dungeon Floor", biome: "Mountain", type: "Pickup"},
+  ],
+  "MushroomJotunPuffs": [
+    {source: "Ground Spawn", biome: "Mistlands", type: "Pickup"},
+  ],
+  "MushroomMagecap": [
+    {source: "Ground Spawn", biome: "Mistlands", type: "Pickup"},
+  ],
+  "MushroomSmokePuff": [
+    {source: "Ground Spawn", biome: "Mistlands", type: "Pickup"},
+  ],
+  "Thistle": [
+    {source: "Ground Spawn", biome: "Black Forest", type: "Pickup"},
+    {source: "Ground Spawn", biome: "Swamp", type: "Pickup"},
+  ],
+  "Dandelion": [
+    {source: "Ground Spawn", biome: "Meadows", type: "Pickup"},
+  ],
+  "Raspberry": [
+    {source: "Raspberry Bush", biome: "Meadows", type: "Pickup"},
+  ],
+  "Blueberries": [
+    {source: "Blueberry Bush", biome: "Black Forest", type: "Pickup"},
+  ],
+  "Cloudberry": [
+    {source: "Cloudberry Bush", biome: "Plains", type: "Pickup"},
+  ],
+  "Barley": [
+    {source: "Fuling Farm", biome: "Plains", type: "Pickup"},
+  ],
+  "Flax": [
+    {source: "Fuling Farm", biome: "Plains", type: "Pickup"},
+  ],
+  "CarrotSeeds": [
+    {source: "Ground Spawn", biome: "Black Forest", type: "Pickup"},
+  ],
+  "TurnipSeeds": [
+    {source: "Ground Spawn", biome: "Swamp", type: "Pickup"},
+  ],
+  "Vineberry": [
+    {source: "Ground Spawn", biome: "Ashlands", type: "Pickup"},
+  ],
+  "Fiddleheadfern": [
+    {source: "Ground Spawn", biome: "Ashlands", type: "Pickup"},
+  ],
+  "Sap": [
+    {source: "Yggdrasil Root", biome: "Mistlands", type: "Pickup"},
+  ],
+  "Guck": [
+    {source: "Guck Sack", biome: "Swamp", type: "Pickup"},
+  ],
+  "Tar": [
+    {source: "Tar Pit", biome: "Plains", type: "Pickup"},
+  ],
+  "DragonEgg": [
+    {source: "Mountain Nest", biome: "Mountain", type: "Pickup"},
+  ],
+  "Wisp": [
+    {source: "Night Spawn", biome: "Mistlands", type: "Pickup"},
+  ],
+  "FreshSeaweed": [
+    {source: "Shoreline", biome: "Ocean", type: "Pickup"},
+    {source: "Shoreline", biome: "Meadows", type: "Pickup"},
+  ],
+  "Turnip": [
+    {source: "Farming", biome: "Swamp", type: "Pickup"},
+  ],
+  "Carrot": [
+    {source: "Farming", biome: "Black Forest", type: "Pickup"},
+  ],
+  "Onion": [
+    {source: "Farming", biome: "Mountain", type: "Pickup"},
+  ],
+  // ─── Spices ───
+  "SpiceForests": [
+    {source: "Herb Node", biome: "Black Forest", type: "Pickup"},
+  ],
+  "SpicePlains": [
+    {source: "Herb Node", biome: "Plains", type: "Pickup"},
+  ],
+  "SpiceMountains": [
+    {source: "Herb Node", biome: "Mountain", type: "Pickup"},
+  ],
+  "SpiceOceans": [
+    {source: "Herb Node", biome: "Ocean", type: "Pickup"},
+  ],
+  "SpiceMistlands": [
+    {source: "Herb Node", biome: "Mistlands", type: "Pickup"},
+  ],
+  "SpiceAshlands": [
+    {source: "Herb Node", biome: "Ashlands", type: "Pickup"},
+  ],
+  "VineberrySeeds": [
+    {source: "Ground Spawn", biome: "Ashlands", type: "Pickup"},
+  ],
+  "VineGreenSeeds": [
+    {source: "Ground Spawn", biome: "Ashlands", type: "Pickup"},
+  ],
+  // ─── Fish (Fishing) ───
+  "Fish1": [
+    {source: "Fishing", biome: "Meadows", type: "Pickup"},
+    {source: "Fishing", biome: "Black Forest", type: "Pickup"},
+  ],
+  "Fish2": [
+    {source: "Fishing", biome: "Black Forest", type: "Pickup"},
+  ],
+  "Fish3": [
+    {source: "Fishing", biome: "Ocean", type: "Pickup"},
+  ],
+  "Fish4_cave": [
+    {source: "Fishing", biome: "Black Forest", type: "Pickup"},
+  ],
+  "Fish5": [
+    {source: "Fishing", biome: "Mountain", type: "Pickup"},
+  ],
+  "Fish6": [
+    {source: "Fishing", biome: "Ocean", type: "Pickup"},
+  ],
+  "Fish7": [
+    {source: "Fishing", biome: "Swamp", type: "Pickup"},
+  ],
+  "Fish8": [
+    {source: "Fishing", biome: "Plains", type: "Pickup"},
+  ],
+  "Fish9": [
+    {source: "Fishing", biome: "Mistlands", type: "Pickup"},
+  ],
+  "Fish10": [
+    {source: "Fishing", biome: "Mountain", type: "Pickup"},
+  ],
+  "Fish11": [
+    {source: "Fishing", biome: "Ashlands", type: "Pickup"},
+  ],
+  "Fish12": [
+    {source: "Fishing", biome: "Ocean", type: "Pickup"},
+  ],
+  "FishAnglerRaw": [
+    {source: "Fishing", biome: "Mistlands", type: "Pickup"},
+  ],
+  // ─── Destructibles & special ───
   "Feathers": [
     {source: "Birds", biome: "Meadows", type: "Destructible"},
     {source: "Birds", biome: "Black Forest", type: "Destructible"},
     {source: "Birds", biome: "Mountain", type: "Destructible"},
     {source: "Birds", biome: "Plains", type: "Destructible"},
   ],
-  "Mushroom": [
-    {source: "Ground Spawn", biome: "Meadows", type: "Pickup"},
-    {source: "Ground Spawn", biome: "Black Forest", type: "Pickup"},
+  "Honey": [
+    {source: "Beehive", biome: "Meadows", type: "Destructible"},
+    {source: "Beehive", biome: "Black Forest", type: "Destructible"},
+  ],
+  "QueenBee": [
+    {source: "Beehive", biome: "Meadows", type: "Destructible"},
+    {source: "Beehive", biome: "Black Forest", type: "Destructible"},
   ],
   "Coal": [
     {source: "Charcoal Kiln", biome: "Meadows", type: "Crafting"},
-    {source: "Burial Chamber", biome: "Black Forest", type: "Destructible"},
+    {source: "Smelter Byproduct", biome: "Meadows", type: "Crafting"},
+    {source: "Dungeon Barrel", biome: "Black Forest", type: "Destructible"},
   ],
   "LeatherScraps": [
-    {source: "Burial Chamber Furniture", biome: "Black Forest", type: "Destructible"},
+    {source: "Shipwreck", biome: "Ocean", type: "Destructible"},
+    {source: "Dungeon Furniture", biome: "Black Forest", type: "Destructible"},
   ],
   "SurtlingCore": [
-    {source: "Burial Chamber", biome: "Black Forest", type: "Destructible"},
+    {source: "Burial Chamber Pylon", biome: "Black Forest", type: "Destructible"},
     {source: "Fire Geyser", biome: "Swamp", type: "Destructible"},
   ],
   "BoneFragments": [
@@ -874,49 +1066,59 @@ const WORLD_DROPS = {
     {source: "Bone Pile", biome: "Black Forest", type: "Destructible"},
     {source: "Bone Pile", biome: "Swamp", type: "Destructible"},
   ],
-  // ─── Seeds from trees ───
-  "BeechSeeds": [
-    {source: "Beech Tree", biome: "Meadows", type: "Tree"},
-  ],
-  "BirchSeeds": [
-    {source: "Birch Tree", biome: "Meadows", type: "Tree"},
-    {source: "Birch Tree", biome: "Plains", type: "Tree"},
-  ],
-  "PineCone": [
-    {source: "Pine Tree", biome: "Black Forest", type: "Tree"},
-    {source: "Pine Tree", biome: "Mountain", type: "Tree"},
-  ],
-  "FirCone": [
-    {source: "Fir Tree", biome: "Black Forest", type: "Tree"},
-  ],
-  "Acorn": [
-    {source: "Oak Tree", biome: "Meadows", type: "Tree"},
-    {source: "Oak Tree", biome: "Plains", type: "Tree"},
-  ],
-  // ─── Dungeon loot / chests ───
-  "Amber": [
-    {source: "Chest", biome: "Meadows", type: "Destructible"},
-    {source: "Burial Chamber Chest", biome: "Black Forest", type: "Destructible"},
-    {source: "Sunken Crypt Chest", biome: "Swamp", type: "Destructible"},
-  ],
-  "AmberPearl": [
-    {source: "Chest", biome: "Meadows", type: "Destructible"},
-    {source: "Burial Chamber Chest", biome: "Black Forest", type: "Destructible"},
-    {source: "Sunken Crypt Chest", biome: "Swamp", type: "Destructible"},
-  ],
-  "Ruby": [
-    {source: "Burial Chamber Chest", biome: "Black Forest", type: "Destructible"},
-    {source: "Sunken Crypt Chest", biome: "Swamp", type: "Destructible"},
-  ],
-  "Coins": [
-    {source: "Chest", biome: "Meadows", type: "Destructible"},
-    {source: "Burial Chamber Chest", biome: "Black Forest", type: "Destructible"},
-    {source: "Sunken Crypt Chest", biome: "Swamp", type: "Destructible"},
-    {source: "Frost Cave Chest", biome: "Mountain", type: "Destructible"},
-  ],
 };
 
-// ── Inject WORLD_DROPS (trees, rocks, destructibles) into dropLookup ──
+// ── Chest Loot Tables ──
+// Maps chest type → { biome, items[] }. Auto-injected into WORLD_DROPS below.
+// Maintained manually — game dump does not include Container loot tables.
+const CHEST_LOOT = {
+  "Meadows Chest": {
+    biome: "Meadows",
+    items: ["Coins", "Amber", "AmberPearl", "Feathers", "Flint", "ArrowFlint", "ArrowFire"],
+  },
+  "Burial Chamber Chest": {
+    biome: "Black Forest",
+    items: ["Coins", "Amber", "AmberPearl", "Ruby", "SurtlingCore", "BoneFragments",
+            "Feathers", "ArrowFlint", "ArrowFire", "LeatherScraps"],
+  },
+  "Troll Cave Chest": {
+    biome: "Black Forest",
+    items: ["Coins", "Ruby", "BoneFragments", "DeerHide", "TrollHide",
+            "LeatherScraps", "ArrowFlint"],
+  },
+  "Sunken Crypt Chest": {
+    biome: "Swamp",
+    items: ["Coins", "Amber", "AmberPearl", "Ruby", "IronScrap", "Chain",
+            "WitheredBone", "ElderBark", "Feathers", "ArrowPoison"],
+  },
+  "Frost Cave Chest": {
+    biome: "Mountain",
+    items: ["Coins", "OnionSeeds", "ArrowFrost", "WolfClaw", "WolfHairBundle"],
+  },
+  "Fuling Village Chest": {
+    biome: "Plains",
+    items: ["Coins", "BlackMetalScrap", "Barley", "Flax", "Needle", "GoblinTotem"],
+  },
+  "Dvergr Chest": {
+    biome: "Mistlands",
+    items: ["Coins", "Softtissue", "DvergrNeedle", "BlackCore", "JuteRed"],
+  },
+  "Charred Fortress Chest": {
+    biome: "Ashlands",
+    items: ["Coins", "FlametalNew", "GemstoneBlue", "GemstoneGreen", "GemstoneRed",
+            "CeramicPlate", "BronzeScrap", "CharredBone", "CharredCogwheel", "MoltenCore"],
+  },
+};
+
+// Auto-generate WORLD_DROPS entries from CHEST_LOOT
+for (const [chestName, data] of Object.entries(CHEST_LOOT)) {
+  for (const itemPrefab of data.items) {
+    if (!WORLD_DROPS[itemPrefab]) WORLD_DROPS[itemPrefab] = [];
+    WORLD_DROPS[itemPrefab].push({source: chestName, biome: data.biome, type: "Chest"});
+  }
+}
+
+// ── Inject WORLD_DROPS (trees, rocks, destructibles, chests) into dropLookup ──
 for (const [itemPrefab, sources] of Object.entries(WORLD_DROPS)) {
   if (!dropLookup[itemPrefab]) dropLookup[itemPrefab] = [];
   for (const wd of sources) {
@@ -1037,6 +1239,7 @@ function getSource(prefab, recipe, itemDrops) {
   if (worldTypes.has("Rock")) sources.push("Mining");
   if (worldTypes.has("Destructible")) sources.push("Destructible");
   if (worldTypes.has("Pickup")) sources.push("Pickup");
+  if (worldTypes.has("Chest")) sources.push("Chest Loot");
 
   const p = prefab.toLowerCase();
   if ((p.includes("ore") || (p.includes("scrap") && !p.includes("leather"))) && !sources.includes("Mining")) sources.push("Mining");

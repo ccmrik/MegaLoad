@@ -1,11 +1,1 @@
-{
-  "version": "0.13.22",
-  "notes": "v0.13.22 - Fix world source labels layout",
-  "pub_date": "2026-03-22T03:00:00Z",
-  "platforms": {
-    "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU9oeUhVbTljaTFyR3RCV3ZzbWJvRkJzRGFGcGs0NDdaOFdUM2cvNGJRaEdZblJZalNWSzFTb1kwVlVOdjYyU2RpT2FSZEdTNFpjTTVocGlZUTZwcHdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTQ4MzY4CWZpbGU6TWVnYUxvYWRfMC4xMy4yMl94NjQtc2V0dXAubnNpcy56aXAKWFc2Tjg2KzNEemZtUlF1M2VtYzdlNi9OYlhvRWxsREJUQk1iT0ZYSXdReTBFM3VkRlZwRS80VEFlZWpCd1prdUNqM0NTeW9OMDVQbnNob3dBSXVaQVE9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.22/MegaLoad_0.13.22_x64-setup.nsis.zip"
-    }
-  }
-}
+{"version":"0.13.23","notes":"v0.13.23 - Fix mod updater (per-profile versions, flag unknown DLLs for update, always cache download URLs), fix trainer auto-deploy, auto-update when game closes, fix feast duplication","pub_date":"2026-03-22T14:24:34Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUpvNGhkVFV5QnBZeGRlS3l3cmpZa2dCUnNSVTQzQjlRY29HemxMNndyVkVFR0VtOEg3UjJQbnQxMWpZdEt4UE1DejVLV1o4MmpoWjFCWGRNai85YWdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTQ5ODY1CWZpbGU6TWVnYUxvYWRfMC4xMy4yM194NjQtc2V0dXAubnNpcy56aXAKT21rRVBJVXNHOEtBODZJdXZNaC9pQnIvaklFWWZaOXF1aVZtcmFXbm05aWNSekt4N21zaXc2V0VVck5pc3FvUUN0ajExKytwdVJmcXVFOWRxNUNtQnc9PQo=","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.13.23/MegaLoad_0.13.23_x64-setup.nsis.zip"}}}
