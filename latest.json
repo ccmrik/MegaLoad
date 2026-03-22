@@ -1,11 +1,1 @@
-{
-  "version": "0.13.14",
-  "notes": "v0.13.14 - Fix mod update count bug, add MegaTrainer cheats",
-  "pub_date": "2026-03-20T00:00:00Z",
-  "platforms": {
-    "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU1oQkJMc0xPeDg3Y2RxaW9rOTZMaHppamtSNStDN0V6Szl1ektVQmwyWit3TGVNNUhINlVnYllkSkJUdWh3TkU1NjU5Wnh0azRaRGMvTUxsTXc3dFFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzczOTY4Mjc5CWZpbGU6TWVnYUxvYWRfMC4xMy4xNF94NjQtc2V0dXAubnNpcy56aXAKdXVhc2x1MExBRW1Hem15RHpLK2V3VzRHcnZna0h5NzFQVEFya1g1dCtDZXUwUGtSWWN2aDRCR0JycENnNzVrTDEvaHM4YVVSZWJ3b0x3T2dUeXJHQWc9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.14/MegaLoad_0.13.14_x64-setup.nsis.zip"
-    }
-  }
-}
+{"version":"0.13.15","notes":"v0.13.15 - Bump all mod versions, update manifest","pub_date":"2026-03-21T23:30:22Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUk1WExrNXdxa1ZOVlJ3NHlLTmVhbmduUS84MXBPQ3N2Mzd3bDE0THREdmhXNXczaVkvREM0L0FTbGx4MHJtSmhLZjFHbm92Yy9GOWVsYXh4MjBuTmdnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTM1Nzk3CWZpbGU6TWVnYUxvYWRfMC4xMy4xNV94NjQtc2V0dXAubnNpcy56aXAKTkZFZXVUQVZOaS8yY2JBSWpZVGlPVEs0VHBNWXI5Q01RVGxIdnVmbE1PeHkzRzJjR0NETmdjUVlLNXFZNDlUWCtQdWxRblhSSUx3OXEwRFY5UTgvQmc9PQo=","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.13.15/MegaLoad_0.13.15_x64-setup.nsis.zip"}}}

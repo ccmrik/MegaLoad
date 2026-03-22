@@ -141,8 +141,7 @@ export function Sidebar() {
   const launchDisabled =
     !profile || !valheimPath || launching || updatesBlocking || gameBlocking;
 
-  const updatedCount =
-    updateResult?.mods.filter((m) => m.status === "updated").length ?? 0;
+  const updatedCount = sessionUpdatedMods.length;
   const availableCount =
     updateResult?.mods.filter((m) => m.status === "update-available").length ?? 0;
   const errorCount =
@@ -204,16 +203,10 @@ export function Sidebar() {
                 {updatedCount > 0 && (
                   <button
                     onClick={() => {
-                      const names = sessionUpdatedMods.length > 0
-                        ? sessionUpdatedMods.join(", ")
-                        : updateResult?.mods
-                            .filter((m) => m.status === "updated")
-                            .map((m) => m.name)
-                            .join(", ") ?? "";
                       addToast({
                         type: "success",
-                        title: `${sessionUpdatedMods.length || updatedCount} mod${(sessionUpdatedMods.length || updatedCount) > 1 ? "s" : ""} updated this session`,
-                        message: names,
+                        title: `${updatedCount} mod${updatedCount > 1 ? "s" : ""} updated this session`,
+                        message: sessionUpdatedMods.join(", "),
                         duration: 8000,
                       });
                     }}
