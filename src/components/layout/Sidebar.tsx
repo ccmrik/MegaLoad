@@ -19,6 +19,7 @@ import {
   Cloud,
   CloudOff,
   Monitor,
+  UserCircle,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useProfileStore } from "../../stores/profileStore";
@@ -34,6 +35,7 @@ const navItems = [
   { to: "/config", icon: Settings2, label: "Config Editor" },
   { to: "/trainer", icon: Gamepad2, label: "Trainer" },
   { to: "/valheim-data", icon: Database, label: "Valheim Data" },
+  { to: "/player-data", icon: UserCircle, label: "Player Data" },
   { to: "/logs", icon: ScrollText, label: "Log Viewer" },
   { to: "/profiles", icon: Users, label: "Profiles" },
   { to: "/settings", icon: Cog, label: "Settings" },

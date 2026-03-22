@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-03-22T10:25:00Z",
+  "updated_at": "2026-03-22T04:50:00Z",
   "mods": [
     {
       "name": "SluttyHoe",
@@ -36,8 +36,8 @@
     },
     {
       "name": "MegaQoL",
-      "version": "1.7.2",
-      "download_url": "https://github.com/ccmrik/MegaQoL/releases/download/v1.7.2/MegaQoL.dll",
+      "version": "1.7.4",
+      "download_url": "https://github.com/ccmrik/MegaQoL/releases/download/v1.7.4/MegaQoL.dll",
       "dll_name": "MegaQoL.dll",
       "plugin_folder": "MegaQoL",
       "description": "Quality of life — auto repair, refueller, pet feeder, craft from containers, map teleport, mass farming"
