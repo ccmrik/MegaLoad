@@ -1421,19 +1421,21 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                   {item.worldSources?.map((ws) => (
                     <div
                       key={ws.source}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-left"
+                      className="px-3 py-2 rounded-lg"
                     >
-                      <div className="w-6 h-6 shrink-0 flex items-center justify-center">
-                        {ws.type === "Tree" ? <TreePine className="w-4 h-4 text-green-400" /> :
-                         ws.type === "Rock" ? <Pickaxe className="w-4 h-4 text-stone-400" /> :
-                         ws.type === "Pickup" ? <Hand className="w-4 h-4 text-sky-400" /> :
-                         ws.type === "Crafting" ? <Hammer className="w-4 h-4 text-amber-400" /> :
-                         <Boxes className="w-4 h-4 text-orange-400" />}
+                      <div className="flex items-center gap-2.5">
+                        <div className="w-6 h-6 shrink-0 flex items-center justify-center">
+                          {ws.type === "Tree" ? <TreePine className="w-4 h-4 text-green-400" /> :
+                           ws.type === "Rock" ? <Pickaxe className="w-4 h-4 text-stone-400" /> :
+                           ws.type === "Pickup" ? <Hand className="w-4 h-4 text-sky-400" /> :
+                           ws.type === "Crafting" ? <Hammer className="w-4 h-4 text-amber-400" /> :
+                           <Boxes className="w-4 h-4 text-orange-400" />}
+                        </div>
+                        <span className="text-xs text-zinc-200">
+                          {ws.source}
+                        </span>
                       </div>
-                      <span className="text-xs text-zinc-200 truncate flex-1">
-                        {ws.source}
-                      </span>
-                      <div className="flex items-center gap-1 shrink-0">
+                      <div className="flex flex-wrap items-center gap-1 mt-1.5 ml-[34px]">
                         {ws.biomes.map((b) => (
                           <BiomeBadge key={b} biome={b} onClick={() => navigateToBiome(b)} />
                         ))}

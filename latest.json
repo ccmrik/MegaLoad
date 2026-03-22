@@ -1,11 +1,11 @@
 {
-  "version": "0.13.20",
-  "notes": "v0.13.20 - Multi-biome item data",
-  "pub_date": "2026-03-22T02:19:41Z",
+  "version": "0.13.21",
+  "notes": "v0.13.21 - World sources in Dropped By, Feast reclassification",
+  "pub_date": "2026-03-22T02:39:36Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUhhK0ZUK1FadEV4ZHBnckc3SExpWVJvcHJETnFwbGlsOFhlM2xXcTY3MEpOdkJ0Nkd1QnRsbVM5VzVBTUkxRHVWanlvanRtaWp6ekdXNXRiYW53d2dBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTQ1ODM3CWZpbGU6TWVnYUxvYWRfMC4xMy4yMF94NjQtc2V0dXAubnNpcy56aXAKeUFNYVhtUEE4YUQ5eHBxRm9xZmxQd0x1OFdWQjhrQXlsVXQrV2s0S29KYzBKTTljdFRld0dWNXI5dUwzNk9tQ1NUNWFTSkx2RVVmeExjWFhjdHlGRGc9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.20/MegaLoad_0.13.20_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdVNkpWN1hqRFBmN3p1UkJTaHpKWGpPT2dsY0N5ZXBORDh0cm5uc1F0MXNxeWg5VW9DVjlIRlpSNkw2OXgzSkRNWGNRVGZGNytLMWMvZFJROFJQRndJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTQ3MTM5CWZpbGU6TWVnYUxvYWRfMC4xMy4yMV94NjQtc2V0dXAubnNpcy56aXAKeVQ3UmRsRHZLbGdDSm4rTHM3YWhNQW9rL0lnZ3k1NVo4QTV5b1l1T0FHSUdRTTU3TDNKK0pWYTVONW4wWW1MN21HTmRpSzlWSWNyZ2hsV2E2VWhpQmc9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.21/MegaLoad_0.13.21_x64-setup.nsis.zip"
     }
   }
 }
