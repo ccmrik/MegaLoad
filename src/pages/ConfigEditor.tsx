@@ -630,10 +630,84 @@ function ConfigEntryRow({
   const isDefault =
     entry.default_value !== null && localValue === entry.default_value;
 
+  // Wide controls (sliders, text inputs, selects) go on their own row
+  const isWideControl = (isNumber && numRange) || (!isBoolean && !isColor && !isKeyboard);
+
+  const controlEl = isBoolean ? (
+    <BooleanToggle
+      value={localValue}
+      onChange={(v) => {
+        setLocalValue(v);
+        onSave(v);
+      }}
+    />
+  ) : isNumber && numRange ? (
+    <SliderControl
+      value={localValue}
+      min={numRange.min}
+      max={numRange.max}
+      step={numRange.step}
+      isFloat={
+        entry.value_type === "Single" ||
+        entry.value_type === "Float" ||
+        entry.value_type === "Double"
+      }
+      onChange={setLocalValue}
+      onCommit={(v) => onSave(v)}
+    />
+  ) : hasAcceptable ? (
+    <SelectControl
+      value={localValue}
+      options={entry.acceptable_values!}
+      onChange={(v) => {
+        setLocalValue(v);
+        onSave(v);
+      }}
+    />
+  ) : isKeyboard ? (
+    <KeybindCapture
+      value={localValue}
+      onChange={(v) => {
+        setLocalValue(v);
+        onSave(v);
+      }}
+    />
+  ) : isColor ? (
+    <ColorPicker
+      value={localValue}
+      onChange={(v) => {
+        setLocalValue(v);
+        onSave(v);
+      }}
+    />
+  ) : isNumber ? (
+    <NumberInput
+      value={localValue}
+      onChange={setLocalValue}
+      onCommit={(v) => onSave(v)}
+    />
+  ) : (
+    <TextInput
+      value={localValue}
+      onChange={setLocalValue}
+      onCommit={(v) => onSave(v)}
+    />
+  );
+
+  const resetBtn = !isDefault && entry.default_value !== null && (
+    <button
+      onClick={handleReset}
+      className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-600 hover:text-brand-400 transition-colors opacity-0 group-hover/entry:opacity-100"
+      title={`Reset to: ${entry.default_value}`}
+    >
+      <RotateCcw className="w-3.5 h-3.5" />
+    </button>
+  );
+
   return (
     <div className="px-5 py-4 hover:bg-zinc-800/20 transition-colors group/entry">
+      {/* Title row — label + inline controls for compact types (boolean, color, keybind) */}
       <div className="flex items-start justify-between gap-4">
-        {/* Label & description */}
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-sm font-medium text-zinc-200">
@@ -650,8 +724,22 @@ function ConfigEntryRow({
               </span>
             )}
           </div>
+        </div>
+
+        {/* Inline controls for compact types */}
+        {!isWideControl && (
+          <div className="flex items-center gap-2 shrink-0">
+            {resetBtn}
+            {controlEl}
+          </div>
+        )}
+      </div>
+
+      {/* Description & default */}
+      {(entry.description || entry.default_value !== null) && (
+        <div className="mt-1.5">
           {entry.description && (
-            <p className="text-xs text-zinc-500 mt-1.5 leading-relaxed max-w-lg">
+            <p className="text-xs text-zinc-500 leading-relaxed max-w-lg">
               {entry.description}
             </p>
           )}
@@ -661,83 +749,15 @@ function ConfigEntryRow({
             </p>
           )}
         </div>
+      )}
 
-        {/* Controls */}
-        <div className="flex items-center gap-2 shrink-0">
-          {/* Reset button */}
-          {!isDefault && entry.default_value !== null && (
-            <button
-              onClick={handleReset}
-              className="p-1.5 rounded-lg hover:bg-zinc-800 text-zinc-600 hover:text-brand-400 transition-colors opacity-0 group-hover/entry:opacity-100"
-              title={`Reset to: ${entry.default_value}`}
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-            </button>
-          )}
-
-          {/* Render appropriate control */}
-          {isBoolean ? (
-            <BooleanToggle
-              value={localValue}
-              onChange={(v) => {
-                setLocalValue(v);
-                onSave(v);
-              }}
-            />
-          ) : isNumber && numRange ? (
-            <SliderControl
-              value={localValue}
-              min={numRange.min}
-              max={numRange.max}
-              step={numRange.step}
-              isFloat={
-                entry.value_type === "Single" ||
-                entry.value_type === "Float" ||
-                entry.value_type === "Double"
-              }
-              onChange={setLocalValue}
-              onCommit={(v) => onSave(v)}
-            />
-          ) : hasAcceptable ? (
-            <SelectControl
-              value={localValue}
-              options={entry.acceptable_values!}
-              onChange={(v) => {
-                setLocalValue(v);
-                onSave(v);
-              }}
-            />
-          ) : isKeyboard ? (
-            <KeybindCapture
-              value={localValue}
-              onChange={(v) => {
-                setLocalValue(v);
-                onSave(v);
-              }}
-            />
-          ) : isColor ? (
-            <ColorPicker
-              value={localValue}
-              onChange={(v) => {
-                setLocalValue(v);
-                onSave(v);
-              }}
-            />
-          ) : isNumber ? (
-            <NumberInput
-              value={localValue}
-              onChange={setLocalValue}
-              onCommit={(v) => onSave(v)}
-            />
-          ) : (
-            <TextInput
-              value={localValue}
-              onChange={setLocalValue}
-              onCommit={(v) => onSave(v)}
-            />
-          )}
+      {/* Wide controls on their own row */}
+      {isWideControl && (
+        <div className="flex items-center gap-2 mt-3">
+          {controlEl}
+          {resetBtn}
         </div>
-      </div>
+      )}
     </div>
   );
 }
