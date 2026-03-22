@@ -15,10 +15,12 @@ interface PlayerDataState {
 
   fetchCharacters: () => Promise<void>;
   selectCharacter: (path: string) => Promise<void>;
+  /** Re-read the currently selected character (for live updates) */
+  refreshSelected: () => Promise<void>;
   clear: () => void;
 }
 
-export const usePlayerDataStore = create<PlayerDataState>((set) => ({
+export const usePlayerDataStore = create<PlayerDataState>((set, get) => ({
   characters: [],
   selectedPath: null,
   character: null,
@@ -42,6 +44,18 @@ export const usePlayerDataStore = create<PlayerDataState>((set) => ({
       set({ character, loading: false });
     } catch (e) {
       set({ error: String(e), loading: false });
+    }
+  },
+
+  refreshSelected: async () => {
+    const { selectedPath } = get();
+    if (!selectedPath) return;
+    try {
+      const characters = await listCharacters();
+      const character = await readCharacter(selectedPath);
+      set({ characters, character });
+    } catch {
+      // Silently ignore — file may be mid-write
     }
   },
 

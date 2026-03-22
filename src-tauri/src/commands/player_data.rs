@@ -1,7 +1,77 @@
+use crate::commands::app_log::app_log;
+use notify::{Config as NotifyConfig, RecommendedWatcher, RecursiveMode, Watcher};
 use serde::Serialize;
 use std::fs;
 use std::path::PathBuf;
-use tauri::command;
+use std::sync::{Arc, Mutex};
+use std::time::{Duration, Instant};
+use tauri::{command, AppHandle, Emitter, State};
+
+pub struct PlayerDataWatcherState {
+    pub watcher: Mutex<Option<RecommendedWatcher>>,
+}
+
+#[command]
+pub fn start_player_data_watcher(
+    app: AppHandle,
+    state: State<'_, PlayerDataWatcherState>,
+) -> Result<(), String> {
+    let dirs = find_character_dirs();
+    if dirs.is_empty() {
+        return Ok(());
+    }
+
+    let mut guard = state.watcher.lock().map_err(|e| e.to_string())?;
+    // Drop existing watcher before creating new one
+    *guard = None;
+
+    let last_emit = Arc::new(Mutex::new(Instant::now() - Duration::from_secs(10)));
+    let app_handle = app.clone();
+
+    let mut watcher = RecommendedWatcher::new(
+        move |res: Result<notify::Event, notify::Error>| {
+            if let Ok(event) = res {
+                let is_fch = event
+                    .paths
+                    .iter()
+                    .any(|p| {
+                        let name = p.file_name().and_then(|n| n.to_str()).unwrap_or("");
+                        name.ends_with(".fch") || name.ends_with(".fch.old")
+                    });
+                if !is_fch {
+                    return;
+                }
+                // Debounce: skip if emitted < 2s ago (Valheim writes multiple times per save)
+                if let Ok(mut last) = last_emit.lock() {
+                    if last.elapsed() < Duration::from_secs(2) {
+                        return;
+                    }
+                    *last = Instant::now();
+                }
+                let _ = app_handle.emit("player-data-changed", "");
+            }
+        },
+        NotifyConfig::default(),
+    )
+    .map_err(|e| format!("Failed to create player data watcher: {}", e))?;
+
+    for dir in &dirs {
+        if let Err(e) = watcher.watch(dir, RecursiveMode::NonRecursive) {
+            app_log(&format!("Warning: failed to watch {:?}: {}", dir, e));
+        }
+    }
+
+    *guard = Some(watcher);
+    app_log(&format!("Player data watcher started on {} directories", dirs.len()));
+    Ok(())
+}
+
+#[command]
+pub fn stop_player_data_watcher(state: State<'_, PlayerDataWatcherState>) -> Result<(), String> {
+    let mut guard = state.watcher.lock().map_err(|e| e.to_string())?;
+    *guard = None;
+    Ok(())
+}
 
 // ── Binary Reader ──────────────────────────────────────────
 // Handles C# BinaryWriter format used by Valheim's ZPackage

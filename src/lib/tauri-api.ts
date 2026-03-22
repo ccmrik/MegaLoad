@@ -472,3 +472,9 @@ export const listCharacters = () =>
 
 export const readCharacter = (path: string) =>
   invoke<CharacterData>("read_character", { path });
+
+export const startPlayerDataWatcher = () =>
+  invoke<void>("start_player_data_watcher");
+
+export const stopPlayerDataWatcher = () =>
+  invoke<void>("stop_player_data_watcher");

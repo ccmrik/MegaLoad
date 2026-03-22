@@ -25,6 +25,7 @@ import { cn } from "../../lib/utils";
 import { useProfileStore } from "../../stores/profileStore";
 import { useUpdateStore } from "../../stores/updateStore";
 import { useToastStore } from "../../stores/toastStore";
+import { usePlayerDataStore } from "../../stores/playerDataStore";
 import { detectValheimPath, launchValheim, checkGameStatus, startSteam } from "../../lib/tauri-api";
 import type { GameStatus } from "../../lib/tauri-api";
 
@@ -84,6 +85,8 @@ export function Sidebar() {
     // Game just stopped — trigger auto-update to install any pending updates
     else if (wasGameRunning.current && !gameStatus?.valheim_running) {
       autoUpdate(bep);
+      // Refresh player data after game exits (character save updated)
+      usePlayerDataStore.getState().refreshSelected();
     }
 
     wasGameRunning.current = !!gameStatus?.valheim_running;

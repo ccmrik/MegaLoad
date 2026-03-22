@@ -1,11 +1,11 @@
 {
-  "version": "0.13.28",
-  "notes": "v0.13.28 - Player Data: fix discoveries, add kills/forsaken stats, link items to Valheim Data",
-  "pub_date": "2026-03-22T16:52:33Z",
+  "version": "0.13.29",
+  "notes": "v0.13.29 - Discoveries include build pieces, discovery eye icons on recipes, type filter",
+  "pub_date": "2026-03-22T17:26:04Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUoycHN3bmhjblB3S0M2RWF5NzZIK1dCVkxzeXBCYi9zbFlMTU9Jb1hIN3Y0bUJNS2RZM3pLcmJHeEhUcVVFVTdTMDBMZGF0aCs0OWpVU3EvNTRzU2c0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTU4NzQ0CWZpbGU6TWVnYUxvYWRfMC4xMy4yOF94NjQtc2V0dXAubnNpcy56aXAKVThaVFY3OTlIK2NwVkl4TlpjZU5maU9hTTJWNUdFNE5XMkVKaDc0YVpMWSt2SEpiWmtDc1hrb0MvOE9yNzVFdVRpdmVzQW1RaEdQOXdxK3hVaUxQQkE9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.28/MegaLoad_0.13.28_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU9iUC94aGsvQlloQXd0ZW1OTmppa2lOVUN4alJSaHI1VW5VVjA1ak9raTh2N216WWFoc0dmc3pjRlRyZGM2eFBvNmpoeDRQemg4NlptcUxIWkg3eUFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MTYwNzU1CWZpbGU6TWVnYUxvYWRfMC4xMy4yOV94NjQtc2V0dXAubnNpcy56aXAKMWF1UTFFTEtSQXBnT2NWK1Vod2M2VnpELzFZT1RvbW5DWE96ejhZVGRlNFVIM3BBTXJxQUJma0FoOXNsS293UHBDcXBpdG9zZkNpZEsvbzlvNHkyQWc9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.29/MegaLoad_0.13.29_x64-setup.nsis.zip"
     }
   }
 }

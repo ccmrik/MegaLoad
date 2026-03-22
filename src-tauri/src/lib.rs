@@ -9,6 +9,7 @@ use commands::launcher::*;
 use commands::logs::*;
 use commands::mods::*;
 use commands::player_data::*;
+use commands::player_data::PlayerDataWatcherState;
 use commands::profiles::*;
 use commands::thunderstore::*;
 use commands::trainer::*;
@@ -25,6 +26,9 @@ pub fn run() {
         .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .manage(ConfigWatcherState {
+            watcher: std::sync::Mutex::new(None),
+        })
+        .manage(PlayerDataWatcherState {
             watcher: std::sync::Mutex::new(None),
         })
         .invoke_handler(tauri::generate_handler![
@@ -104,6 +108,8 @@ pub fn run() {
             // Player data
             list_characters,
             read_character,
+            start_player_data_watcher,
+            stop_player_data_watcher,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

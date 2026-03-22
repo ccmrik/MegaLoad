@@ -1,5 +1,6 @@
 // @ts-nocheck
 import { useEffect, useMemo, useState } from "react";
+import { listen } from "@tauri-apps/api/event";
 import { useNavigate } from "react-router-dom";
 import {
   User,
@@ -37,6 +38,7 @@ import {
   type ValheimItem,
 } from "../data/valheim-items";
 import type { InventoryItem, SkillData } from "../lib/tauri-api";
+import { startPlayerDataWatcher, stopPlayerDataWatcher } from "../lib/tauri-api";
 
 // ── Guardian power display names ───────────────────────────
 const GUARDIAN_NAMES: Record<string, string> = {
@@ -136,6 +138,7 @@ export function PlayerData() {
     error,
     fetchCharacters,
     selectCharacter,
+    refreshSelected,
   } = usePlayerDataStore();
 
   const goToItem = (prefabId: string) => {
@@ -155,6 +158,20 @@ export function PlayerData() {
   useEffect(() => {
     fetchCharacters();
   }, [fetchCharacters]);
+
+  // File watcher: live-update when .fch files change (game saves, cloud sync, etc.)
+  useEffect(() => {
+    startPlayerDataWatcher().catch(() => {});
+
+    const unlistenPromise = listen("player-data-changed", () => {
+      refreshSelected();
+    });
+
+    return () => {
+      stopPlayerDataWatcher().catch(() => {});
+      unlistenPromise.then((fn) => fn());
+    };
+  }, [refreshSelected]);
 
   // Auto-select first character
   useEffect(() => {
