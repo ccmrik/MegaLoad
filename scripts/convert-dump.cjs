@@ -1459,7 +1459,8 @@ for (const e of converted) {
 }
 console.log("Type breakdown:", typeCounts);
 
-let ts = `// ── Valheim Item Database ──────────────────────────────────
+let ts = `// @ts-nocheck — generated data, array literal too large for TS union inference
+// ── Valheim Item Database ──────────────────────────────────
 // Auto-generated from game data dump (assembly_valheim.dll via MegaDataExtractor)
 // ${converted.length} items extracted from Valheim ${new Date().toISOString().split("T")[0]}
 // DO NOT EDIT MANUALLY — re-run convert-dump.cjs to regenerate

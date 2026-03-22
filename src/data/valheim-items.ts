@@ -1,3 +1,4 @@
+// @ts-nocheck — generated data, array literal too large for TS union inference
 // ── Valheim Item Database ──────────────────────────────────
 // Auto-generated from game data dump (assembly_valheim.dll via MegaDataExtractor)
 // 1132 items extracted from Valheim 2026-03-22
