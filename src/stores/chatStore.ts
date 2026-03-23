@@ -11,9 +11,11 @@ import { useModStore } from "./modStore";
 import { usePlayerDataStore } from "./playerDataStore";
 import { useProfileStore } from "./profileStore";
 import { useAppUpdateStore } from "./appUpdateStore";
+import { VALHEIM_ITEMS } from "../data/valheim-items";
+import { VENDORS, PROCESSING_STATIONS } from "./valheimDataStore";
 
 const MAX_HISTORY = 20;
-const DAILY_TOKEN_LIMIT = 50_000;
+const DAILY_TOKEN_LIMIT = 200_000;
 
 export interface DisplayMessage {
   id: string;
@@ -45,32 +47,155 @@ function buildSystemPrompt(): string {
   const mods = useModStore.getState().mods;
   const player = usePlayerDataStore.getState();
 
-  let ctx = `You are MegaChat, the AI assistant built into MegaLoad v${version} — a Valheim mod manager.
-You help players with Valheim gameplay, mod configuration, character data, and troubleshooting.
-Be helpful, concise, and friendly. Use markdown formatting for readability.
-If you don't know something, say so — don't make things up.
+  const sections: string[] = [];
 
-Current context:`;
+  // ── Core identity ──
+  sections.push(`You are MegaChat, the AI assistant built into MegaLoad v${version} — a Valheim mod manager.
+You have FULL access to the Valheim item database and player character data below.
+Answer questions about items, recipes, creatures, biomes, stats, crafting, character progress, and mod configuration.
+Be helpful, concise, and friendly. Use markdown formatting.
+When referencing items, use their exact names. When listing items, use tables or bullet points for readability.
+You CAN and SHOULD look up data from the databases below to answer questions — that is your primary purpose.`);
 
+  // ── Profile & mods ──
   if (profile) {
-    ctx += `\n- Active profile: ${profile.name}`;
+    sections.push(`Active profile: ${profile.name}`);
   }
-
   if (mods.length > 0) {
     const enabled = mods.filter((m) => m.enabled);
-    ctx += `\n- Installed mods (${enabled.length} enabled): ${enabled.map((m) => m.name || m.file_name).join(", ")}`;
+    sections.push(`Installed mods (${enabled.length} enabled): ${enabled.map((m) => `${m.name || m.file_name}${m.version ? ` v${m.version}` : ""}`).join(", ")}`);
   }
 
+  // ── Player character data ──
   if (player.character) {
-    const c = player.character;
-    ctx += `\n- Selected character: ${c.name}`;
-    if (c.skills && c.skills.length > 0) {
-      const top = [...c.skills].sort((a, b) => b.level - a.level).slice(0, 5);
-      ctx += `\n- Top skills: ${top.map((s) => `${s.name} (${s.level})`).join(", ")}`;
+    sections.push(buildPlayerContext(player.character));
+  }
+
+  // ── Valheim item database (compact) ──
+  sections.push(buildValheimDataContext());
+
+  // ── Vendors ──
+  sections.push(buildVendorContext());
+
+  // ── Processing stations ──
+  sections.push(buildProcessingContext());
+
+  return sections.join("\n\n");
+}
+
+function buildPlayerContext(c: import("../lib/tauri-api").CharacterData): string {
+  const lines: string[] = [`=== PLAYER CHARACTER: ${c.name} ===`];
+
+  // Core stats
+  lines.push(`HP: ${c.hp}/${c.max_hp} | Stamina: ${c.stamina} | Eitr: ${c.max_eitr}`);
+  lines.push(`Kills: ${c.kills} | Deaths: ${c.deaths} | Crafts: ${c.crafts} | Builds: ${c.builds} | Boss Kills: ${c.boss_kills}`);
+  if (c.guardian_power) lines.push(`Guardian Power: ${c.guardian_power}`);
+
+  // Skills (all, sorted by level desc)
+  if (c.skills.length > 0) {
+    const sorted = [...c.skills].sort((a, b) => b.level - a.level);
+    lines.push(`Skills: ${sorted.map((s) => `${s.name}:${Math.floor(s.level)}`).join(", ")}`);
+  }
+
+  // Known biomes
+  if (c.known_biomes.length > 0) {
+    lines.push(`Explored biomes: ${c.known_biomes.join(", ")}`);
+  }
+
+  // Inventory (equipped items first, then backpack)
+  if (c.inventory.length > 0) {
+    const equipped = c.inventory.filter((i) => i.equipped);
+    const backpack = c.inventory.filter((i) => !i.equipped);
+    if (equipped.length > 0) {
+      lines.push(`Equipped: ${equipped.map((i) => `${i.name}${i.quality > 1 ? ` Q${i.quality}` : ""}`).join(", ")}`);
+    }
+    if (backpack.length > 0) {
+      lines.push(`Inventory: ${backpack.map((i) => `${i.name}${i.stack > 1 ? ` x${i.stack}` : ""}${i.quality > 1 ? ` Q${i.quality}` : ""}`).join(", ")}`);
     }
   }
 
-  return ctx;
+  // Active foods
+  if (c.active_foods.length > 0) {
+    lines.push(`Active foods: ${c.active_foods.map((f) => `${f.name} (HP+${f.health}, Stam+${f.stamina})`).join(", ")}`);
+  }
+
+  // Trophies
+  if (c.trophies.length > 0) {
+    lines.push(`Trophies (${c.trophies.length}): ${c.trophies.join(", ")}`);
+  }
+
+  // Known recipes count + materials
+  if (c.known_recipes.length > 0) {
+    lines.push(`Known recipes: ${c.known_recipes.length} total`);
+  }
+  if (c.known_materials.length > 0) {
+    lines.push(`Known materials: ${c.known_materials.join(", ")}`);
+  }
+
+  // Known stations
+  if (c.known_stations.length > 0) {
+    lines.push(`Crafting stations: ${c.known_stations.map((s) => `${s.name} Lv${s.level}`).join(", ")}`);
+  }
+
+  return lines.join("\n");
+}
+
+function buildValheimDataContext(): string {
+  const lines: string[] = [
+    `=== VALHEIM ITEM DATABASE (${VALHEIM_ITEMS.length} items) ===`,
+    `Format: Name | ID | Type | SubCat | Biomes | Station(Level) | Recipe | Stats`,
+  ];
+
+  for (const item of VALHEIM_ITEMS) {
+    const biomes = item.biomes.length > 0 ? item.biomes.join(",") : "—";
+    const station = item.station ? `${item.station}${item.stationLevel > 1 ? `(${item.stationLevel})` : ""}` : "—";
+
+    const recipe = item.recipe.length > 0
+      ? item.recipe.map((r) => `${r.amount} ${r.name}`).join("+")
+      : "—";
+
+    const stats = item.stats.length > 0
+      ? item.stats.map((s) => `${s.label}:${s.value}`).join(",")
+      : "";
+
+    // Compact single-line format
+    const parts = [item.name, item.id, item.type, item.subcategory, biomes, station, recipe];
+    if (stats) parts.push(stats);
+    lines.push(parts.join("|"));
+  }
+
+  return lines.join("\n");
+}
+
+function buildVendorContext(): string {
+  const lines: string[] = ["=== VENDORS ==="];
+  for (const vendor of Object.values(VENDORS)) {
+    lines.push(`${vendor.name} (${vendor.biome}, ${vendor.location}):`);
+    lines.push(`  Sells: ${vendor.sells.map((s) => {
+      const item = VALHEIM_ITEMS.find((i) => i.id === s.id);
+      const name = item?.name || s.id;
+      return `${name} ${s.price}c${s.requirement ? ` [${s.requirement}]` : ""}`;
+    }).join(", ")}`);
+    if (vendor.buys.length > 0) {
+      lines.push(`  Buys: ${vendor.buys.map((b) => {
+        const item = VALHEIM_ITEMS.find((i) => i.id === b.id);
+        return `${item?.name || b.id} ${b.sellPrice}c`;
+      }).join(", ")}`);
+    }
+  }
+  return lines.join("\n");
+}
+
+function buildProcessingContext(): string {
+  const lines: string[] = ["=== PROCESSING STATIONS ==="];
+  for (const ps of Object.values(PROCESSING_STATIONS)) {
+    const fuel = ps.fuel ? ` (Fuel: ${ps.fuel})` : "";
+    lines.push(`${ps.name}${fuel} [${ps.biome}]: ${ps.description}`);
+    if (ps.conversions.length > 0) {
+      lines.push(`  Conversions: ${ps.conversions.map((c) => `${c.inputName} → ${c.outputName}`).join(", ")}`);
+    }
+  }
+  return lines.join("\n");
 }
 
 function makeId(): string {

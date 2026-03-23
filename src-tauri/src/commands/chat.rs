@@ -71,7 +71,7 @@ pub fn init_megachat_debug() {
 // ---------------------------------------------------------------------------
 // Usage tracking
 // ---------------------------------------------------------------------------
-const DAILY_TOKEN_LIMIT: u64 = 50_000;
+const DAILY_TOKEN_LIMIT: u64 = 200_000;
 const CLAUDE_MODEL: &str = "claude-sonnet-4-20250514";
 const CLAUDE_API_URL: &str = "https://api.anthropic.com/v1/messages";
 const USER_AGENT: &str = concat!("MegaLoad/", env!("CARGO_PKG_VERSION"));

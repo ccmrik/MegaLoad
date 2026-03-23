@@ -1,11 +1,1 @@
-{
-  "version": "0.13.39",
-  "notes": "v0.13.39 - Add Shield Generator & Ballista to Factory, fix factory counts, blacklist duplicate prefabs",
-  "pub_date": "2026-03-23T18:17:03Z",
-  "platforms": {
-    "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUM4WkFSNWdXWTBsdDFrQW1NZ2xwQllSZWxaUHF1MTBoV3hnTkV2WUdERkRQcEtFZGwxbUJId2lsb05jeElpWVRZZ1NuQittN0ZmeW55OUFseGdaakE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MjUwMjE0CWZpbGU6TWVnYUxvYWRfMC4xMy4zOV94NjQtc2V0dXAubnNpcy56aXAKNDArU2VlUHNPcmQxdlZmM1NRYVZFYWk2OWU2WVRpbW1LSjRrN0tLV2I4aXNBZVJrZnVlaVhLSDc2VjU2eURrSVBZRHA2Mi8yOU9NOGJMbm5EUXlzQVE9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.39/MegaLoad_0.13.39_x64-setup.nsis.zip"
-    }
-  }
-}
+{"version":"0.14.0","notes":"v0.14.0 - MegaChat: AI assistant powered by Claude Sonnet 4","pub_date":"2026-03-23T00:00:00Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU5NUms3YUxCYXg2anZpYm1vcnRTeitrWVQ1Y2t5cnAzYW8zbWRsTFV1VFdaM1krKzRTaTlXTEFDMUpwbzUyaTM4VDdvUnFFYTZhUEplUXpUSnJkSHdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MjY4NDg0CWZpbGU6TWVnYUxvYWRfMC4xNC4wX3g2NC1zZXR1cC5uc2lzLnppcApMRzNIcTVOMzRSVUcvemROKys2MjNnSlZ4Wmt3eEl5VXhERjFHaU9hUXgvdEE4RGJFdnJMUFYvL0NsNy9DQVBNTkZvNWcxeGk5N3VPREp6TlJ2ZFZDdz09Cg==","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.14.0/MegaLoad_0.14.0_x64-setup.nsis.zip"}}}
