@@ -1,11 +1,11 @@
 {
-  "version": "0.15.2",
-  "notes": "v0.15.2 - MegaChat token optimization: prompt caching, reduced history/output",
-  "pub_date": "2026-03-24T08:45:50Z",
+  "version": "0.15.3",
+  "notes": "v0.15.3 - Clothing type, From column, scroll restore, DLC tags, wiki fixes, data cleanup",
+  "pub_date": "2026-03-23T22:38:59Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU5MeXpIVzJsQU1NQnNUZ09QNVdhblQxZytLMzlMN3FDQ0RKME9PT1YvNnVlZG05QS9EQzdSbVdFdndJZTg3bWw4RjRxT3REU0dGdDgwOXJGS0lLR1E4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MzAyMzI4CWZpbGU6TWVnYUxvYWRfMC4xNS4yX3g2NC1zZXR1cC5uc2lzLnppcApNY3F1UTh1M0VMWmN5TFJuWGdCRjRNZWpvb2RNR0o3blREODFkVGJpSGZyZVZmZzd0STlpQ25BTXU3RzI4Z21DY1cvNzkrUWtlUmVJV0s3SlBPWkxCUT09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.15.2/MegaLoad_0.15.2_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUJpL0ttUUxpWnFHS2N4TTBMRnlsR3gzSC9ycCtJUEtHZVZMUTVRbDVDSW9KU3UvUm9zd2JiSHhKNm5ZTFFESmY0SFBDNG9QUTRaYW4raU5OaEdjZUFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MzA1NDUzCWZpbGU6TWVnYUxvYWRfMC4xNS4zX3g2NC1zZXR1cC5uc2lzLnppcAo1TkdkckFCcjYvc0NsMHV1U2xiUEVwc0lEVndUd3crZDJobmI1Y2QzdFlUOEw4RHJNcUczeEdsVDZSNGhTWjNhcDhLUVM5WE5rRXFNMEZkbXFiMk1BZz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.15.3/MegaLoad_0.15.3_x64-setup.nsis.zip"
     }
   }
 }
