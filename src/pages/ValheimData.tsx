@@ -1523,6 +1523,7 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                            ws.type === "Pickup" ? <Hand className="w-4 h-4 text-sky-400" /> :
                            ws.type === "Crafting" ? <Hammer className="w-4 h-4 text-amber-400" /> :
                            ws.type === "Chest" ? <Archive className="w-4 h-4 text-yellow-400" /> :
+                           ws.type === "Spawner" ? <Skull className="w-4 h-4 text-red-400" /> :
                            <Boxes className="w-4 h-4 text-orange-400" />}
                         </div>
                         <span className="text-xs text-zinc-200">

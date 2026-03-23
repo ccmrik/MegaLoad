@@ -1172,7 +1172,25 @@ for (const [chestName, data] of Object.entries(CHEST_LOOT)) {
   }
 }
 
-// ── Inject WORLD_DROPS (trees, rocks, destructibles, chests) into dropLookup ──
+// ── Spawner Drops ──
+// Items dropped when creature spawners are destroyed. Manually maintained.
+// See: https://valheim.fandom.com/wiki/Category:Creature_spawner
+const SPAWNER_DROPS = {
+  "Greydwarf Nest": {
+    biome: "Black Forest",
+    items: ["AncientSeed"],
+  },
+};
+
+// Auto-generate WORLD_DROPS entries from SPAWNER_DROPS
+for (const [spawnerName, data] of Object.entries(SPAWNER_DROPS)) {
+  for (const itemPrefab of data.items) {
+    if (!WORLD_DROPS[itemPrefab]) WORLD_DROPS[itemPrefab] = [];
+    WORLD_DROPS[itemPrefab].push({source: spawnerName, biome: data.biome, type: "Spawner"});
+  }
+}
+
+// ── Inject WORLD_DROPS (trees, rocks, destructibles, chests, spawners) into dropLookup ──
 for (const [itemPrefab, sources] of Object.entries(WORLD_DROPS)) {
   if (!dropLookup[itemPrefab]) dropLookup[itemPrefab] = [];
   for (const wd of sources) {
