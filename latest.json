@@ -1,1 +1,11 @@
-{"version":"0.14.0","notes":"v0.14.0 - MegaChat: AI assistant powered by Claude Sonnet 4","pub_date":"2026-03-23T00:00:00Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU5NUms3YUxCYXg2anZpYm1vcnRTeitrWVQ1Y2t5cnAzYW8zbWRsTFV1VFdaM1krKzRTaTlXTEFDMUpwbzUyaTM4VDdvUnFFYTZhUEplUXpUSnJkSHdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MjY4NDg0CWZpbGU6TWVnYUxvYWRfMC4xNC4wX3g2NC1zZXR1cC5uc2lzLnppcApMRzNIcTVOMzRSVUcvemROKys2MjNnSlZ4Wmt3eEl5VXhERjFHaU9hUXgvdEE4RGJFdnJMUFYvL0NsNy9DQVBNTkZvNWcxeGk5N3VPREp6TlJ2ZFZDdz09Cg==","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.14.0/MegaLoad_0.14.0_x64-setup.nsis.zip"}}}
+{
+  "version": "0.15.0",
+  "notes": "v0.15.0 - User identity system, admin panel, chat history sync, ban system",
+  "pub_date": "2026-03-24T00:14:31Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUhOby8rMEdPbUh0NzYyWlNnbTBPNldEYkdDUVFITzE2Q0xoWlFGTjJ1aThra3RiS2JLa0UzakhJS2JoN1RMekkyenA3bFVYbmFJR0pIeVR1V3VLakFBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MjcxNjUzCWZpbGU6TWVnYUxvYWRfMC4xNS4wX3g2NC1zZXR1cC5uc2lzLnppcAp2ZHZ2MUYzY3hHWENXUm1SYnQ1QnlscjV2c3hUS3VjblViQ2JWNFJwR2ZxWUFSR0VndkRGTi9HTE5EY1JpSFFNVnQ2UnkvN05JcGVzRjVEbkJoUk9BZz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.15.0/MegaLoad_0.15.0_x64-setup.nsis.zip"
+    }
+  }
+}
