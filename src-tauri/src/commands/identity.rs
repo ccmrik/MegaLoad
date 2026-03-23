@@ -329,8 +329,16 @@ pub fn check_is_admin() -> bool {
 // ---------------------------------------------------------------------------
 
 fn load_user_index() -> Result<UserIndex, String> {
-    let (content, _sha) = github_get_file("users/index.json")?;
-    serde_json::from_str(&content).map_err(|e| format!("User index parse error: {}", e))
+    match github_get_file("users/index.json") {
+        Ok((content, _sha)) => {
+            serde_json::from_str(&content).map_err(|e| format!("User index parse error: {}", e))
+        }
+        Err(e) if e.contains("404") => Ok(UserIndex {
+            users: vec![],
+            last_updated: iso_now(),
+        }),
+        Err(e) => Err(e),
+    }
 }
 
 fn update_user_index(user_id: &str, display_name: &str, is_admin: bool) -> Result<(), String> {
@@ -416,7 +424,11 @@ pub fn admin_list_users() -> Result<Vec<AdminUserInfo>, String> {
         return Err("Admin access required".to_string());
     }
 
-    let listing = github_list_dir("users")?;
+    let listing = match github_list_dir("users") {
+        Ok(l) => l,
+        Err(e) if e.contains("404") => return Ok(Vec::new()),
+        Err(e) => return Err(e),
+    };
     let mut users = Vec::new();
     for (path, _sha) in &listing {
         if path.ends_with("index.json") {
