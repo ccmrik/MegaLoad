@@ -20,11 +20,11 @@
     },
     {
       "name": "MegaFood",
-      "version": "1.1.9",
-      "download_url": "https://github.com/ccmrik/MegaFood/releases/download/v1.1.9/MegaFood.dll",
+      "version": "1.2.0",
+      "download_url": "https://github.com/ccmrik/MegaFood/releases/download/v1.2.0/MegaFood.dll",
       "dll_name": "MegaFood.dll",
       "plugin_folder": "MegaFood",
-      "description": "Custom food items & recipes with fermenter integration and configurable stats"
+      "description": "Custom food items & recipes with fermenter integration — 150 HP/Stam/Eitr, enable/disable per food"
     },
     {
       "name": "MegaShot",

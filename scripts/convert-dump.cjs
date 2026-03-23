@@ -311,8 +311,24 @@ function mapItemType(gameType, prefab, shared) {
   }
 }
 
+// ── Subcategory overrides (prefab → subcategory) ──
+const SUBCATEGORY_OVERRIDE = {
+  Acorn:               "Seed",
+  TrophyDeer:          "Boss Caller",
+  AncientSeed:         "Boss Caller",
+  WitheredBone:        "Boss Caller",
+  DragonEgg:           "Boss Caller",
+  GoblinTotem:         "Boss Caller",
+  DvergrKey:           "Boss Caller",
+  DvergrKeyFragment:   "Boss Caller",
+  Bell:                "Boss Caller",
+  BellFragment:        "Boss Caller",
+};
+
 // ── Map game ItemType to subcategory ──
 function mapSubcategory(gameType, prefab, shared) {
+  if (SUBCATEGORY_OVERRIDE[prefab]) return SUBCATEGORY_OVERRIDE[prefab];
+
   // Special cases
   if (prefab === "FishingRod") return "Fishing Rod";
   if ((prefab.startsWith("Feast") && prefab !== "Feaster") || prefab === "MeatPlatter") return "Feast";
