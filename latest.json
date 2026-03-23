@@ -1,1 +1,11 @@
-{"version":"0.13.38","notes":"v0.13.38 - Biome sort option, trophy biome fixes, remove TrophyForestTroll","pub_date":"2026-03-23T17:58:24Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdwUUtpNkxPRHUvVkUzeDUweWdDblY0MisvSDVzUFRWSG1XMlEwOU93bG01bFFtcWY0NVFjUWNpYmVnR1VJVURiQmRNZUFValg3L3JpKzE5bjdHeEFBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MjQ5MDg1CWZpbGU6TWVnYUxvYWRfMC4xMy4zOF94NjQtc2V0dXAubnNpcy56aXAKeFRsc1pZaUZtVlgxR21YN3M4a3pOR0I0bGM3ci9GZkVtcmpsQ1RZZ0dMQTRzYVlXNWgrc2RoY0ZqTHE4QjM0VkNjc0o4WGRiRkRkc1lMeUx5UzREQXc9PQo=","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.13.38/MegaLoad_0.13.38_x64-setup.nsis.zip"}}}
+{
+  "version": "0.13.39",
+  "notes": "v0.13.39 - Add Shield Generator & Ballista to Factory, fix factory counts, blacklist duplicate prefabs",
+  "pub_date": "2026-03-23T18:17:03Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUM4WkFSNWdXWTBsdDFrQW1NZ2xwQllSZWxaUHF1MTBoV3hnTkV2WUdERkRQcEtFZGwxbUJId2lsb05jeElpWVRZZ1NuQittN0ZmeW55OUFseGdaakE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MjUwMjE0CWZpbGU6TWVnYUxvYWRfMC4xMy4zOV94NjQtc2V0dXAubnNpcy56aXAKNDArU2VlUHNPcmQxdlZmM1NRYVZFYWk2OWU2WVRpbW1LSjRrN0tLV2I4aXNBZVJrZnVlaVhLSDc2VjU2eURrSVBZRHA2Mi8yOU9NOGJMbm5EUXlzQVE9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.13.39/MegaLoad_0.13.39_x64-setup.nsis.zip"
+    }
+  }
+}

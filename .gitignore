@@ -25,3 +25,6 @@ Thumbs.db
 # Icon generation scripts
 generate-icons.cjs
 generate-ico.cjs
+
+# Maintenance reports
+maintenance-report.json

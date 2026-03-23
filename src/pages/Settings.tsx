@@ -13,6 +13,7 @@ import {
 import { useProfileStore } from "../stores/profileStore";
 import { useSettingsStore } from "../stores/settingsStore";
 import { useAppUpdateStore } from "../stores/appUpdateStore";
+import { useChatStore } from "../stores/chatStore";
 import {
   FolderOpen,
   RefreshCw,
@@ -26,12 +27,14 @@ import {
   Trash2,
   ToggleLeft,
   ToggleRight,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
 export function Settings() {
   const { fetchProfiles } = useProfileStore();
   const { loggingEnabled, loaded: settingsLoaded, fetchSettings, setLoggingEnabled } = useSettingsStore();
+  const { debugEnabled, debugLoaded, fetchDebug, setDebugEnabled } = useChatStore();
   const { currentVersion } = useAppUpdateStore();
   const [valheimPath, setValheimPath] = useState("");
   const [detecting, setDetecting] = useState(false);
@@ -46,6 +49,7 @@ export function Settings() {
 
   useEffect(() => {
     fetchSettings();
+    fetchDebug();
     detectValheimPath()
       .then((p) => {
         setValheimPath(p);
@@ -123,6 +127,11 @@ export function Settings() {
   const handleToggleLogging = async () => {
     await setLoggingEnabled(!loggingEnabled);
     setToast(loggingEnabled ? "Logging disabled" : "Logging enabled");
+  };
+
+  const handleToggleChatDebug = async () => {
+    await setDebugEnabled(!debugEnabled);
+    setToast(debugEnabled ? "MegaChat debug disabled" : "MegaChat debug enabled");
   };
 
   const handleDownloadLog = async () => {
@@ -390,6 +399,30 @@ export function Settings() {
             )}
           </div>
         )}
+      </div>
+
+      {/* MegaChat Debug */}
+      <div className="glass rounded-xl p-5 border border-zinc-800/50 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <MessageCircle className="w-4 h-4 text-brand-400" />
+            <h2 className="text-sm font-semibold text-zinc-300">MegaChat Debug</h2>
+          </div>
+          {debugLoaded && (
+            <button onClick={handleToggleChatDebug} className="shrink-0">
+              {debugEnabled ? (
+                <ToggleRight className="w-8 h-8 text-brand-400" />
+              ) : (
+                <ToggleLeft className="w-8 h-8 text-zinc-600" />
+              )}
+            </button>
+          )}
+        </div>
+        <p className="text-xs text-zinc-500">
+          {debugEnabled
+            ? "Shows token usage per message, daily totals, and logs API requests to the app log."
+            : "Enable to see token usage and API diagnostics in MegaChat."}
+        </p>
       </div>
 
       {/* Data Location */}

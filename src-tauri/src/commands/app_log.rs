@@ -12,12 +12,15 @@ static LOGGING_ENABLED: AtomicBool = AtomicBool::new(false);
 pub struct AppSettings {
     #[serde(default)]
     pub logging_enabled: bool,
+    #[serde(default)]
+    pub megachat_debug: bool,
 }
 
 impl Default for AppSettings {
     fn default() -> Self {
         Self {
             logging_enabled: false,
+            megachat_debug: false,
         }
     }
 }
@@ -51,6 +54,11 @@ fn save_settings(settings: &AppSettings) -> Result<(), String> {
     let json = serde_json::to_string_pretty(settings).map_err(|e| e.to_string())?;
     fs::write(settings_path(), json).map_err(|e| e.to_string())?;
     Ok(())
+}
+
+/// Public wrapper for other modules (e.g. chat) to persist settings.
+pub fn save_settings_pub(settings: &AppSettings) -> Result<(), String> {
+    save_settings(settings)
 }
 
 /// Call once at startup to load the logging flag into memory.

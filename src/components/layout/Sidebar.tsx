@@ -21,6 +21,7 @@ import {
   Monitor,
   UserCircle,
   Bug,
+  MessageCircle,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useProfileStore } from "../../stores/profileStore";
@@ -39,6 +40,7 @@ const navItems = [
   { to: "/trainer", icon: Gamepad2, label: "Trainer" },
   { to: "/valheim-data", icon: Database, label: "Valheim Data" },
   { to: "/player-data", icon: UserCircle, label: "Player Data" },
+  { to: "/chat", icon: MessageCircle, label: "MegaChat" },
   { to: "/logs", icon: ScrollText, label: "Log Viewer" },
   { to: "/profiles", icon: Users, label: "Profiles" },
   { to: "/settings", icon: Cog, label: "Settings" },

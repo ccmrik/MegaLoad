@@ -12,6 +12,7 @@ import { ValheimData } from "./pages/ValheimData";
 import { PlayerData } from "./pages/PlayerData";
 import { Cart } from "./pages/Cart";
 import { MegaBugs } from "./pages/MegaBugs";
+import { MegaChat } from "./pages/MegaChat";
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
         <Route path="/player-data" element={<PlayerData />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/bugs" element={<MegaBugs />} />
+        <Route path="/chat" element={<MegaChat />} />
         <Route path="/logs" element={<LogViewer />} />
         <Route path="/profiles" element={<Profiles />} />
         <Route path="/settings" element={<Settings />} />

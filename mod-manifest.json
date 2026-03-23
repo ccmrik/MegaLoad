@@ -1,67 +1,67 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-03-22T04:50:00Z",
+  "updated_at": "2026-03-23T23:20:00Z",
   "mods": [
     {
-      "name": "SluttyHoe",
-      "version": "3.7.8",
-      "download_url": "https://github.com/ccmrik/SluttyHoe/releases/download/v3.7.8/SluttyHoe.dll",
-      "dll_name": "SluttyHoe.dll",
-      "plugin_folder": "SluttyHoe",
+      "name": "MegaHoe",
+      "version": "4.0.2",
+      "download_url": "https://github.com/ccmrik/MegaHoe/releases/download/v4.0.2/MegaHoe.dll",
+      "dll_name": "MegaHoe.dll",
+      "plugin_folder": "MegaHoe",
       "description": "Hoe tool overhaul with biome painter, extended terrain editing, and configurable radius"
     },
     {
       "name": "MegaMegingjord",
-      "version": "1.6.5",
-      "download_url": "https://github.com/ccmrik/MegaMegingjord/releases/download/v1.6.5/MegaMegingjord.dll",
+      "version": "1.6.7",
+      "download_url": "https://github.com/ccmrik/MegaMegingjord/releases/download/v1.6.7/MegaMegingjord.dll",
       "dll_name": "MegaMegingjord.dll",
       "plugin_folder": "MegaMegingjord",
       "description": "Megingjord belt powers — carry weight, headlamp, Eitr bonus, seafloor walk, speed & jump boost"
     },
     {
       "name": "MegaFood",
-      "version": "1.1.4",
-      "download_url": "https://github.com/ccmrik/MegaFood/releases/download/v1.1.4/MegaFood.dll",
+      "version": "1.1.8",
+      "download_url": "https://github.com/ccmrik/MegaFood/releases/download/v1.1.8/MegaFood.dll",
       "dll_name": "MegaFood.dll",
       "plugin_folder": "MegaFood",
       "description": "Custom food items & recipes with fermenter integration and configurable stats"
     },
     {
       "name": "MegaShot",
-      "version": "2.2.3",
-      "download_url": "https://github.com/ccmrik/MegaShot/releases/download/v2.2.3/MegaShot.dll",
+      "version": "2.3.2",
+      "download_url": "https://github.com/ccmrik/MegaShot/releases/download/v2.3.2/MegaShot.dll",
       "dll_name": "MegaShot.dll",
       "plugin_folder": "MegaShot",
       "description": "Crossbow & firearms overhaul — scope/zoom, AOE, DoT, fire rate, magazine/reload system"
     },
     {
       "name": "MegaQoL",
-      "version": "1.8.3",
-      "download_url": "https://github.com/ccmrik/MegaQoL/releases/download/v1.8.3/MegaQoL.dll",
+      "version": "1.8.7",
+      "download_url": "https://github.com/ccmrik/MegaQoL/releases/download/v1.8.7/MegaQoL.dll",
       "dll_name": "MegaQoL.dll",
       "plugin_folder": "MegaQoL",
       "description": "Quality of life — auto repair, refueller, pet feeder, craft from containers, map teleport, mass farming"
     },
     {
       "name": "MegaFishing",
-      "version": "1.0.7",
-      "download_url": "https://github.com/ccmrik/MegaFishing/releases/download/v1.0.7/MegaFishing.dll",
+      "version": "1.0.11",
+      "download_url": "https://github.com/ccmrik/MegaFishing/releases/download/v1.0.11/MegaFishing.dll",
       "dll_name": "MegaFishing.dll",
       "plugin_folder": "MegaFishing",
       "description": "Fish auto-pull into containers/inventory with quality upgrade and configurable radius"
     },
     {
       "name": "MegaFactory",
-      "version": "1.1.7",
-      "download_url": "https://github.com/ccmrik/MegaFactory/releases/download/v1.1.7/MegaFactory.dll",
+      "version": "1.1.11",
+      "download_url": "https://github.com/ccmrik/MegaFactory/releases/download/v1.1.11/MegaFactory.dll",
       "dll_name": "MegaFactory.dll",
       "plugin_folder": "MegaFactory",
-      "description": "Auto-feed factory stations (Kiln, Smelter, Blast Furnace, Windmill, Spinning Wheel) with work order system"
+      "description": "Auto-feed factory stations (Kiln, Smelter, Blast Furnace, Windmill, Spinning Wheel, Eitr Refinery) with work order system"
     },
     {
       "name": "MegaTrainer",
-      "version": "1.5.4",
-      "download_url": "https://github.com/ccmrik/MegaTrainer/releases/download/v1.5.4/MegaTrainer.dll",
+      "version": "1.5.6",
+      "download_url": "https://github.com/ccmrik/MegaTrainer/releases/download/v1.5.6/MegaTrainer.dll",
       "dll_name": "MegaTrainer.dll",
       "plugin_folder": "MegaTrainer",
       "description": "In-game cheat trainer — god mode, fly, no cost, explore map, always rested, infinite eitr, tame all, no structure damage, fast skill up, speed/jump controls"

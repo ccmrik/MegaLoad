@@ -4,6 +4,7 @@ mod models;
 use commands::app_log::*;
 use commands::bepinex::*;
 use commands::bugs::*;
+use commands::chat::*;
 use commands::config::*;
 use commands::import::*;
 use commands::launcher::*;
@@ -19,6 +20,7 @@ use commands::updater::*;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     commands::app_log::init_logging();
+    commands::chat::init_megachat_debug();
 
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
@@ -122,6 +124,12 @@ pub fn run() {
             update_ticket_status,
             delete_ticket,
             fetch_attachment,
+            // MegaChat
+            chat_send_message,
+            chat_get_usage,
+            chat_reset_usage,
+            chat_get_debug_enabled,
+            chat_set_debug_enabled,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

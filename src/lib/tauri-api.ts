@@ -585,3 +585,42 @@ export const deleteTicket = (ticketId: string) =>
 
 export const fetchAttachment = (path: string) =>
   invoke<string>("fetch_attachment", { path });
+
+// ---------------------------------------------------------------------------
+// MegaChat
+// ---------------------------------------------------------------------------
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
+}
+
+export interface DailyUsage {
+  date: string;
+  input_tokens: number;
+  output_tokens: number;
+  total_tokens: number;
+  request_count: number;
+}
+
+export interface ChatResponse {
+  text: string;
+  input_tokens: number;
+  output_tokens: number;
+  daily_usage: DailyUsage;
+}
+
+export const chatSendMessage = (messages: ChatMessage[], systemContext: string) =>
+  invoke<ChatResponse>("chat_send_message", { messages, systemContext });
+
+export const chatGetUsage = () =>
+  invoke<DailyUsage>("chat_get_usage");
+
+export const chatResetUsage = () =>
+  invoke<void>("chat_reset_usage");
+
+export const chatGetDebugEnabled = () =>
+  invoke<boolean>("chat_get_debug_enabled");
+
+export const chatSetDebugEnabled = (enabled: boolean) =>
+  invoke<void>("chat_set_debug_enabled", { enabled });
