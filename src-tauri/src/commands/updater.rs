@@ -150,7 +150,7 @@ fn save_cache(bepinex_path: &str, mods: &[ModUpdateInfo]) {
 /// Fetch the mod manifest — a single HTTP request for all mod info.
 fn fetch_manifest() -> Result<ModManifest, String> {
     let resp = crate::commands::http::agent().get(MANIFEST_URL)
-        .set("User-Agent", "MegaLoad/0.16.0")
+        .set("User-Agent", "MegaLoad/0.16.1")
         .call()
         .map_err(|e| {
             let msg = format!("{}", e);
@@ -173,16 +173,24 @@ fn evaluate_updates(
     plugins_dir: &PathBuf,
     installed_versions: &std::collections::HashMap<String, String>,
 ) -> Vec<ModUpdateInfo> {
+    // Derive disabled_plugins path (sibling of plugins/)
+    let disabled_dir = plugins_dir.parent()
+        .map(|p| p.join("disabled_plugins"))
+        .unwrap_or_else(|| plugins_dir.join("..").join("disabled_plugins"));
+
     manifest
         .mods
         .iter()
         .map(|m| {
             let dll_path = plugins_dir.join(&m.plugin_folder).join(&m.dll_name);
+            let disabled_path = disabled_dir.join(&m.plugin_folder).join(&m.dll_name);
             let is_installed = dll_path.exists();
+            let is_disabled = disabled_path.exists();
             let iv = installed_versions.get(&m.name).cloned();
             let latest = m.version.trim_start_matches('v').to_string();
 
-            let has_update = if !is_installed {
+            // Don't flag updates for disabled mods — user deliberately disabled them
+            let has_update = if !is_installed || is_disabled {
                 false
             } else {
                 match &iv {
@@ -205,7 +213,9 @@ fn evaluate_updates(
                 has_update,
                 // Always include download_url so cached entries have it when re-evaluated
                 download_url: Some(m.download_url.clone()),
-                status: if !is_installed {
+                status: if is_disabled {
+                    "disabled".to_string()
+                } else if !is_installed {
                     "not-installed".to_string()
                 } else if has_update {
                     "update-available".to_string()
@@ -239,6 +249,7 @@ pub fn check_mod_updates(bepinex_path: String, force: bool) -> Result<UpdateChec
         app_log("Checking for mod updates...");
     }
     let plugins_dir = PathBuf::from(&bepinex_path).join("plugins");
+    let disabled_dir = PathBuf::from(&bepinex_path).join("disabled_plugins");
     let installed_versions = load_installed_versions(&bepinex_path);
 
     // Check cache first
@@ -252,11 +263,16 @@ pub fn check_mod_updates(bepinex_path: String, force: bool) -> Result<UpdateChec
                 let folder = m.name.clone();
                 let dll_name = format!("{}.dll", m.name);
                 let dll_path = plugins_dir.join(&folder).join(&dll_name);
+                let disabled_path = disabled_dir.join(&folder).join(&dll_name);
                 let is_installed = dll_path.exists();
+                let is_disabled = disabled_path.exists();
                 let iv = installed_versions.get(&m.name).cloned();
                 m.installed_version = iv.clone();
                 if let Some(latest) = &m.latest_version {
-                    if is_installed && iv.is_none() {
+                    // Don't flag updates for disabled mods
+                    if is_disabled || !is_installed {
+                        m.has_update = false;
+                    } else if is_installed && iv.is_none() {
                         // Installed but no version recorded — flag for update
                         m.has_update = true;
                     } else {
@@ -266,7 +282,9 @@ pub fn check_mod_updates(bepinex_path: String, force: bool) -> Result<UpdateChec
                                 .map(|v| v.trim_start_matches('v'))
                                 != Some(latest.trim_start_matches('v'));
                     }
-                    m.status = if !is_installed {
+                    m.status = if is_disabled {
+                        "disabled".to_string()
+                    } else if !is_installed {
                         "not-installed".to_string()
                     } else if m.has_update {
                         "update-available".to_string()
@@ -364,17 +382,26 @@ pub fn install_mod_update(
     sanitize_path_component(&dll_name)?;
 
     let plugins_dir = PathBuf::from(&bepinex_path).join("plugins");
-    let mod_dir = plugins_dir.join(&plugin_folder);
+    let disabled_dir = PathBuf::from(&bepinex_path).join("disabled_plugins");
 
-    if !mod_dir.exists() {
-        fs::create_dir_all(&mod_dir).map_err(|e| format!("Failed to create dir: {}", e))?;
-    }
+    // Check if mod is disabled — if so, update in disabled_plugins/ to respect the user's choice
+    let disabled_mod_dir = disabled_dir.join(&plugin_folder);
+    let mod_dir = if disabled_mod_dir.exists() {
+        app_log(&format!("{} is disabled — updating in disabled_plugins/", mod_name));
+        disabled_mod_dir
+    } else {
+        let d = plugins_dir.join(&plugin_folder);
+        if !d.exists() {
+            fs::create_dir_all(&d).map_err(|e| format!("Failed to create dir: {}", e))?;
+        }
+        d
+    };
 
     let dll_path = mod_dir.join(&dll_name);
 
     // Download the DLL (this is a direct file download, not an API call — no rate limit)
     let resp = crate::commands::http::agent().get(&download_url)
-        .set("User-Agent", "MegaLoad/0.16.0")
+        .set("User-Agent", "MegaLoad/0.16.1")
         .call()
         .map_err(|e| format!("Download failed for {}: {}", mod_name, e))?;
 

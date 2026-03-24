@@ -56,9 +56,30 @@ fn load_manifest_info(bepinex_path: &str) -> std::collections::HashMap<String, (
 #[command]
 pub fn get_mods(bepinex_path: String) -> Result<Vec<ModInfo>, String> {
     let plugins_dir = Path::new(&bepinex_path).join("plugins");
-    let disabled_dir = plugins_dir.join("_disabled");
+    let disabled_dir = Path::new(&bepinex_path).join("disabled_plugins");
     let mut mods = Vec::new();
     let manifest_info = load_manifest_info(&bepinex_path);
+
+    // Migration: move mods from old plugins/_disabled/ to new disabled_plugins/
+    let old_disabled = plugins_dir.join("_disabled");
+    if old_disabled.exists() {
+        fs::create_dir_all(&disabled_dir).ok();
+        if let Ok(entries) = fs::read_dir(&old_disabled) {
+            for entry in entries.flatten() {
+                let src = entry.path();
+                let dst = disabled_dir.join(entry.file_name());
+                if !dst.exists() {
+                    if let Err(e) = fs::rename(&src, &dst) {
+                        app_log(&format!("Migration: failed to move {:?}: {}", src, e));
+                    } else {
+                        app_log(&format!("Migration: moved {:?} to disabled_plugins/", entry.file_name()));
+                    }
+                }
+            }
+        }
+        // Remove old _disabled dir if now empty
+        let _ = fs::remove_dir(&old_disabled);
+    }
 
     // Scan enabled mods first
     if plugins_dir.exists() {
@@ -174,7 +195,7 @@ pub fn toggle_mod(bepinex_path: String, folder: String, file_name: String, enabl
     sanitize_path_component(&file_name)?;
 
     let plugins_dir = Path::new(&bepinex_path).join("plugins");
-    let disabled_dir = plugins_dir.join("_disabled");
+    let disabled_dir = Path::new(&bepinex_path).join("disabled_plugins");
 
     let (src_base, dst_base) = if enable {
         (disabled_dir.as_path(), plugins_dir.as_path())
@@ -217,7 +238,7 @@ pub fn delete_mod(bepinex_path: String, folder: String, file_name: String, enabl
     let base = if enabled {
         plugins_dir
     } else {
-        plugins_dir.join("_disabled")
+        Path::new(&bepinex_path).join("disabled_plugins")
     };
 
     if folder.is_empty() {

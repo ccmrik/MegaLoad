@@ -317,12 +317,12 @@ pub fn reset_config_file(config_path: String) -> Result<ConfigFile, String> {
     parse_config_file(path)
 }
 
-/// Collect all installed mod DLL stems from plugins/ and plugins/_disabled/.
+/// Collect all installed mod DLL stems from plugins/ and disabled_plugins/.
 fn collect_installed_mod_names(bepinex_path: &Path) -> HashSet<String> {
     let mut names = HashSet::new();
     let plugins_dir = bepinex_path.join("plugins");
 
-    for dir in [plugins_dir.clone(), plugins_dir.join("_disabled")] {
+    for dir in [plugins_dir.clone(), bepinex_path.join("disabled_plugins")] {
         if let Ok(entries) = fs::read_dir(&dir) {
             for entry in entries.flatten() {
                 let path = entry.path();

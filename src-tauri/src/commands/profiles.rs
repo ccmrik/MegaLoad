@@ -51,7 +51,7 @@ pub fn create_profile(name: String) -> Result<Profile, String> {
     fs::create_dir_all(bepinex_dir.join("plugins")).map_err(|e| e.to_string())?;
     fs::create_dir_all(bepinex_dir.join("config")).map_err(|e| e.to_string())?;
     fs::create_dir_all(bepinex_dir.join("core")).map_err(|e| e.to_string())?;
-    fs::create_dir_all(bepinex_dir.join("plugins").join("_disabled")).map_err(|e| e.to_string())?;
+    fs::create_dir_all(bepinex_dir.join("disabled_plugins")).map_err(|e| e.to_string())?;
 
     let now = chrono_now();
     let profile = Profile {
