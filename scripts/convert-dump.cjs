@@ -1625,19 +1625,30 @@ for (const item of items) {
     }
     worldSources.push(...Object.values(grouped));
   }
+
+  const resolvedType = mapItemType(item.itemType, item.prefab, item);
+  const isClothing = resolvedType === "Clothing";
   
+  // For clothing items, strip per-level stats and Max Quality (they don't upgrade)
+  let stats = buildStats(item);
+  if (isClothing) {
+    stats = stats
+      .filter(s => s.label !== "Max Quality")
+      .map(s => s.value.includes("/lvl") ? { label: s.label, value: `${parseInt(s.value)}` } : s);
+  }
+
   const entry = {
     id: item.prefab,
     token: item.name || "",
     name: name,
-    type: mapItemType(item.itemType, item.prefab, item),
+    type: resolvedType,
     subcategory: mapSubcategory(item.itemType, item.prefab, item),
     description: loc(item.description) || (feastMat ? loc(feastMat.description) : ""),
     biomes: biomes,
     source: getSource(item.prefab, recipe, itemDrops),
     station: FIRE_COOKED_ITEMS.has(item.prefab) ? "Cooking Station" : (recipe ? mapStation(recipe.craftingStation) : ""),
     stationLevel: recipe ? recipe.minStationLevel : 0,
-    maxQuality: item.maxQuality,
+    maxQuality: isClothing ? 1 : item.maxQuality,
     stack: feastMat ? feastMat.stack : item.maxStackSize,
     weight: item.weight,
     value: item.value,
@@ -1645,7 +1656,7 @@ for (const item of items) {
     upgradeCosts: upgradeCosts,
     drops: drops,
     worldSources: worldSources,
-    stats: buildStats(item),
+    stats: stats,
     wikiUrl: WIKI_MAP[item.prefab] ? WIKI_MAP[item.prefab][0] : "",
     wikiGroup: WIKI_MAP[item.prefab] && WIKI_MAP[item.prefab][1] ? WIKI_MAP[item.prefab][1] : "",
   };
