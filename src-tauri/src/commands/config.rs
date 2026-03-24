@@ -401,3 +401,33 @@ pub fn clean_orphan_configs(bepinex_path: String) -> Result<Vec<String>, String>
     }
     Ok(deleted)
 }
+
+/// Delete a single config file by path.
+/// Protected configs (BepInEx core) cannot be deleted.
+#[command]
+pub fn delete_config_file(config_path: String) -> Result<(), String> {
+    validate_config_path(&config_path, "")?;
+
+    let path = Path::new(&config_path);
+    if !path.exists() {
+        return Err("Config file does not exist".to_string());
+    }
+
+    // Check protected prefixes
+    let file_name = path
+        .file_name()
+        .unwrap_or_default()
+        .to_string_lossy()
+        .to_string();
+    let stem = file_name.trim_end_matches(".cfg").to_lowercase();
+    if PROTECTED_PREFIXES.iter().any(|p| stem.starts_with(p)) {
+        return Err(format!(
+            "Cannot delete protected config file: {}",
+            file_name
+        ));
+    }
+
+    app_log(&format!("Deleting config file: {}", file_name));
+    fs::remove_file(path).map_err(|e| format!("Failed to delete {}: {}", file_name, e))?;
+    Ok(())
+}

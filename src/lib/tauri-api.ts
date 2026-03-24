@@ -106,6 +106,8 @@ export const resetConfigFile = (configPath: string) =>
   invoke<ConfigFile>("reset_config_file", { configPath });
 export const cleanOrphanConfigs = (bepinexPath: string) =>
   invoke<string[]>("clean_orphan_configs", { bepinexPath });
+export const deleteConfigFile = (configPath: string) =>
+  invoke<void>("delete_config_file", { configPath });
 export const startConfigWatcher = (bepinexPath: string) =>
   invoke<void>("start_config_watcher", { bepinexPath });
 export const stopConfigWatcher = () =>

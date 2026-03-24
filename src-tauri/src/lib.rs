@@ -55,6 +55,7 @@ pub fn run() {
             save_config_value,
             reset_config_file,
             clean_orphan_configs,
+            delete_config_file,
             start_config_watcher,
             stop_config_watcher,
             // Logs

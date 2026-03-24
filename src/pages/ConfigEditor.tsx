@@ -6,6 +6,7 @@ import {
   saveConfigValue,
   resetConfigFile,
   cleanOrphanConfigs,
+  deleteConfigFile,
   startConfigWatcher,
   stopConfigWatcher,
   type ConfigFile,
@@ -24,6 +25,7 @@ import {
   Undo2,
   List,
   RefreshCw,
+  Trash2,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -65,6 +67,7 @@ export function ConfigEditor() {
   );
   const [changeCount, setChangeCount] = useState(0);
   const [toast, setToast] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<ConfigFile | null>(null);
   const sectionRefs = useRef<Record<string, HTMLDivElement | null>>({});
   const contentRef = useRef<HTMLDivElement>(null);
   const selectedModRef = useRef(selectedMod);
@@ -188,6 +191,19 @@ export function ConfigEditor() {
     }
   };
 
+  const handleDeleteFile = async (config: ConfigFile) => {
+    try {
+      await deleteConfigFile(config.path);
+      setConfigs((prev) => prev.filter((cfg) => cfg.path !== config.path));
+      setSelectedMod(null);
+      setDeleteConfirm(null);
+      setToast(`Deleted ${config.file_name}`);
+    } catch (e) {
+      setToast(`Error: ${e}`);
+      setDeleteConfirm(null);
+    }
+  };
+
   const selectedConfig = configs.find((c) => c.file_name === selectedMod);
 
   // Sort sections naturally (1, 2, 3... not 1, 10, 11, 2...)
@@ -287,6 +303,49 @@ export function ConfigEditor() {
       {toast && (
         <div className="fixed top-14 right-6 z-50 px-4 py-2.5 rounded-lg bg-brand-500/90 text-zinc-950 text-sm font-medium shadow-xl animate-in slide-in-from-top-2 duration-300">
           {toast}
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="glass rounded-2xl border border-zinc-700/50 shadow-2xl p-6 w-full max-w-md animate-in zoom-in-95 duration-200">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="p-2.5 rounded-xl bg-red-500/10">
+                <Trash2 className="w-5 h-5 text-red-400" />
+              </div>
+              <h3 className="text-lg font-semibold text-zinc-200">
+                Delete Config File
+              </h3>
+            </div>
+            <p className="text-sm text-zinc-400 mb-2">
+              Are you sure you want to delete the config file for{" "}
+              <span className="font-semibold text-zinc-200">
+                {deleteConfirm.mod_name}
+              </span>
+              ?
+            </p>
+            <p className="text-xs text-zinc-600 font-mono mb-1">
+              {deleteConfirm.file_name}
+            </p>
+            <p className="text-xs text-zinc-500 mb-5">
+              The mod will regenerate a default config file on next game launch.
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDeleteFile(deleteConfirm)}
+                className="px-4 py-2 rounded-lg text-sm font-medium bg-red-500/15 text-red-400 hover:bg-red-500/25 hover:text-red-300 border border-red-500/20 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
@@ -512,14 +571,23 @@ export function ConfigEditor() {
                     {selectedConfig.file_name}
                   </p>
                 </div>
-                <button
-                  onClick={() => handleResetFile(selectedConfig.path)}
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors"
-                  title="Reset all to defaults"
-                >
-                  <Undo2 className="w-3.5 h-3.5" />
-                  Reset All
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => handleResetFile(selectedConfig.path)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50 transition-colors"
+                    title="Reset all to defaults"
+                  >
+                    <Undo2 className="w-3.5 h-3.5" />
+                    Reset All
+                  </button>
+                  <button
+                    onClick={() => setDeleteConfirm(selectedConfig)}
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-zinc-500 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                    title="Delete config file"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
               </div>
 
               {/* Sections */}

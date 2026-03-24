@@ -68,8 +68,8 @@
     },
     {
       "name": "MegaBuilder",
-      "version": "1.0.3",
-      "download_url": "https://github.com/ccmrik/MegaBuilder/releases/download/v1.0.3/MegaBuilder.dll",
+      "version": "1.0.6",
+      "download_url": "https://github.com/ccmrik/MegaBuilder/releases/download/v1.0.6/MegaBuilder.dll",
       "dll_name": "MegaBuilder.dll",
       "plugin_folder": "MegaBuilder",
       "description": "Grid alignment for building placement — snap pieces to configurable grid sizes (0.5, 1, 2, 4)"
