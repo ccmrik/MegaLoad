@@ -1,11 +1,11 @@
 {
-  "version": "0.16.1",
-  "notes": "v0.16.1 - Move disabled mods outside plugins/ to prevent BepInEx from loading them",
-  "pub_date": "2026-03-24T18:00:36Z",
+  "version": "0.16.2",
+  "notes": "v0.16.2 - Fix Thunderstore UA drift, update mod-manifest",
+  "pub_date": "2026-03-30T03:34:16Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU5pMGxPNTZBVmxBSUhjQmhjNWNEOWRQRlFkWTRNUlZJQXpjMjNZVjluVWNWU08wbXM5Wko1T1NQdDVvNThRRzZpVzFYZFRoTWFlUXQ3WlBpUmhJcnc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MzM1NjI0CWZpbGU6TWVnYUxvYWRfMC4xNi4xX3g2NC1zZXR1cC5uc2lzLnppcApRbDlXQ0gwOWl2NEtheHU2Y2Jmbjl1ZWtqcjFTM2xpaWR1Rm9tUjZ2cUVzS2ZuajVCSC82dlArY2VFK2pzYS9EZ0dtUG1UUUhySEpTYXFaSzhuZlhEZz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.16.1/MegaLoad_0.16.1_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU5wZVdOMThoZmFGMFZ4dlNJRlpHTWVSV2tmRkVRYWppQWZJTkExU2ltam1KMDc4cVI5NTI2dHBVcUNyd2R5UXhhckJmS2RyVEJIRTUySmIreEtLaGdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0ODQxNjM4CWZpbGU6TWVnYUxvYWRfMC4xNi4yX3g2NC1zZXR1cC5uc2lzLnppcApSZ1pSd1NBZXl0QmpGRFkzVUVzWkkrV0pZOEtHeHZtTm8vUGJ3bm9QdWpmNVVHWmRXZXN5YWhmNkNsdlIyMDQ3empsc29xL1p6QVAveTZqWlh2cDVEZz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.16.2/MegaLoad_0.16.2_x64-setup.nsis.zip"
     }
   }
 }

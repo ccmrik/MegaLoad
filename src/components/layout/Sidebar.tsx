@@ -294,7 +294,7 @@ export function Sidebar() {
                     onClick={() => {
                       addToast({
                         type: "success",
-                        title: `${updatedCount} mod${updatedCount > 1 ? "s" : ""} updated this session`,
+                        title: `${updatedCount} mod${updatedCount > 1 ? "s" : ""} updated`,
                         message: sessionUpdatedMods.join(", "),
                         duration: 8000,
                       });
