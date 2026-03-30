@@ -1,11 +1,11 @@
 {
-  "version": "0.15.11",
-  "notes": "v0.15.11 - Fix Steam cloud sync detection stuck after sync completes",
-  "pub_date": "2026-03-24T17:15:32Z",
+  "version": "0.16.1",
+  "notes": "v0.16.1 - Move disabled mods outside plugins/ to prevent BepInEx from loading them",
+  "pub_date": "2026-03-24T18:00:36Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUZMamFLeE91OXhPOTAyd2E5YjlJemgwSmpVTTU1LzhBL3NiN2tYUjFiNzJIeVJqR0ZyVE9CUUxSQXpKcmZ6SWNvdjIrditEc3hYcXF1VmI3T1FHWWdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MzMyODY1CWZpbGU6TWVnYUxvYWRfMC4xNS4xMV94NjQtc2V0dXAubnNpcy56aXAKYm16SGhvY2pMNGl2ZmdwaVFoSUdLWGg5V3dqV29Rd0NTYmdGL3RCUFVvbCtOV3hmOXEvWFowSnN4eHJWMndGaXp6blZ1c0lkRFVFSGtCak8xMHk2QUE9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.15.11/MegaLoad_0.15.11_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU5pMGxPNTZBVmxBSUhjQmhjNWNEOWRQRlFkWTRNUlZJQXpjMjNZVjluVWNWU08wbXM5Wko1T1NQdDVvNThRRzZpVzFYZFRoTWFlUXQ3WlBpUmhJcnc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc0MzM1NjI0CWZpbGU6TWVnYUxvYWRfMC4xNi4xX3g2NC1zZXR1cC5uc2lzLnppcApRbDlXQ0gwOWl2NEtheHU2Y2Jmbjl1ZWtqcjFTM2xpaWR1Rm9tUjZ2cUVzS2ZuajVCSC82dlArY2VFK2pzYS9EZ0dtUG1UUUhySEpTYXFaSzhuZlhEZz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.16.1/MegaLoad_0.16.1_x64-setup.nsis.zip"
     }
   }
 }
