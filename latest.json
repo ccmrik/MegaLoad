@@ -1,11 +1,1 @@
-{
-  "version": "0.16.5",
-  "notes": "v0.16.5 - Show version numbers in update toasts",
-  "pub_date": "2026-04-08T11:22:41Z",
-  "platforms": {
-    "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdmbXplcmUyQlRsM1hRanErSk54clVvTUQ1a3pxUUVobDFyV2xDeHFZeGpaakhkWUE2dWRLRTcyWm9JUkRncFR5dCsxaFdmWk45MVdmSmY5SGRjOWdBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1NjQ3MzM5CWZpbGU6TWVnYUxvYWRfMC4xNi41X3g2NC1zZXR1cC5uc2lzLnppcApraFJiS2ZvSm1GbzlWS3Z3aHd6NktXeHVtMFJ0RkR4dS9jaDU1bGhoUGE2YkRNTWdvN3MzaHBqaytoTE5BaEplcTAzMGplY2Y3ZDZUbCtRWHNNUnZEdz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.16.5/MegaLoad_0.16.5_x64-setup.nsis.zip"
-    }
-  }
-}
+{"version":"0.17.0","notes":"v0.17.0 - MegaChat: user-provided API key instead of embedded key","pub_date":"2026-04-08T23:12:37Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOURpa3A2WFpMWlZvQ2d0QkExSzFKN3pzb2tQQ3lJcnNDeXlPSFluMjg5Tk9TT3pQbUNXUmQxQ2F5ZXg2SjV3a28rOVNPWUhac1lnQTU1OHRaNk9ZY0FvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1NjUzOTIzCWZpbGU6TWVnYUxvYWRfMC4xNy4wX3g2NC1zZXR1cC5uc2lzLnppcAphQjY3Vmd6MGhHSUxDTkJSTm43Q25WNUpRN3NrWDhtbDhQSEVYZnlFUUVLbzcvZ3ovVm5ESmtIc09RZ2RqZDNmVGFaL0pHdjNLMnhHdUR1REc1YnNCZz09Cg==","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.17.0/MegaLoad_0.17.0_x64-setup.nsis.zip"}}}
