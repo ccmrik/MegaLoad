@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { useChatStore, DAILY_TOKEN_LIMIT } from "../stores/chatStore";
+import { useChatStore } from "../stores/chatStore";
 import { useIdentityStore } from "../stores/identityStore";
 import { cn } from "../lib/utils";
+import { Link } from "react-router-dom";
 import {
   MessageCircle,
   Send,
@@ -13,6 +14,7 @@ import {
   User,
   Zap,
   ShieldOff,
+  Key,
 } from "lucide-react";
 
 export function MegaChat() {
@@ -22,11 +24,13 @@ export function MegaChat() {
     error,
     usage,
     debugEnabled,
+    available,
     sendMessage,
     clearChat,
     fetchUsage,
     fetchDebug,
     loadHistory,
+    checkAvailable,
   } = useChatStore();
 
   const isBanned = useIdentityStore((s) => s.isBanned);
@@ -38,10 +42,11 @@ export function MegaChat() {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    checkAvailable();
     fetchUsage();
     fetchDebug();
     loadHistory();
-  }, [fetchUsage, fetchDebug, loadHistory]);
+  }, [checkAvailable, fetchUsage, fetchDebug, loadHistory]);
 
   // Auto-scroll to bottom on new messages
   useEffect(() => {
@@ -71,10 +76,6 @@ export function MegaChat() {
     }
   };
 
-  const usagePercent = usage
-    ? Math.min(100, (usage.total_tokens / DAILY_TOKEN_LIMIT) * 100)
-    : 0;
-
   return (
     <div className="flex flex-col h-full">
       {/* Header */}
@@ -94,17 +95,8 @@ export function MegaChat() {
             <div className="flex items-center gap-2 text-[10px] text-zinc-500">
               <Zap className="w-3 h-3" />
               <span>
-                {usage.total_tokens.toLocaleString()} / {DAILY_TOKEN_LIMIT.toLocaleString()} tokens
+                {usage.total_tokens.toLocaleString()} tokens today ({usage.request_count} requests)
               </span>
-              <div className="w-16 h-1.5 rounded-full bg-zinc-800 overflow-hidden">
-                <div
-                  className={cn(
-                    "h-full rounded-full transition-all",
-                    usagePercent > 80 ? "bg-red-500" : usagePercent > 50 ? "bg-amber-500" : "bg-brand-500"
-                  )}
-                  style={{ width: `${usagePercent}%` }}
-                />
-              </div>
             </div>
           )}
           {messages.length > 0 && (
@@ -125,7 +117,27 @@ export function MegaChat() {
         onScroll={handleScroll}
         className="flex-1 overflow-y-auto px-5 py-4 space-y-4"
       >
-        {messages.length === 0 && !loading && (
+        {!available && messages.length === 0 && !loading && (
+          <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
+            <div className="w-16 h-16 rounded-2xl bg-amber-500/10 flex items-center justify-center">
+              <Key className="w-8 h-8 text-amber-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold text-zinc-200 mb-1">API Key Required</h2>
+              <p className="text-sm text-zinc-500 max-w-md">
+                MegaChat needs your Anthropic API key to work. Add it in Settings and you're good to go.
+              </p>
+            </div>
+            <Link
+              to="/settings"
+              className="px-4 py-2 rounded-lg text-sm font-medium bg-brand-500/15 text-brand-400 hover:bg-brand-500/25 transition-colors"
+            >
+              Go to Settings
+            </Link>
+          </div>
+        )}
+
+        {available && messages.length === 0 && !loading && (
           <div className="flex flex-col items-center justify-center h-full text-center space-y-4">
             <div className="w-16 h-16 rounded-2xl bg-brand-500/10 flex items-center justify-center">
               <Bot className="w-8 h-8 text-brand-400" />
@@ -250,6 +262,13 @@ export function MegaChat() {
             <ShieldOff className="w-5 h-5 text-red-400 shrink-0" />
             <p className="text-sm text-red-300">
               Your account has been suspended. Contact support if you believe this is in error.
+            </p>
+          </div>
+        ) : !available ? (
+          <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-amber-500/10 border border-amber-500/20">
+            <Key className="w-5 h-5 text-amber-400 shrink-0" />
+            <p className="text-sm text-amber-300">
+              Add your Anthropic API key in <Link to="/settings" className="underline hover:text-amber-200">Settings</Link> to start chatting.
             </p>
           </div>
         ) : (

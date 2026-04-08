@@ -632,6 +632,15 @@ export const chatGetDebugEnabled = () =>
 export const chatSetDebugEnabled = (enabled: boolean) =>
   invoke<void>("chat_set_debug_enabled", { enabled });
 
+export const chatSaveApiKey = (key: string) =>
+  invoke<void>("chat_save_api_key", { key });
+
+export const chatClearApiKey = () =>
+  invoke<void>("chat_clear_api_key");
+
+export const chatGetApiKeyStatus = () =>
+  invoke<boolean>("chat_get_api_key_status");
+
 // ---------------------------------------------------------------------------
 // Identity & User Management
 // ---------------------------------------------------------------------------

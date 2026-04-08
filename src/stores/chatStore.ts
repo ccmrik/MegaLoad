@@ -4,7 +4,7 @@ import {
   chatGetUsage,
   chatGetDebugEnabled,
   chatSetDebugEnabled as apiSetDebug,
-  chatCheckAvailable,
+  chatGetApiKeyStatus,
   chatLoadHistory,
   chatSaveHistory,
   type ChatMessage,
@@ -19,7 +19,6 @@ import { VALHEIM_ITEMS } from "../data/valheim-items";
 import { VENDORS, PROCESSING_STATIONS } from "./valheimDataStore";
 
 const MAX_HISTORY = 10;
-const DAILY_TOKEN_LIMIT = 200_000;
 
 export interface DisplayMessage {
   id: string;
@@ -235,7 +234,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
 
   checkAvailable: async () => {
     try {
-      const ok = await chatCheckAvailable();
+      const ok = await chatGetApiKeyStatus();
       set({ available: ok });
     } catch {
       set({ available: false });
@@ -353,5 +352,3 @@ export const useChatStore = create<ChatState>((set, get) => ({
     }
   },
 }));
-
-export { DAILY_TOKEN_LIMIT };

@@ -6,42 +6,20 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use tauri::command;
 
 // ---------------------------------------------------------------------------
-// Claude API token — XOR-obfuscated at compile time (same pattern as bugs.rs)
-// Set MEGACHAT_TOKEN_OBF env var before building, or leave blank for dev.
+// Claude API key — user-provided, stored locally in %APPDATA%/MegaLoad/
 // ---------------------------------------------------------------------------
-const OBFUSCATION_KEY: u8 = 0xAB;
 
-fn get_claude_token() -> Option<String> {
-    let obfuscated: &[u8] = match option_env!("MEGACHAT_TOKEN_OBF") {
-        Some(s) => s.as_bytes(),
-        None => return None,
-    };
-    let bytes: Vec<u8> = (0..obfuscated.len() / 2)
-        .filter_map(|i| {
-            u8::from_str_radix(
-                &String::from_utf8_lossy(&obfuscated[i * 2..i * 2 + 2]),
-                16,
-            )
-            .ok()
-        })
-        .map(|b| b ^ OBFUSCATION_KEY)
-        .collect();
-    String::from_utf8(bytes).ok()
-}
-
-/// Dev fallback: read token from local file
-fn get_claude_token_dev() -> Option<String> {
-    let home = std::env::var("USERPROFILE").ok()?;
-    let path = std::path::Path::new(&home)
-        .join(".megaload")
-        .join("megachat-token");
-    fs::read_to_string(path).ok().map(|s| s.trim().to_string())
+fn api_key_path() -> PathBuf {
+    megaload_dir().join("megachat-api-key")
 }
 
 fn claude_token() -> Result<String, String> {
-    get_claude_token()
-        .or_else(get_claude_token_dev)
-        .ok_or_else(|| "MegaChat: No Claude API token configured".to_string())
+    let path = api_key_path();
+    fs::read_to_string(&path)
+        .ok()
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .ok_or_else(|| "No API key configured. Add your Anthropic API key in Settings → MegaChat.".to_string())
 }
 
 // ---------------------------------------------------------------------------
@@ -62,9 +40,8 @@ pub fn init_megachat_debug() {
 }
 
 // ---------------------------------------------------------------------------
-// Usage tracking
+// Usage tracking (informational only — no enforced limit since user provides own key)
 // ---------------------------------------------------------------------------
-const DAILY_TOKEN_LIMIT: u64 = 200_000;
 const CLAUDE_MODEL: &str = "claude-sonnet-4-20250514";
 const CLAUDE_API_URL: &str = "https://api.anthropic.com/v1/messages";
 const USER_AGENT: &str = concat!("MegaLoad/", env!("CARGO_PKG_VERSION"));
@@ -224,14 +201,7 @@ pub fn chat_send_message(
         }
     }
 
-    // Check daily limit (admin bypasses)
     let mut usage = load_usage();
-    if !admin && usage.total_tokens >= DAILY_TOKEN_LIMIT {
-        return Err(format!(
-            "Daily token limit reached ({}/{}). Resets tomorrow.",
-            usage.total_tokens, DAILY_TOKEN_LIMIT
-        ));
-    }
 
     // Validate messages
     if messages.is_empty() {
@@ -394,4 +364,36 @@ pub fn chat_set_debug_enabled(enabled: bool) -> Result<(), String> {
         if enabled { "enabled" } else { "disabled" }
     ));
     Ok(())
+}
+
+// ---------------------------------------------------------------------------
+// API key management — user-provided key stored locally
+// ---------------------------------------------------------------------------
+
+#[command]
+pub fn chat_save_api_key(key: String) -> Result<(), String> {
+    let trimmed = key.trim().to_string();
+    if trimmed.is_empty() {
+        return Err("API key cannot be empty".to_string());
+    }
+    let dir = megaload_dir();
+    fs::create_dir_all(&dir).map_err(|e| e.to_string())?;
+    fs::write(api_key_path(), &trimmed).map_err(|e| e.to_string())?;
+    app_log("MegaChat: API key saved");
+    Ok(())
+}
+
+#[command]
+pub fn chat_clear_api_key() -> Result<(), String> {
+    let path = api_key_path();
+    if path.exists() {
+        fs::remove_file(&path).map_err(|e| e.to_string())?;
+    }
+    app_log("MegaChat: API key cleared");
+    Ok(())
+}
+
+#[command]
+pub fn chat_get_api_key_status() -> bool {
+    claude_token().is_ok()
 }

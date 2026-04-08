@@ -30,7 +30,6 @@ import { useUpdateStore } from "../../stores/updateStore";
 import { useToastStore } from "../../stores/toastStore";
 import { usePlayerDataStore } from "../../stores/playerDataStore";
 import { useBugStore } from "../../stores/bugStore";
-import { useChatStore } from "../../stores/chatStore";
 import { useIdentityStore } from "../../stores/identityStore";
 import { detectValheimPath, launchValheim, checkGameStatus, startSteam, deployBundledPlugins } from "../../lib/tauri-api";
 import type { GameStatus } from "../../lib/tauri-api";
@@ -53,8 +52,6 @@ export function Sidebar() {
   const profile = activeProfile();
   const bugAccess = useBugStore((s) => s.access);
   const checkBugAccess = useBugStore((s) => s.checkAccess);
-  const chatAvailable = useChatStore((s) => s.available);
-  const checkChatAvailable = useChatStore((s) => s.checkAvailable);
   const isAdmin = useIdentityStore((s) => s.isAdmin);
   const [launching, setLaunching] = useState(false);
   const [launchPhase, setLaunchPhase] = useState<string | null>(null);
@@ -75,7 +72,6 @@ export function Sidebar() {
 
   useEffect(() => {
     detectValheimPath().then(setValheimPath).catch(() => {});
-    checkChatAvailable();
   }, []);
 
   // Check MegaBugs access when profile is available
@@ -233,8 +229,8 @@ export function Sidebar() {
             {item.label}
           </NavLink>
         ))}
-        {chatAvailable && (
-          <NavLink
+        {/* MegaChat — always visible */}
+        <NavLink
             to="/chat"
             className={({ isActive }) =>
               cn(
@@ -248,7 +244,6 @@ export function Sidebar() {
             <MessageCircle className="w-4.5 h-4.5 shrink-0" />
             MegaChat
           </NavLink>
-        )}
         {bugAccess?.enabled && (
           <NavLink
             to="/bugs"

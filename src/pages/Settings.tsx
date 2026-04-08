@@ -9,6 +9,9 @@ import {
   clearAppLog,
   getAppLogPath,
   openDataDir,
+  chatSaveApiKey,
+  chatClearApiKey,
+  chatGetApiKeyStatus,
 } from "../lib/tauri-api";
 import { useProfileStore } from "../stores/profileStore";
 import { useSettingsStore } from "../stores/settingsStore";
@@ -28,6 +31,10 @@ import {
   ToggleLeft,
   ToggleRight,
   MessageCircle,
+  Key,
+  ExternalLink,
+  Eye,
+  EyeOff,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
@@ -46,10 +53,15 @@ export function Settings() {
   const [toast, setToast] = useState<string | null>(null);
   const [logPreview, setLogPreview] = useState<string | null>(null);
   const [downloading, setDownloading] = useState(false);
+  const [apiKey, setApiKey] = useState("");
+  const [apiKeyHasKey, setApiKeyHasKey] = useState(false);
+  const [apiKeySaving, setApiKeySaving] = useState(false);
+  const [apiKeyVisible, setApiKeyVisible] = useState(false);
 
   useEffect(() => {
     fetchSettings();
     fetchDebug();
+    chatGetApiKeyStatus().then(setApiKeyHasKey).catch(() => {});
     detectValheimPath()
       .then((p) => {
         setValheimPath(p);
@@ -132,6 +144,33 @@ export function Settings() {
   const handleToggleChatDebug = async () => {
     await setDebugEnabled(!debugEnabled);
     setToast(debugEnabled ? "MegaChat debug disabled" : "MegaChat debug enabled");
+  };
+
+  const handleSaveApiKey = async () => {
+    if (!apiKey.trim()) return;
+    setApiKeySaving(true);
+    try {
+      await chatSaveApiKey(apiKey.trim());
+      setApiKeyHasKey(true);
+      setApiKey("");
+      setApiKeyVisible(false);
+      setToast("API key saved!");
+    } catch (e) {
+      setToast(`Failed: ${e}`);
+    } finally {
+      setApiKeySaving(false);
+    }
+  };
+
+  const handleClearApiKey = async () => {
+    try {
+      await chatClearApiKey();
+      setApiKeyHasKey(false);
+      setApiKey("");
+      setToast("API key removed");
+    } catch (e) {
+      setToast(`Failed: ${e}`);
+    }
   };
 
   const handleDownloadLog = async () => {
@@ -399,6 +438,85 @@ export function Settings() {
             )}
           </div>
         )}
+      </div>
+
+      {/* MegaChat API Key */}
+      <div className="glass rounded-xl p-5 border border-zinc-800/50 space-y-4">
+        <div className="flex items-center gap-2">
+          <Key className="w-4 h-4 text-brand-400" />
+          <h2 className="text-sm font-semibold text-zinc-300">MegaChat API Key</h2>
+        </div>
+        <p className="text-xs text-zinc-500">
+          MegaChat uses your own Anthropic API key. Usage is billed to your Anthropic account.
+        </p>
+        {apiKeyHasKey ? (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2 text-xs text-emerald-400">
+              <Check className="w-3.5 h-3.5" />
+              API key configured
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={handleClearApiKey}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-zinc-800/50 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Remove Key
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-3">
+            <div className="flex gap-2">
+              <div className="flex-1 relative">
+                <input
+                  type={apiKeyVisible ? "text" : "password"}
+                  value={apiKey}
+                  onChange={(e) => setApiKey(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") handleSaveApiKey(); }}
+                  placeholder="sk-ant-..."
+                  className="w-full px-4 py-2.5 pr-10 rounded-lg bg-zinc-900 border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-brand-500/50 transition-all font-mono"
+                  autoComplete="off"
+                />
+                <button
+                  onClick={() => setApiKeyVisible(!apiKeyVisible)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-zinc-300 transition-colors"
+                >
+                  {apiKeyVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              <button
+                onClick={handleSaveApiKey}
+                disabled={!apiKey.trim() || apiKeySaving}
+                className={cn(
+                  "flex items-center gap-1.5 px-4 py-2.5 rounded-lg text-xs font-medium transition-colors",
+                  apiKey.trim() && !apiKeySaving
+                    ? "bg-brand-500/15 text-brand-400 hover:bg-brand-500/25"
+                    : "bg-zinc-800 text-zinc-600 cursor-not-allowed"
+                )}
+              >
+                {apiKeySaving ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : (
+                  <Check className="w-3.5 h-3.5" />
+                )}
+                Save
+              </button>
+            </div>
+            <a
+              href="https://console.anthropic.com/settings/keys"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs text-brand-400 hover:text-brand-300 transition-colors"
+            >
+              <ExternalLink className="w-3 h-3" />
+              Get an API key from console.anthropic.com
+            </a>
+          </div>
+        )}
+        <p className="text-xs text-zinc-600">
+          Your key is stored locally and never sent anywhere except Anthropic's API.
+        </p>
       </div>
 
       {/* MegaChat Debug */}

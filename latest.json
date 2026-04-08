@@ -1,11 +1,11 @@
 {
-  "version": "0.16.4",
-  "notes": "v0.16.4 - Hide MegaChat when Claude API key not present",
-  "pub_date": "2026-04-08T19:39:05Z",
+  "version": "0.16.5",
+  "notes": "v0.16.5 - Show version numbers in update toasts",
+  "pub_date": "2026-04-08T11:22:41Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUVHUXBFZ29jS0ZRQmo2RzI0Yjl6OVAzTVVGZTY4TkRUOTBqMGY3UHVpN1g0WHZVSEdZR0lzenVJY2dFVkRBQkRkWk5DSGx1TU4xUjNkMGpnaUdKMndRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1NjQxMTI2CWZpbGU6TWVnYUxvYWRfMC4xNi40X3g2NC1zZXR1cC5uc2lzLnppcApmUDZGNTB5MU5qUFNKYStTazNPNERWditIaENFWWVUVjdHSDZ4SHFKUWpCSThvOE1lQWdLYTVhNHpIZzA0dFl1M1Bla0JiQUJmci91Y0pwZ1RHaHhCZz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.16.4/MegaLoad_0.16.4_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdmbXplcmUyQlRsM1hRanErSk54clVvTUQ1a3pxUUVobDFyV2xDeHFZeGpaakhkWUE2dWRLRTcyWm9JUkRncFR5dCsxaFdmWk45MVdmSmY5SGRjOWdBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1NjQ3MzM5CWZpbGU6TWVnYUxvYWRfMC4xNi41X3g2NC1zZXR1cC5uc2lzLnppcApraFJiS2ZvSm1GbzlWS3Z3aHd6NktXeHVtMFJ0RkR4dS9jaDU1bGhoUGE2YkRNTWdvN3MzaHBqaytoTE5BaEplcTAzMGplY2Y3ZDZUbCtRWHNNUnZEdz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v0.16.5/MegaLoad_0.16.5_x64-setup.nsis.zip"
     }
   }
 }

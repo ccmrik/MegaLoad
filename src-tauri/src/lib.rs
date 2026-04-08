@@ -134,6 +134,9 @@ pub fn run() {
             chat_reset_usage,
             chat_get_debug_enabled,
             chat_set_debug_enabled,
+            chat_save_api_key,
+            chat_clear_api_key,
+            chat_get_api_key_status,
             // Identity & user management
             get_megaload_identity,
             set_megaload_identity,
