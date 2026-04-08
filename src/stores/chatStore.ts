@@ -4,6 +4,7 @@ import {
   chatGetUsage,
   chatGetDebugEnabled,
   chatSetDebugEnabled as apiSetDebug,
+  chatCheckAvailable,
   chatLoadHistory,
   chatSaveHistory,
   type ChatMessage,
@@ -37,7 +38,9 @@ interface ChatState {
   debugEnabled: boolean;
   debugLoaded: boolean;
   historyLoaded: boolean;
+  available: boolean;
 
+  checkAvailable: () => Promise<void>;
   sendMessage: (userText: string) => Promise<void>;
   clearChat: () => void;
   fetchUsage: () => Promise<void>;
@@ -228,6 +231,16 @@ export const useChatStore = create<ChatState>((set, get) => ({
   debugEnabled: false,
   debugLoaded: false,
   historyLoaded: false,
+  available: false,
+
+  checkAvailable: async () => {
+    try {
+      const ok = await chatCheckAvailable();
+      set({ available: ok });
+    } catch {
+      set({ available: false });
+    }
+  },
 
   sendMessage: async (userText: string) => {
     const trimmed = userText.trim();

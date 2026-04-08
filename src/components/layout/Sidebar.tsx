@@ -30,6 +30,7 @@ import { useUpdateStore } from "../../stores/updateStore";
 import { useToastStore } from "../../stores/toastStore";
 import { usePlayerDataStore } from "../../stores/playerDataStore";
 import { useBugStore } from "../../stores/bugStore";
+import { useChatStore } from "../../stores/chatStore";
 import { useIdentityStore } from "../../stores/identityStore";
 import { detectValheimPath, launchValheim, checkGameStatus, startSteam, deployBundledPlugins } from "../../lib/tauri-api";
 import type { GameStatus } from "../../lib/tauri-api";
@@ -42,7 +43,6 @@ const navItems = [
   { to: "/trainer", icon: Gamepad2, label: "Trainer" },
   { to: "/valheim-data", icon: Database, label: "Valheim Data" },
   { to: "/player-data", icon: UserCircle, label: "Player Data" },
-  { to: "/chat", icon: MessageCircle, label: "MegaChat" },
   { to: "/logs", icon: ScrollText, label: "Log Viewer" },
   { to: "/profiles", icon: Users, label: "Profiles" },
   { to: "/settings", icon: Cog, label: "Settings" },
@@ -53,6 +53,8 @@ export function Sidebar() {
   const profile = activeProfile();
   const bugAccess = useBugStore((s) => s.access);
   const checkBugAccess = useBugStore((s) => s.checkAccess);
+  const chatAvailable = useChatStore((s) => s.available);
+  const checkChatAvailable = useChatStore((s) => s.checkAvailable);
   const isAdmin = useIdentityStore((s) => s.isAdmin);
   const [launching, setLaunching] = useState(false);
   const [launchPhase, setLaunchPhase] = useState<string | null>(null);
@@ -73,6 +75,7 @@ export function Sidebar() {
 
   useEffect(() => {
     detectValheimPath().then(setValheimPath).catch(() => {});
+    checkChatAvailable();
   }, []);
 
   // Check MegaBugs access when profile is available
@@ -230,6 +233,22 @@ export function Sidebar() {
             {item.label}
           </NavLink>
         ))}
+        {chatAvailable && (
+          <NavLink
+            to="/chat"
+            className={({ isActive }) =>
+              cn(
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+                isActive
+                  ? "bg-brand-500/15 text-brand-400 shadow-sm"
+                  : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+              )
+            }
+          >
+            <MessageCircle className="w-4.5 h-4.5 shrink-0" />
+            MegaChat
+          </NavLink>
+        )}
         {bugAccess?.enabled && (
           <NavLink
             to="/bugs"

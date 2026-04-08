@@ -614,6 +614,9 @@ export interface ChatResponse {
   daily_usage: DailyUsage;
 }
 
+export const chatCheckAvailable = () =>
+  invoke<boolean>("chat_check_available");
+
 export const chatSendMessage = (messages: ChatMessage[], staticContext: string, dynamicContext: string) =>
   invoke<ChatResponse>("chat_send_message", { messages, staticContext, dynamicContext });
 

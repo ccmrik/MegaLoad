@@ -374,6 +374,11 @@ pub fn chat_reset_usage() -> Result<(), String> {
 }
 
 #[command]
+pub fn chat_check_available() -> bool {
+    claude_token().is_ok()
+}
+
+#[command]
 pub fn chat_get_debug_enabled() -> bool {
     MEGACHAT_DEBUG.load(Ordering::Relaxed)
 }

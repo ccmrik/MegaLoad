@@ -128,6 +128,7 @@ pub fn run() {
             delete_ticket,
             fetch_attachment,
             // MegaChat
+            chat_check_available,
             chat_send_message,
             chat_get_usage,
             chat_reset_usage,
