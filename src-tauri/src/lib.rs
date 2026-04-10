@@ -40,7 +40,6 @@ pub fn run() {
             // Profiles
             get_profiles,
             create_profile,
-            create_profile_linked,
             delete_profile,
             set_active_profile,
             rename_profile,
@@ -87,6 +86,8 @@ pub fn run() {
             get_starter_mods,
             deploy_bundled_plugins,
             sync_install_all_mods,
+            get_update_log,
+            record_app_update,
             // Thunderstore
             search_thunderstore,
             get_thunderstore_detail,
@@ -113,6 +114,7 @@ pub fn run() {
             read_app_log,
             clear_app_log,
             get_app_log_path,
+            log_from_frontend,
             open_data_dir,
             open_folder,
             // Player data
@@ -149,6 +151,7 @@ pub fn run() {
             regenerate_link_code,
             check_username_available,
             check_is_admin,
+            validate_identity,
             check_user_banned,
             chat_load_history,
             chat_save_history,

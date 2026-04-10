@@ -2,7 +2,6 @@ import { create } from "zustand";
 import {
   getProfiles,
   createProfile as apiCreateProfile,
-  createProfileLinked as apiCreateProfileLinked,
   deleteProfile as apiDeleteProfile,
   setActiveProfile as apiSetActive,
   renameProfile as apiRename,
@@ -18,7 +17,6 @@ interface ProfileState {
   error: string | null;
   fetchProfiles: () => Promise<void>;
   createProfile: (name: string) => Promise<Profile>;
-  createProfileLinked: (name: string, bepinexPath: string) => Promise<Profile>;
   deleteProfile: (id: string) => Promise<void>;
   setActiveProfile: (id: string) => Promise<void>;
   renameProfile: (id: string, newName: string) => Promise<void>;
@@ -47,13 +45,6 @@ export const useProfileStore = create<ProfileState>((set, get) => ({
 
   createProfile: async (name: string) => {
     const profile = await apiCreateProfile(name);
-    await get().fetchProfiles();
-    useSyncStore.getState().triggerAutoSync();
-    return profile;
-  },
-
-  createProfileLinked: async (name: string, bepinexPath: string) => {
-    const profile = await apiCreateProfileLinked(name, bepinexPath);
     await get().fetchProfiles();
     useSyncStore.getState().triggerAutoSync();
     return profile;

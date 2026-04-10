@@ -153,7 +153,7 @@ fn save_cache(bepinex_path: &str, mods: &[ModUpdateInfo]) {
 /// Fetch the mod manifest — a single HTTP request for all mod info.
 fn fetch_manifest() -> Result<ModManifest, String> {
     let resp = crate::commands::http::agent().get(MANIFEST_URL)
-        .set("User-Agent", "MegaLoad/1.2.3")
+        .set("User-Agent", "MegaLoad/1.3.0")
         .call()
         .map_err(|e| {
             let msg = format!("{}", e);
@@ -405,7 +405,7 @@ pub fn install_mod_update(
 
     // Download the DLL (this is a direct file download, not an API call — no rate limit)
     let resp = crate::commands::http::agent().get(&download_url)
-        .set("User-Agent", "MegaLoad/1.2.3")
+        .set("User-Agent", "MegaLoad/1.3.0")
         .call()
         .map_err(|e| format!("Download failed for {}: {}", mod_name, e))?;
 
@@ -420,8 +420,12 @@ pub fn install_mod_update(
         .map_err(|e| format!("Failed to write file: {}", e))?;
 
     let mut versions = load_installed_versions(&bepinex_path);
+    let old_version = versions.get(&mod_name).cloned();
     versions.insert(mod_name.clone(), version.clone());
     save_installed_versions(&bepinex_path, &versions);
+
+    // Record in update log
+    record_update("mod", &mod_name, old_version.as_deref(), &version);
     app_log(&format!("Updated {} to v{}", mod_name, version.trim_start_matches('v')));
 
     Ok(format!(
@@ -560,4 +564,101 @@ pub fn sync_install_all_mods(bepinex_path: String) -> Result<u32, String> {
 
     app_log(&format!("Sync: installed {} mods from manifest", installed));
     Ok(installed)
+}
+
+// ── Update Log ────────────────────────────────────────────────
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct UpdateLogEntry {
+    pub timestamp: String,
+    pub update_type: String, // "mod" or "app"
+    pub name: String,
+    pub from_version: Option<String>,
+    pub to_version: String,
+}
+
+fn update_log_path() -> PathBuf {
+    megaload_dir()
+        .unwrap_or_else(|| PathBuf::from("."))
+        .join("update_log.json")
+}
+
+fn load_update_log() -> Vec<UpdateLogEntry> {
+    let path = update_log_path();
+    if let Ok(data) = fs::read_to_string(&path) {
+        serde_json::from_str(&data).unwrap_or_default()
+    } else {
+        Vec::new()
+    }
+}
+
+fn save_update_log(entries: &[UpdateLogEntry]) {
+    let path = update_log_path();
+    if let Some(dir) = path.parent() {
+        let _ = fs::create_dir_all(dir);
+    }
+    if let Ok(json) = serde_json::to_string_pretty(entries) {
+        let _ = fs::write(&path, json);
+    }
+}
+
+pub fn record_update(update_type: &str, name: &str, from_version: Option<&str>, to_version: &str) {
+    let mut entries = load_update_log();
+    entries.push(UpdateLogEntry {
+        timestamp: iso_now(),
+        update_type: update_type.to_string(),
+        name: name.to_string(),
+        from_version: from_version.map(|s| s.to_string()),
+        to_version: to_version.to_string(),
+    });
+    // Keep last 200 entries
+    if entries.len() > 200 {
+        entries = entries.split_off(entries.len() - 200);
+    }
+    save_update_log(&entries);
+}
+
+fn iso_now() -> String {
+    let now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_secs();
+    let secs_per_day: u64 = 86400;
+    let days = now / secs_per_day;
+    let time_of_day = now % secs_per_day;
+    let hours = time_of_day / 3600;
+    let minutes = (time_of_day % 3600) / 60;
+    let seconds = time_of_day % 60;
+
+    let mut y = 1970i64;
+    let mut remaining = days as i64;
+    loop {
+        let days_in_year = if y % 4 == 0 && (y % 100 != 0 || y % 400 == 0) { 366 } else { 365 };
+        if remaining < days_in_year { break; }
+        remaining -= days_in_year;
+        y += 1;
+    }
+    let leap = y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
+    let month_days = [31, if leap { 29 } else { 28 }, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+    let mut m = 0usize;
+    for (i, &md) in month_days.iter().enumerate() {
+        if remaining < md as i64 { m = i; break; }
+        remaining -= md as i64;
+    }
+    let d = remaining + 1;
+    format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z", y, m + 1, d, hours, minutes, seconds)
+}
+
+/// Read the update log for the frontend.
+#[command]
+pub fn get_update_log() -> Result<Vec<UpdateLogEntry>, String> {
+    Ok(load_update_log())
+}
+
+/// Record an app update from the frontend.
+#[command]
+pub fn record_app_update(from_version: String, to_version: String) -> Result<(), String> {
+    record_update("app", "MegaLoad", Some(&from_version), &to_version);
+    app_log(&format!("App updated: v{} → v{}", from_version, to_version));
+    Ok(())
 }

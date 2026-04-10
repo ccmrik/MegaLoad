@@ -23,6 +23,7 @@ interface SyncState {
   enabled: boolean;
   autoSync: boolean;
   syncing: boolean;
+  syncProgress: string | null;
   lastPush: string | null;
   lastPull: string | null;
   error: string | null;
@@ -45,6 +46,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
   enabled: false,
   autoSync: true,
   syncing: false,
+  syncProgress: null,
   lastPush: null,
   lastPull: null,
   error: null,
@@ -109,12 +111,12 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     const active = profileStore.activeProfile();
     if (!active) return;
 
-    set({ syncing: true, error: null });
+    set({ syncing: true, syncProgress: `Pushing "${active.name}"...`, error: null });
     try {
       await syncPushProfile(active.id, active.name, active.bepinex_path);
-      set({ syncing: false, lastPush: new Date().toISOString() });
+      set({ syncing: false, syncProgress: null, lastPush: new Date().toISOString() });
     } catch (e) {
-      set({ syncing: false, error: String(e) });
+      set({ syncing: false, syncProgress: null, error: String(e) });
     }
   },
 
@@ -126,19 +128,19 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     const profiles = profileStore.profiles;
     if (profiles.length === 0) return;
 
-    set({ syncing: true, error: null });
+    set({ syncing: true, syncProgress: `Pushing ${profiles.length} profile${profiles.length !== 1 ? "s" : ""}...`, error: null });
     try {
       const pushData = profiles.map((p) => ({
         id: p.id,
         name: p.name,
         bepinex_path: p.bepinex_path,
         is_active: p.id === profileStore.activeProfileId,
-        is_linked: !p.bepinex_path.includes("MegaLoad"),
+        is_linked: false,
       }));
       await syncPushAll(JSON.stringify(pushData));
-      set({ syncing: false, lastPush: new Date().toISOString() });
+      set({ syncing: false, syncProgress: null, lastPush: new Date().toISOString() });
     } catch (e) {
-      set({ syncing: false, error: String(e) });
+      set({ syncing: false, syncProgress: null, error: String(e) });
     }
   },
 
@@ -146,13 +148,13 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     const { enabled } = get();
     if (!enabled) throw new Error("Cloud sync is not enabled");
 
-    set({ syncing: true, error: null });
+    set({ syncing: true, syncProgress: "Pulling profile...", error: null });
     try {
       const result = await syncPullProfile(profileId, bepinexPath);
-      set({ syncing: false, lastPull: new Date().toISOString() });
+      set({ syncing: false, syncProgress: null, lastPull: new Date().toISOString() });
       return result;
     } catch (e) {
-      set({ syncing: false, error: String(e) });
+      set({ syncing: false, syncProgress: null, error: String(e) });
       throw e;
     }
   },
@@ -162,7 +164,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     if (!enabled || syncing) return;
 
     const addToast = useToastStore.getState().addToast;
-    set({ syncing: true, error: null });
+    set({ syncing: true, syncProgress: "Fetching manifest...", error: null });
     try {
       // Fetch remote manifest to see what profiles exist in the cloud
       const manifest = await syncPullManifest();
@@ -172,14 +174,18 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       let totalConfigs = 0;
       let totalMods = 0;
       let profilesProcessed = 0;
+      const total = manifest.profiles.length;
 
       for (const remote of manifest.profiles) {
+        set({ syncProgress: `Syncing "${remote.name}" (${profilesProcessed + 1}/${total})...` });
+
         // Check if this profile exists locally (by ID first, then by name)
         let local = profileStore.profiles.find((p) => p.id === remote.id)
           ?? profileStore.profiles.find((p) => p.name === remote.name);
 
         if (!local) {
           // Profile doesn't exist locally — create it, then re-fetch
+          set({ syncProgress: `Creating "${remote.name}"...` });
           try {
             const { createProfile } = await import("../lib/tauri-api");
             await createProfile(remote.name);
@@ -195,6 +201,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         if (!local) continue;
 
         // Pull configs from cloud using the REMOTE profile ID (that's where the data is stored)
+        set({ syncProgress: `Pulling configs for "${remote.name}"...` });
         try {
           const configCount = await syncPullConfigs(remote.id, local.bepinex_path);
           totalConfigs += configCount;
@@ -203,6 +210,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         }
 
         // Install ALL mods from manifest that aren't on disk yet
+        set({ syncProgress: `Installing mods for "${remote.name}"...` });
         try {
           const modsInstalled = await syncInstallAllMods(local.bepinex_path);
           totalMods += modsInstalled;
@@ -214,6 +222,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         try {
           const remoteState = await syncPullProfileState(remote.id);
           if (remoteState.thunderstore_mods && remoteState.thunderstore_mods.length > 0) {
+            set({ syncProgress: `Installing Thunderstore mods for "${remote.name}"...` });
             const tsInstalled = await syncInstallThunderstoreMods(
               local.bepinex_path,
               JSON.stringify(remoteState.thunderstore_mods)
@@ -239,9 +248,9 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         });
       }
 
-      set({ syncing: false, lastPull: new Date().toISOString() });
+      set({ syncing: false, syncProgress: null, lastPull: new Date().toISOString() });
     } catch (e) {
-      set({ syncing: false, error: String(e) });
+      set({ syncing: false, syncProgress: null, error: String(e) });
     }
   },
 

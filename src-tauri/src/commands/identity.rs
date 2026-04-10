@@ -474,6 +474,36 @@ pub fn clear_megaload_identity() -> Result<(), String> {
     Ok(())
 }
 
+/// Validate that the local identity is linked to a modern account (has link_code_hash).
+/// Returns true if the identity is valid, false if it was cleared (legacy account).
+/// Network failures return true (benefit of the doubt — don't penalize offline users).
+#[command]
+pub fn validate_identity() -> bool {
+    let identity = match get_megaload_identity() {
+        Ok(id) => id,
+        Err(_) => return true, // No identity = nothing to validate
+    };
+
+    // Try to check server-side profile
+    match github_get_file(&format!("users/{}.json", identity.user_id)) {
+        Ok((content, _)) => {
+            if let Ok(profile) = serde_json::from_str::<UserProfile>(&content) {
+                if profile.link_code_hash.is_none() {
+                    // Legacy account — clear local identity
+                    app_log(&format!(
+                        "Legacy account detected for {} — clearing identity for re-registration",
+                        identity.display_name
+                    ));
+                    let _ = clear_megaload_identity();
+                    return false;
+                }
+            }
+            true
+        }
+        Err(_) => true, // Network error — don't clear
+    }
+}
+
 /// Check if the current user is admin (local key file check).
 #[command]
 pub fn check_is_admin() -> bool {

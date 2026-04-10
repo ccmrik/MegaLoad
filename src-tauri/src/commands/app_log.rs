@@ -123,6 +123,12 @@ fn epoch_days_to_ymd(days: u64) -> (u64, u64, u64) {
 
 // ── Tauri commands ──────────────────────────────────────────
 
+/// Log a message from the frontend (same log file as Rust-side app_log).
+#[command]
+pub fn log_from_frontend(message: String) {
+    app_log(&format!("[frontend] {}", message));
+}
+
 #[command]
 pub fn get_logging_enabled() -> bool {
     LOGGING_ENABLED.load(Ordering::Relaxed)

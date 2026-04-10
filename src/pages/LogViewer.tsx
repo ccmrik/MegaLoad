@@ -6,7 +6,9 @@ import {
   getLogSize,
   saveLogFile,
   saveTextFile,
+  getUpdateLog,
   type LogLine,
+  type UpdateLogEntry,
 } from "../lib/tauri-api";
 import { save } from "@tauri-apps/plugin-dialog";
 import {
@@ -19,14 +21,17 @@ import {
   X,
   Download,
   Copy,
+  History,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
 type LogLevel = "all" | "error" | "warning" | "info" | "debug";
+type LogTab = "bepinex" | "updates";
 
 export function LogViewer() {
   const { activeProfile } = useProfileStore();
   const profile = activeProfile();
+  const [activeTab, setActiveTab] = useState<LogTab>("bepinex");
   const [lines, setLines] = useState<LogLine[]>([]);
   const [loading, setLoading] = useState(false);
   const [logSize, setLogSize] = useState(0);
@@ -35,6 +40,7 @@ export function LogViewer() {
   const [levelFilter, setLevelFilter] = useState<LogLevel>("all");
   const [refreshInterval, setRefreshInterval] = useState<number | null>(3000);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [updateEntries, setUpdateEntries] = useState<UpdateLogEntry[]>([]);
 
   const fetchLog = useCallback(async () => {
     if (!profile?.bepinex_path) return;
@@ -55,6 +61,13 @@ export function LogViewer() {
     setLoading(true);
     fetchLog().finally(() => setLoading(false));
   }, [fetchLog]);
+
+  // Load update log when tab switches
+  useEffect(() => {
+    if (activeTab === "updates") {
+      getUpdateLog().then((entries) => setUpdateEntries(entries.reverse())).catch(() => {});
+    }
+  }, [activeTab]);
 
   // Auto-refresh
   useEffect(() => {
@@ -121,12 +134,6 @@ export function LogViewer() {
     debug: lines.filter((l) => l.level === "debug").length,
   };
 
-  const formatSize = (bytes: number) => {
-    if (bytes < 1024) return `${bytes} B`;
-    if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-    return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-  };
-
   if (!profile) {
     return (
       <div className="flex flex-col items-center justify-center h-full text-center">
@@ -145,81 +152,151 @@ export function LogViewer() {
       <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-3xl font-bold text-zinc-100">Log Viewer</h1>
-          <p className="text-zinc-500 mt-1">
-            BepInEx LogOutput.log &middot; {formatSize(logSize)} &middot;{" "}
-            {lines.length} lines
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {/* Auto-refresh toggle */}
-          <button
-            onClick={() =>
-              setRefreshInterval((prev) => (prev ? null : 3000))
-            }
-            className={cn(
-              "flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
-              refreshInterval
-                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
-                : "glass border border-zinc-800 text-zinc-400"
-            )}
-          >
-            <RefreshCw
+          {/* Tabs */}
+          <div className="flex items-center gap-1 mt-2">
+            <button
+              onClick={() => setActiveTab("bepinex")}
               className={cn(
-                "w-3.5 h-3.5",
-                refreshInterval && "animate-spin"
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                activeTab === "bepinex"
+                  ? "bg-brand-500/15 text-brand-400"
+                  : "text-zinc-500 hover:text-zinc-300"
               )}
-              style={{
-                animationDuration: refreshInterval ? "3s" : undefined,
-              }}
-            />
-            {refreshInterval ? "Live" : "Paused"}
-          </button>
-
-          <button
-            onClick={fetchLog}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
-          >
-            <RefreshCw className="w-3.5 h-3.5" />
-            Refresh
-          </button>
-
-          <button
-            onClick={handleExport}
-            disabled={filteredLines.length === 0}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-30"
-          >
-            <Download className="w-3.5 h-3.5" />
-            Export
-          </button>
-
-          <button
-            onClick={handleCopy}
-            disabled={filteredLines.length === 0}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-30"
-          >
-            <Copy className="w-3.5 h-3.5" />
-            Copy
-          </button>
-
-          <button
-            onClick={handleDownload}
-            disabled={logSize === 0}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-30"
-          >
-            <FileText className="w-3.5 h-3.5" />
-            Download Full Log
-          </button>
-
-          <button
-            onClick={handleClear}
-            className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors"
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            Clear
-          </button>
+            >
+              <FileText className="w-3.5 h-3.5" />
+              BepInEx Log
+            </button>
+            <button
+              onClick={() => setActiveTab("updates")}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                activeTab === "updates"
+                  ? "bg-brand-500/15 text-brand-400"
+                  : "text-zinc-500 hover:text-zinc-300"
+              )}
+            >
+              <History className="w-3.5 h-3.5" />
+              Update History
+              {updateEntries.length > 0 && (
+                <span className="text-[10px] tabular-nums text-zinc-500">{updateEntries.length}</span>
+              )}
+            </button>
+          </div>
         </div>
+        {activeTab === "bepinex" && (
+          <div className="flex items-center gap-2">
+            {/* Auto-refresh toggle */}
+            <button
+              onClick={() =>
+                setRefreshInterval((prev) => (prev ? null : 3000))
+              }
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition-colors",
+                refreshInterval
+                  ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                  : "glass border border-zinc-800 text-zinc-400"
+              )}
+            >
+              <RefreshCw
+                className={cn(
+                  "w-3.5 h-3.5",
+                  refreshInterval && "animate-spin"
+                )}
+                style={{
+                  animationDuration: refreshInterval ? "3s" : undefined,
+                }}
+              />
+              {refreshInterval ? "Live" : "Paused"}
+            </button>
+
+            <button
+              onClick={fetchLog}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
+            >
+              <RefreshCw className="w-3.5 h-3.5" />
+              Refresh
+            </button>
+
+            <button
+              onClick={handleExport}
+              disabled={filteredLines.length === 0}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-30"
+            >
+              <Download className="w-3.5 h-3.5" />
+              Export
+            </button>
+
+            <button
+              onClick={handleCopy}
+              disabled={filteredLines.length === 0}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-30"
+            >
+              <Copy className="w-3.5 h-3.5" />
+              Copy
+            </button>
+
+            <button
+              onClick={handleDownload}
+              disabled={logSize === 0}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors disabled:opacity-30"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              Download Full Log
+            </button>
+
+            <button
+              onClick={handleClear}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Clear
+            </button>
+          </div>
+        )}
       </div>
 
+      {/* ─── Update History Tab ─── */}
+      {activeTab === "updates" && (
+        <div className="flex-1 glass rounded-xl border border-zinc-800/50 overflow-y-auto min-h-0">
+          {updateEntries.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-32 text-center">
+              <History className="w-8 h-8 text-zinc-700 mb-2" />
+              <p className="text-zinc-500 text-sm">No updates recorded yet</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-zinc-800/50">
+              {updateEntries.map((entry, i) => (
+                <div key={i} className="flex items-center gap-4 px-4 py-3">
+                  <div className={cn(
+                    "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0",
+                    entry.update_type === "app" ? "bg-brand-500/15" : "bg-blue-500/10"
+                  )}>
+                    {entry.update_type === "app" ? (
+                      <Download className="w-4 h-4 text-brand-400" />
+                    ) : (
+                      <FileText className="w-4 h-4 text-blue-400" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-zinc-200">{entry.name}</p>
+                    <p className="text-xs text-zinc-500">
+                      {entry.from_version
+                        ? `v${entry.from_version.replace(/^v/, "")} → v${entry.to_version.replace(/^v/, "")}`
+                        : `Installed v${entry.to_version.replace(/^v/, "")}`}
+                    </p>
+                  </div>
+                  <p className="text-[10px] text-zinc-600 flex-shrink-0">
+                    {formatTimestamp(entry.timestamp)}
+                  </p>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ─── BepInEx Log Tab ─── */}
+      {activeTab === "bepinex" && <>
       {/* Filter Bar */}
       <div className="flex items-center gap-3 mb-3">
         {/* Search */}
@@ -355,6 +432,18 @@ export function LogViewer() {
           <ArrowDown className="w-4 h-4" />
         </button>
       )}
+      </>}
     </div>
   );
+}
+
+function formatTimestamp(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const day = String(d.getDate()).padStart(2, "0");
+  const mon = String(d.getMonth() + 1).padStart(2, "0");
+  const yr = d.getFullYear();
+  const hr = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+  return `${day}/${mon}/${yr} ${hr}:${min}`;
 }

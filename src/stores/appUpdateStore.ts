@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { check, type Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { logFromFrontend, recordAppUpdate } from "../lib/tauri-api";
 
 /** Poll every 5 minutes for app updates */
 const APP_POLL_INTERVAL_MS = 5 * 60 * 1000;
@@ -31,7 +32,7 @@ let pollTimer: ReturnType<typeof setInterval> | null = null;
 
 export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
   status: "idle",
-  currentVersion: "1.2.3",
+  currentVersion: "1.3.0",
   newVersion: null,
   downloadProgress: 0,
   error: null,
@@ -45,17 +46,21 @@ export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
 
     set({ status: "checking", error: null });
     try {
+      logFromFrontend("App update check started").catch(() => {});
       const update = await check();
       if (update) {
+        logFromFrontend(`App update found: v${update.version}`).catch(() => {});
         set({
           status: "update-available",
           newVersion: update.version,
           pendingUpdate: update,
         });
       } else {
+        logFromFrontend("App update check: up to date").catch(() => {});
         set({ status: "idle" });
       }
     } catch (e) {
+      logFromFrontend(`App update check failed: ${e}`).catch(() => {});
       set({ status: "error", error: String(e) });
     }
   },
@@ -66,6 +71,7 @@ export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
 
     set({ status: "downloading", downloadProgress: 0 });
     try {
+      logFromFrontend(`Downloading app update v${pendingUpdate.version}`).catch(() => {});
       let totalBytes = 0;
       let downloadedBytes = 0;
 
@@ -86,6 +92,7 @@ export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
             break;
           case "Finished":
             set({ status: "ready", downloadProgress: 100 });
+            recordAppUpdate(get().currentVersion, pendingUpdate.version).catch(() => {});
             break;
         }
       });

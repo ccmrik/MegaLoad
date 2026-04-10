@@ -7,17 +7,17 @@ import {
   Pencil,
   Users,
   FolderOpen,
-  Link,
   Loader2,
   Package,
   ExternalLink,
+  Download,
 } from "lucide-react";
 import { cn } from "../lib/utils";
-import { open } from "@tauri-apps/plugin-dialog";
 import {
   detectR2modmanProfiles,
   getStarterMods,
   installModUpdate,
+  importR2modmanProfile,
   openFolder,
   type StarterMod,
 } from "../lib/tauri-api";
@@ -28,7 +28,6 @@ export function Profiles() {
     activeProfileId,
     fetchProfiles,
     createProfile,
-    createProfileLinked,
     deleteProfile,
     setActiveProfile,
     renameProfile,
@@ -38,7 +37,8 @@ export function Profiles() {
   const [editName, setEditName] = useState("");
   const [creating, setCreating] = useState(false);
   const [r2Profiles, setR2Profiles] = useState<[string, string][]>([]);
-  const [linkingR2, setLinkingR2] = useState<string | null>(null);
+  const [importingR2, setImportingR2] = useState<string | null>(null);
+  const [importedR2, setImportedR2] = useState<Set<string>>(new Set());
   const [toast, setToast] = useState<string | null>(null);
   const [starterMods, setStarterMods] = useState<StarterMod[]>([]);
   const [selectedStarters, setSelectedStarters] = useState<Set<string>>(new Set());
@@ -115,28 +115,17 @@ export function Profiles() {
     }
   };
 
-  const handleLinkFolder = async () => {
-    const selected = await open({ directory: true, multiple: false, title: "Select BepInEx folder" });
-    if (!selected) return;
-    const name = (selected as string).split("\\").filter(Boolean).pop() || "Linked Profile";
+  const handleImportR2 = async (r2Name: string, r2Path: string) => {
+    setImportingR2(r2Name);
     try {
-      await createProfileLinked(name, selected as string);
-      setToast(`Linked profile "${name}"`);
-    } catch (e) {
-      setToast(`Failed: ${e}`);
-    }
-  };
-
-  const handleLinkR2 = async (r2Name: string, r2Path: string) => {
-    setLinkingR2(r2Name);
-    try {
-      const bepinexPath = r2Path + "\\BepInEx";
-      await createProfileLinked(r2Name, bepinexPath);
-      setToast(`Linked R2Modman profile "${r2Name}"`);
+      await importR2modmanProfile(r2Name, r2Path);
+      setImportedR2((prev) => new Set([...prev, r2Name]));
+      await fetchProfiles();
+      setToast(`Imported R2Modman profile "${r2Name}"`);
     } catch (e) {
       setToast(`Failed: ${e}`);
     } finally {
-      setLinkingR2(null);
+      setImportingR2(null);
     }
   };
 
@@ -150,8 +139,8 @@ export function Profiles() {
     await deleteProfile(id);
   };
 
-  // Check which R2 profiles are already linked
-  const linkedR2Names = new Set(profiles.map((p) => p.name));
+  // Check which R2 profiles are already imported
+  const existingNames = new Set(profiles.map((p) => p.name));
 
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -285,7 +274,7 @@ export function Profiles() {
         </div>
       )}
 
-      {/* Create / Link Options */}
+      {/* Create / Import Options */}
       <div className="grid grid-cols-2 gap-4">
         {/* Create New Profile */}
         <div className="glass rounded-xl p-5 border border-zinc-800/50 col-span-2">
@@ -373,56 +362,40 @@ export function Profiles() {
           )}
         </div>
 
-        {/* Link Existing BepInEx Folder */}
-        <div className="glass rounded-xl p-5 border border-zinc-800/50">
-          <h2 className="text-sm font-semibold text-zinc-300 mb-3">
-            <Link className="w-4 h-4 inline mr-1.5 -mt-0.5" />
-            Link Existing BepInEx
-          </h2>
-          <button
-            onClick={handleLinkFolder}
-            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg glass border border-dashed border-zinc-700 text-sm text-zinc-400 hover:border-brand-500/50 hover:text-brand-400 transition-all"
-          >
-            <FolderOpen className="w-4 h-4" />
-            Browse for BepInEx folder...
-          </button>
-          <p className="text-[10px] text-zinc-600 mt-2">Point to an existing BepInEx folder to manage its mods directly.</p>
-        </div>
-
-        {/* R2Modman Quick Link */}
+        {/* Import R2Modman Profiles */}
         {r2Profiles.length > 0 && (
-          <div className="glass rounded-xl p-5 border border-zinc-800/50 space-y-3">
+          <div className="glass rounded-xl p-5 border border-zinc-800/50 space-y-3 col-span-2">
             <h2 className="text-sm font-semibold text-zinc-300">
-              <Link className="w-4 h-4 inline mr-1.5 -mt-0.5 text-blue-400" />
-              Quick Link R2Modman
+              <Download className="w-4 h-4 inline mr-1.5 -mt-0.5 text-blue-400" />
+              Import from R2Modman
             </h2>
             <p className="text-xs text-zinc-500">
-              Link R2Modman profiles directly. No copying needed.
+              Copy R2Modman profiles into MegaLoad. Mods and configs are copied — R2Modman is not needed after import.
             </p>
             <div className="flex flex-wrap gap-2">
               {r2Profiles.map(([name, path]) => {
-                const alreadyLinked = linkedR2Names.has(name);
-                const isLinking = linkingR2 === name;
+                const alreadyImported = importedR2.has(name) || existingNames.has(name);
+                const isImporting = importingR2 === name;
                 return (
                   <button
                     key={path}
-                    onClick={() => handleLinkR2(name, path)}
-                    disabled={alreadyLinked || isLinking}
+                    onClick={() => handleImportR2(name, path)}
+                    disabled={alreadyImported || isImporting}
                     className={cn(
                       "flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium transition-all",
-                      alreadyLinked
+                      alreadyImported
                         ? "bg-emerald-500/10 text-emerald-400 cursor-default"
-                        : isLinking
+                        : isImporting
                           ? "bg-zinc-800 text-zinc-500 cursor-wait"
                           : "bg-blue-500/10 text-blue-400 hover:bg-blue-500/20"
                     )}
                   >
-                    {alreadyLinked ? (
+                    {alreadyImported ? (
                       <Check className="w-3.5 h-3.5" />
-                    ) : isLinking ? (
+                    ) : isImporting ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin" />
                     ) : (
-                      <Link className="w-3.5 h-3.5" />
+                      <Download className="w-3.5 h-3.5" />
                     )}
                     {name}
                   </button>

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from "react";
 import { User, Loader2, AlertCircle, CheckCircle2, Copy, Check, Download } from "lucide-react";
 import { useIdentityStore } from "../../stores/identityStore";
 import { useAppUpdateStore } from "../../stores/appUpdateStore";
+import { validateIdentity } from "../../lib/tauri-api";
 
 function UpdateBanner() {
   const { status, newVersion, downloadProgress, installAndRelaunch } = useAppUpdateStore();
@@ -54,7 +55,14 @@ export function IdentityGate({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const init = async () => {
       await loadIdentity();
-      await loadAdminStatus();
+      // Check for legacy accounts (pre-v1.1.0 without link code) — clears identity if legacy
+      const valid = await validateIdentity().catch(() => true);
+      if (!valid) {
+        // Identity was cleared — reload to show registration screen
+        await loadIdentity();
+      } else {
+        await loadAdminStatus();
+      }
       setInitialized(true);
     };
     init();

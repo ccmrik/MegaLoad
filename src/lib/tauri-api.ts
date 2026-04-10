@@ -24,8 +24,6 @@ export const setActiveProfile = (id: string) =>
   invoke<void>("set_active_profile", { id });
 export const renameProfile = (id: string, newName: string) =>
   invoke<void>("rename_profile", { id, newName });
-export const createProfileLinked = (name: string, bepinexPath: string) =>
-  invoke<Profile>("create_profile_linked", { name, bepinexPath });
 export const getProfilePath = (id: string) =>
   invoke<string>("get_profile_path", { id });
 
@@ -215,6 +213,21 @@ export const setModVersion = (bepinexPath: string, modName: string, version: str
 export const deployBundledPlugins = (bepinexPath: string) =>
   invoke<number>("deploy_bundled_plugins", { bepinexPath });
 
+// --- Update log ---
+
+export interface UpdateLogEntry {
+  timestamp: string;
+  update_type: string;
+  name: string;
+  from_version: string | null;
+  to_version: string;
+}
+
+export const getUpdateLog = () =>
+  invoke<UpdateLogEntry[]>("get_update_log");
+export const recordAppUpdate = (fromVersion: string, toVersion: string) =>
+  invoke<void>("record_app_update", { fromVersion, toVersion });
+
 // --- App logging commands ---
 
 export const getLoggingEnabled = () =>
@@ -227,6 +240,8 @@ export const clearAppLog = () =>
   invoke<void>("clear_app_log");
 export const getAppLogPath = () =>
   invoke<string>("get_app_log_path");
+export const logFromFrontend = (message: string) =>
+  invoke<void>("log_from_frontend", { message });
 export const openDataDir = () =>
   invoke<void>("open_data_dir");
 export const openFolder = (path: string) =>
@@ -703,6 +718,9 @@ export const clearMegaloadIdentity = () =>
 
 export const regenerateLinkCode = () =>
   invoke<string>("regenerate_link_code");
+
+export const validateIdentity = () =>
+  invoke<boolean>("validate_identity");
 
 export const checkIsAdmin = () =>
   invoke<boolean>("check_is_admin");

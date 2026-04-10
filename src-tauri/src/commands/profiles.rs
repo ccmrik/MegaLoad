@@ -1,4 +1,5 @@
 use crate::commands::app_log::app_log;
+use crate::commands::bepinex::{find_bepinex_sources, install_bepinex_core};
 use crate::commands::security::sanitize_path_component;
 use crate::models::{Profile, ProfileStore};
 use std::fs;
@@ -68,6 +69,16 @@ pub fn create_profile(name: String) -> Result<Profile, String> {
     }
     save_profiles(&store)?;
 
+    // Auto-install BepInEx core from any existing source on this machine
+    if let Ok(sources) = find_bepinex_sources(None) {
+        if let Some((label, source_path)) = sources.first() {
+            match install_bepinex_core(source_path.clone(), bepinex_dir.to_string_lossy().to_string()) {
+                Ok(_) => app_log(&format!("Auto-installed BepInEx core from: {}", label)),
+                Err(e) => app_log(&format!("Failed to auto-install BepInEx core: {}", e)),
+            }
+        }
+    }
+
     Ok(profile)
 }
 
@@ -128,39 +139,6 @@ pub fn rename_profile(id: String, new_name: String) -> Result<(), String> {
     }
     save_profiles(&store)?;
     Ok(())
-}
-
-#[command]
-pub fn create_profile_linked(name: String, bepinex_path: String) -> Result<Profile, String> {
-    app_log(&format!("Creating linked profile: {} -> {}", name, bepinex_path));
-    let path = std::path::Path::new(&bepinex_path);
-    if !path.exists() {
-        return Err(format!("Path does not exist: {}", bepinex_path));
-    }
-    // Validate it looks like a BepInEx folder (has plugins/ or core/)
-    if !path.join("plugins").exists() && !path.join("core").exists() {
-        return Err("This doesn't look like a BepInEx folder (no plugins/ or core/ subdirectory)".to_string());
-    }
-
-    let mut store = load_profiles();
-    let id = format!("{:x}", md5_hash(&format!("{}_{}", name, bepinex_path)));
-
-    let now = chrono_now();
-    let profile = Profile {
-        id: id.clone(),
-        name,
-        created: now.clone(),
-        last_used: now,
-        bepinex_path,
-    };
-
-    store.profiles.push(profile.clone());
-    if store.active_profile.is_none() {
-        store.active_profile = Some(id);
-    }
-    save_profiles(&store)?;
-
-    Ok(profile)
 }
 
 #[command]
