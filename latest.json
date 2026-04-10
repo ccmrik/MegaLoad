@@ -1,11 +1,11 @@
 {
-  "version": "1.1.1",
-  "notes": "v1.1.1 - Link code authentication for account linking",
-  "pub_date": "2026-04-10T08:54:24.896Z",
+  "version": "1.1.2",
+  "notes": "v1.1.2 - Unified identity gate UX",
+  "pub_date": "2026-04-10T09:11:48.004Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUlEUW96ejBFSStyWE9Db09PcitDQXlROVZvN2pmODR5VkRRM084cUFjOVdjdlVFK1BYeEtMWFlOZXppZG5Td1NmdjdYeTZrY3Q1RHpRcDVCd0dvMXc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODExMjM3CWZpbGU6TWVnYUxvYWRfMS4xLjFfeDY0LXNldHVwLm5zaXMuemlwCncrdHJwRmRRRmhaUTJ1WDNiN2dySzhSemttMi9XaFpwQUlBa0NZUjVUVUFwVzRIODdkOEhER3dyY1h3eGV5R2NFMHFjTzZlemt0UXJzektQMTJnQUJ3PT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.1.1/MegaLoad_1.1.1_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUVyOHMvdjVFQ09oSWlqcE9PSUZTekV3cFJGOFkrbzVrOTkxNVFUbVQyTjc4SE05QXlwdEpLUzhvOGdkYlhmSklaQ3h6SThBT0Raam9IZFZUbXVKekFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODEyMjYzCWZpbGU6TWVnYUxvYWRfMS4xLjJfeDY0LXNldHVwLm5zaXMuemlwCmgrU21tZmpGSXZmSWVGeGhXU1Y5alhUWkJEdlJGUll2SC9pRVBHTlA1NDNZTFJyU1dmT3dlUG4xUjlyc0NYRjZnWkgvTC9mODVqVUF2L1RySXJUM0NnPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.1.2/MegaLoad_1.1.2_x64-setup.nsis.zip"
     }
   }
 }

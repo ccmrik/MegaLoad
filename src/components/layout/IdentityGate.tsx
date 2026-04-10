@@ -1,6 +1,45 @@
 import { useState, useEffect, useCallback } from "react";
-import { User, Loader2, AlertCircle, CheckCircle2, Copy, Check } from "lucide-react";
+import { User, Loader2, AlertCircle, CheckCircle2, Copy, Check, Download } from "lucide-react";
 import { useIdentityStore } from "../../stores/identityStore";
+import { useAppUpdateStore } from "../../stores/appUpdateStore";
+
+function UpdateBanner() {
+  const { status, newVersion, downloadProgress, installAndRelaunch } = useAppUpdateStore();
+
+  if (status === "idle" || status === "checking") return null;
+
+  return (
+    <div className="fixed top-12 left-1/2 -translate-x-1/2 z-[60] animate-in slide-in-from-top-2 duration-300">
+      {status === "update-available" && (
+        <button
+          onClick={installAndRelaunch}
+          className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-500 hover:bg-brand-400 text-white text-sm font-bold shadow-2xl shadow-brand-500/30 transition-all"
+        >
+          <Download className="w-4 h-4" />
+          Update MegaLoad to v{newVersion}
+        </button>
+      )}
+      {status === "downloading" && (
+        <div className="flex items-center gap-3 px-5 py-2.5 rounded-xl bg-zinc-900 border border-brand-500/30 text-brand-400 text-sm font-medium shadow-2xl">
+          <Loader2 className="w-4 h-4 animate-spin" />
+          Downloading update... {downloadProgress}%
+        </div>
+      )}
+      {status === "ready" && (
+        <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-sm font-medium shadow-2xl">
+          <CheckCircle2 className="w-4 h-4" />
+          Restarting...
+        </div>
+      )}
+      {status === "error" && (
+        <div className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-xs shadow-2xl">
+          <AlertCircle className="w-3.5 h-3.5" />
+          Update failed — try again later
+        </div>
+      )}
+    </div>
+  );
+}
 
 export function IdentityGate({ children }: { children: React.ReactNode }) {
   const { identity, loading, error, linkCode, loadIdentity, saveIdentity, linkAccount, checkAvailable, clearLinkCode, loadAdminStatus, loadBanStatus } =
@@ -114,6 +153,7 @@ export function IdentityGate({ children }: { children: React.ReactNode }) {
   if (identity && linkCode) {
     return (
       <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm">
+        <UpdateBanner />
         <div className="glass rounded-2xl p-8 max-w-md w-full mx-4 space-y-6 animate-in">
           <div className="text-center space-y-3">
             <div className="w-16 h-16 rounded-full bg-emerald-500/15 flex items-center justify-center mx-auto">
@@ -160,6 +200,7 @@ export function IdentityGate({ children }: { children: React.ReactNode }) {
   // Unified identity setup / link modal
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/80 backdrop-blur-sm">
+      <UpdateBanner />
       <div className="glass rounded-2xl p-8 max-w-md w-full mx-4 space-y-6 animate-in">
         <div className="text-center space-y-3">
           <div className="w-16 h-16 rounded-full bg-brand-500/15 flex items-center justify-center mx-auto">
