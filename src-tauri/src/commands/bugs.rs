@@ -131,46 +131,15 @@ fn iso_now() -> String {
 // Commands
 // ---------------------------------------------------------------------------
 
-/// Check if MegaBugs is accessible (DLL present + admin status).
+/// Check MegaBugs access — always enabled (core feature since v1.3.3), returns admin status.
 #[command]
-pub fn check_megabugs_access(bepinex_path: String) -> Result<MegaBugsAccess, String> {
-    let plugins = Path::new(&bepinex_path).join("plugins");
-    let mut found = false;
-
-    // Check loose DLL: plugins/MegaBugs.dll
-    if plugins.join("MegaBugs.dll").exists() {
-        found = true;
-    }
-
-    // Check subfolder: plugins/MegaBugs/MegaBugs.dll
-    if !found {
-        let subfolder = plugins.join("MegaBugs");
-        if subfolder.is_dir() {
-            if let Ok(entries) = fs::read_dir(&subfolder) {
-                for entry in entries.flatten() {
-                    if let Some(name) = entry.file_name().to_str() {
-                        if name.eq_ignore_ascii_case("megabugs.dll") {
-                            found = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // Admin: check for key file
+pub fn check_megabugs_access(_bepinex_path: String) -> Result<MegaBugsAccess, String> {
     let is_admin = std::env::var("USERPROFILE")
         .map(|home| Path::new(&home).join(".megaload").join("megabugs-admin.key").exists())
         .unwrap_or(false);
 
-    app_log(&format!(
-        "MegaBugs access check: enabled={}, admin={}",
-        found, is_admin
-    ));
-
     Ok(MegaBugsAccess {
-        enabled: found,
+        enabled: true,
         is_admin,
     })
 }

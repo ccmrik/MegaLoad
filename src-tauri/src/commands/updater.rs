@@ -495,7 +495,6 @@ pub fn set_mod_version(bepinex_path: String, mod_name: String, version: String) 
 /// on every profile activation, always overwriting with the bundled version since
 /// MegaLoad is their sole distribution channel.
 const BUNDLED_PLUGINS: &[(&str, &str)] = &[
-    ("MegaBugs", "MegaBugs.dll"),
     ("MegaDataExtractor", "MegaDataExtractor.dll"),
 ];
 

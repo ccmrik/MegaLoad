@@ -324,21 +324,6 @@ export function MegaBugs() {
   const filteredTickets =
     filterStatus === "all" ? tickets : tickets.filter((t) => t.status === filterStatus);
 
-  // Not accessible — DLL not present
-  if (access && !access.enabled) {
-    return (
-      <div className="flex-1 flex items-center justify-center p-8 animate-in">
-        <div className="glass rounded-2xl p-10 max-w-md text-center space-y-4">
-          <Bug className="w-12 h-12 text-zinc-500 mx-auto" />
-          <h2 className="text-xl font-semibold text-zinc-200">MegaBugs Not Available</h2>
-          <p className="text-sm text-zinc-400">
-            MegaBugs requires the access key DLL installed in your BepInEx plugins folder.
-          </p>
-        </div>
-      </div>
-    );
-  }
-
   // Still checking access
   if (!access) {
     return (
