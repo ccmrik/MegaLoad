@@ -216,18 +216,29 @@ fn read_thunderstore_tracking(bepinex_path: &str) -> Vec<SyncThunderstoreMod> {
     let profile_dir = Path::new(bepinex_path).parent().unwrap_or(Path::new("."));
     let ts_path = profile_dir.join("thunderstore_mods.json");
     if let Ok(data) = fs::read_to_string(&ts_path) {
+        // Try wrapped format: { "mods": [...] }
+        if let Ok(wrapped) = serde_json::from_str::<TsWrappedState>(&data) {
+            return wrapped.mods.into_iter().map(|m| SyncThunderstoreMod {
+                full_name: m.full_name,
+                version: m.version,
+                folder_name: m.folder_name,
+            }).collect();
+        }
+        // Fallback: bare array [...]
         if let Ok(mods) = serde_json::from_str::<Vec<TsModEntry>>(&data) {
-            return mods
-                .into_iter()
-                .map(|m| SyncThunderstoreMod {
-                    full_name: m.full_name,
-                    version: m.version,
-                    folder_name: m.folder_name,
-                })
-                .collect();
+            return mods.into_iter().map(|m| SyncThunderstoreMod {
+                full_name: m.full_name,
+                version: m.version,
+                folder_name: m.folder_name,
+            }).collect();
         }
     }
     Vec::new()
+}
+
+#[derive(Deserialize)]
+struct TsWrappedState {
+    mods: Vec<TsModEntry>,
 }
 
 #[derive(Deserialize)]

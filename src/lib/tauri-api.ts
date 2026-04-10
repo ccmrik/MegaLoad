@@ -833,6 +833,20 @@ export const syncPullProfile = (profileId: string, bepinexPath: string) =>
 export const syncCheckRemoteChanged = () =>
   invoke<boolean>("sync_check_remote_changed");
 
+export const syncInstallThunderstoreMods = (bepinexPath: string, remoteModsJson: string) =>
+  invoke<number>("sync_install_thunderstore_mods", { bepinexPath, remoteModsJson });
+
+export interface TsUpdateInfo {
+  full_name: string;
+  installed_version: string;
+  latest_version: string;
+  download_url: string;
+  folder_name: string;
+}
+
+export const checkThunderstoreUpdates = (bepinexPath: string) =>
+  invoke<TsUpdateInfo[]>("check_thunderstore_updates", { bepinexPath });
+
 export const syncPushPlayerData = () =>
   invoke<number>("sync_push_player_data");
 

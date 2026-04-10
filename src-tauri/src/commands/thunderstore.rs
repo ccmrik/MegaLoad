@@ -441,7 +441,7 @@ pub fn uninstall_thunderstore_mod(
 
 fn download_ts_file(url: &str) -> Result<Vec<u8>, String> {
     let resp = crate::commands::http::agent().get(url)
-        .set("User-Agent", "MegaLoad/0.16.2")
+        .set("User-Agent", concat!("MegaLoad/", env!("CARGO_PKG_VERSION")))
         .call()
         .map_err(|e| format!("Download error: {}", e))?;
 
@@ -560,4 +560,126 @@ fn save_ts_installed_mod(
         });
     }
     save_ts_state(bepinex_path, &state);
+}
+
+// ── Sync + Update commands ────────────────────────────────
+
+/// Install Thunderstore mods that are tracked in sync but missing locally.
+/// Used during sync pull to replicate a profile across machines.
+#[command]
+pub fn sync_install_thunderstore_mods(
+    bepinex_path: String,
+    remote_mods_json: String,
+) -> Result<u32, String> {
+    let remote_mods: Vec<SyncTsMod> = serde_json::from_str(&remote_mods_json)
+        .map_err(|e| format!("Parse error: {}", e))?;
+
+    if remote_mods.is_empty() {
+        return Ok(0);
+    }
+
+    let local_state = load_ts_state(&bepinex_path);
+    let local_names: std::collections::HashSet<String> =
+        local_state.mods.iter().map(|m| m.full_name.clone()).collect();
+
+    let packages = fetch_packages()?;
+    let mut installed: u32 = 0;
+
+    for remote in &remote_mods {
+        if local_names.contains(&remote.full_name) {
+            continue; // Already installed
+        }
+
+        // Look up package on Thunderstore to get download URL
+        let pkg = match packages.iter().find(|p| p.full_name == remote.full_name) {
+            Some(p) => p,
+            None => {
+                app_log(&format!("Sync: TS mod not found on Thunderstore: {}", remote.full_name));
+                continue;
+            }
+        };
+
+        // Find the exact version or fall back to latest
+        let version = pkg.versions.iter()
+            .find(|v| v.version_number == remote.version)
+            .or_else(|| pkg.versions.first());
+
+        let ver = match version {
+            Some(v) => v,
+            None => {
+                app_log(&format!("Sync: No version found for {}", remote.full_name));
+                continue;
+            }
+        };
+
+        app_log(&format!("Sync: installing TS mod {} v{}", remote.full_name, ver.version_number));
+
+        match install_thunderstore_mod(
+            bepinex_path.clone(),
+            remote.full_name.clone(),
+            ver.download_url.clone(),
+            ver.version_number.clone(),
+        ) {
+            Ok(_) => installed += 1,
+            Err(e) => app_log(&format!("Sync: failed to install {}: {}", remote.full_name, e)),
+        }
+    }
+
+    app_log(&format!("Sync: installed {} Thunderstore mods", installed));
+    Ok(installed)
+}
+
+#[derive(Deserialize)]
+struct SyncTsMod {
+    full_name: String,
+    version: String,
+    #[allow(dead_code)]
+    folder_name: String,
+}
+
+/// Check installed Thunderstore mods for available updates.
+/// Returns a list of mods that have newer versions on Thunderstore.
+#[derive(Serialize, Clone, Debug)]
+pub struct TsUpdateInfo {
+    pub full_name: String,
+    pub installed_version: String,
+    pub latest_version: String,
+    pub download_url: String,
+    pub folder_name: String,
+}
+
+#[command]
+pub fn check_thunderstore_updates(bepinex_path: String) -> Result<Vec<TsUpdateInfo>, String> {
+    let local_state = load_ts_state(&bepinex_path);
+    if local_state.mods.is_empty() {
+        return Ok(Vec::new());
+    }
+
+    let packages = fetch_packages()?;
+    let mut updates = Vec::new();
+
+    for installed in &local_state.mods {
+        let pkg = match packages.iter().find(|p| p.full_name == installed.full_name) {
+            Some(p) => p,
+            None => continue,
+        };
+
+        let latest = match pkg.versions.first() {
+            Some(v) => v,
+            None => continue,
+        };
+
+        if latest.version_number != installed.version {
+            updates.push(TsUpdateInfo {
+                full_name: installed.full_name.clone(),
+                installed_version: installed.version.clone(),
+                latest_version: latest.version_number.clone(),
+                download_url: latest.download_url.clone(),
+                folder_name: installed.folder_name.clone(),
+            });
+        }
+    }
+
+    app_log(&format!("Thunderstore update check: {} updates available", updates.len()));
+    Ok(updates)
 }

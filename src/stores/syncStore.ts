@@ -7,9 +7,11 @@ import {
   syncPullManifest,
   syncPullProfile,
   syncPullConfigs,
+  syncPullProfileState,
   syncCheckRemoteChanged,
   syncGetSettings,
   autoUpdateMods,
+  syncInstallThunderstoreMods,
   type SyncPullResult,
   type SyncProfileEntry,
 } from "../lib/tauri-api";
@@ -200,12 +202,26 @@ export const useSyncStore = create<SyncState>((set, get) => ({
           addToast({ type: "warning", title: "Sync", message: `Config pull failed for "${remote.name}": ${e}`, duration: 5000 });
         }
 
-        // Auto-install any missing mods from the manifest
+        // Auto-install any missing Mega mods from the manifest
         try {
           const result = await autoUpdateMods(local.bepinex_path, true);
           totalMods += result.total_updates;
         } catch {
           // Non-critical — mods can be installed manually
+        }
+
+        // Install Thunderstore mods from remote state
+        try {
+          const remoteState = await syncPullProfileState(remote.id);
+          if (remoteState.thunderstore_mods && remoteState.thunderstore_mods.length > 0) {
+            const tsInstalled = await syncInstallThunderstoreMods(
+              local.bepinex_path,
+              JSON.stringify(remoteState.thunderstore_mods)
+            );
+            totalMods += tsInstalled;
+          }
+        } catch {
+          // Non-critical — TS mods can be installed manually
         }
 
         profilesProcessed++;

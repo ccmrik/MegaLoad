@@ -3,6 +3,7 @@ import { useAppUpdateStore } from "../stores/appUpdateStore";
 import { useUpdateStore } from "../stores/updateStore";
 import { useProfileStore } from "../stores/profileStore";
 import { useToastStore } from "../stores/toastStore";
+import { checkThunderstoreUpdates, updateThunderstoreMod } from "../lib/tauri-api";
 
 /**
  * Starts live polling for both app and mod updates.
@@ -59,6 +60,37 @@ export function useLiveUpdateChecks() {
       });
     }
   }, [appStatus, newVersion, addToast]);
+
+  // --- Thunderstore update check (once per profile activation) ---
+  const tsChecked = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!profile?.bepinex_path || tsChecked.current === profile.bepinex_path) return;
+    tsChecked.current = profile.bepinex_path;
+
+    checkThunderstoreUpdates(profile.bepinex_path).then((updates) => {
+      if (updates.length > 0) {
+        const names = updates.map((u) => `${u.full_name.split("-").pop()} ${u.installed_version} → ${u.latest_version}`).join(", ");
+        addToast({
+          type: "update",
+          title: `${updates.length} Thunderstore update${updates.length > 1 ? "s" : ""} available`,
+          message: names,
+          action: {
+            label: "Update All",
+            onClick: async () => {
+              for (const u of updates) {
+                try {
+                  await updateThunderstoreMod(profile!.bepinex_path, u.full_name, u.download_url, u.latest_version, u.folder_name);
+                } catch { /* skip failed */ }
+              }
+              addToast({ type: "success", title: "Thunderstore mods updated", message: `${updates.length} mod${updates.length > 1 ? "s" : ""} updated`, duration: 5000 });
+            },
+          },
+          duration: 0, // sticky
+        });
+      }
+    }).catch(() => {});
+  }, [profile?.bepinex_path, addToast]);
 
   // --- Toast: new mod updates detected ---
   const modResult = useUpdateStore((s) => s.updateResult);

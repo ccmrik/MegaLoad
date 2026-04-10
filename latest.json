@@ -1,11 +1,11 @@
 {
-  "version": "1.1.6",
-  "notes": "v1.1.6 - Robust sync pull with config download and auto-mod-install",
-  "pub_date": "2026-04-10T09:40:25.081Z",
+  "version": "1.2.0",
+  "notes": "v1.2.0 - Admin Command Centre with MegaBugs + MegaChat security",
+  "pub_date": "2026-04-10T09:57:15.388Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUp1WGl3YUhwQlhmREJIQlJocGhZSjhMMkJDNGJjRkU1N1R3NGE3RklRVEx2eVRsMW5vcTdkRE4wempZbCtQbzF2TVhmcGUzYzRWM3ZiRGZ4bGJ4UHdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODE0MDA3CWZpbGU6TWVnYUxvYWRfMS4xLjZfeDY0LXNldHVwLm5zaXMuemlwCjh3dkJqSmhSQ0hLOGNlSjBaVmFLekF0TGxmbWpBVmtSNUg5S0Jpb0t4ZEIwekNRL2tHNTh1ejR0NnRLRTVxaGljQnJXR2ptampLQW5sYlhBN2w5NEFRPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.1.6/MegaLoad_1.1.6_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUd0RWxERTJWRnZDUmRkYXU2czFPczQzRFdPRlJadDJjOG5xUmJveCtSNFZ2ZXVZVWtxS2tma296YndjenNaU3YvMmFsZm5rYXhuQzUrM3Q3M0NPbHdZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODE0OTY3CWZpbGU6TWVnYUxvYWRfMS4yLjBfeDY0LXNldHVwLm5zaXMuemlwCkZmd3hyZGZ5NmpFUUdodEQ0Q3Zwa0tEK0kyVjVwWlQ3YXpyd3JIQ1hSR1hDcVNjSFFGbUZGak1aRGV0NHhRVUM1aUtjaHRpeHFPZ0U4Nno3VmNMbkJRPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.2.0/MegaLoad_1.2.0_x64-setup.nsis.zip"
     }
   }
 }

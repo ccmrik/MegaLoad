@@ -94,6 +94,8 @@ pub fn run() {
             update_thunderstore_mod,
             get_installed_thunderstore_mods,
             uninstall_thunderstore_mod,
+            sync_install_thunderstore_mods,
+            check_thunderstore_updates,
             // Trainer
             get_trainer_cheats,
             toggle_trainer_cheat,
