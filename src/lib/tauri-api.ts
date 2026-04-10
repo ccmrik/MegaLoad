@@ -807,7 +807,8 @@ export interface SyncProfileState {
   last_updated: string;
   mods: SyncModEntry[];
   thunderstore_mods: SyncThunderstoreMod[];
-  config_hashes: SyncConfigHash[];
+  configs: Record<string, string>;
+  config_hashes?: SyncConfigHash[];
 }
 
 export interface SyncPullResult {
@@ -847,6 +848,9 @@ export const syncPullConfigs = (profileId: string, bepinexPath: string) =>
 
 export const syncPullProfile = (profileId: string, bepinexPath: string) =>
   invoke<SyncPullResult>("sync_pull_profile", { profileId, bepinexPath });
+
+export const syncPullBundle = (profileId: string, bepinexPath: string) =>
+  invoke<SyncPullResult>("sync_pull_bundle", { profileId, bepinexPath });
 
 export const syncCheckRemoteChanged = () =>
   invoke<boolean>("sync_check_remote_changed");

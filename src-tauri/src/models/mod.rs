@@ -90,6 +90,7 @@ pub struct SyncProfileEntry {
 }
 
 /// Full profile state stored at sync/{user_id}/profiles/{profile_id}/state.json
+/// Kept for backwards compat — new code uses SyncProfileBundle from sync.rs
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct SyncProfileState {
     pub profile_id: String,
@@ -97,6 +98,7 @@ pub struct SyncProfileState {
     pub last_updated: String,
     pub mods: Vec<SyncModEntry>,
     pub thunderstore_mods: Vec<SyncThunderstoreMod>,
+    #[serde(default)]
     pub config_hashes: Vec<SyncConfigHash>,
 }
 

@@ -3,14 +3,14 @@ import { useSyncStore } from "../stores/syncStore";
 import { useProfileStore } from "../stores/profileStore";
 import { useToastStore } from "../stores/toastStore";
 
-const POLL_INTERVAL_MS = 60_000; // Check for remote changes every 60s
-const DEBOUNCE_MS = 5_000; // Debounce push after changes
+const POLL_INTERVAL_MS = 30_000; // Check for remote changes every 30s
+const DEBOUNCE_MS = 3_000; // Push 3s after FIRST change (non-resetting)
 
 /**
  * Auto-sync hook — handles:
  * 1. Initial pull on app startup (if sync enabled)
- * 2. Periodic polling for remote changes
- * 3. Debounced push after local changes
+ * 2. Periodic polling for remote changes (30s)
+ * 3. Non-resetting debounced push after local changes (3s from first trigger)
  *
  * Mount once in AppShell.
  */
@@ -21,7 +21,7 @@ export function useAutoSync() {
   const fetchSyncStatus = useSyncStore((s) => s.fetchSyncStatus);
   const checkForRemoteChanges = useSyncStore((s) => s.checkForRemoteChanges);
   const pullAllProfiles = useSyncStore((s) => s.pullAllProfiles);
-  const pushCurrentProfile = useSyncStore((s) => s.pushCurrentProfile);
+  const pushAllProfiles = useSyncStore((s) => s.pushAllProfiles);
   const addToast = useToastStore((s) => s.addToast);
   const activeProfileId = useProfileStore((s) => s.activeProfileId);
 
@@ -95,28 +95,24 @@ export function useAutoSync() {
     };
   }, [enabled, autoSync, syncing, checkForRemoteChanges, pullAllProfiles, addToast]);
 
-  // Debounced push trigger — call this after local changes
+  // Non-resetting debounced push — fires 3s after the FIRST trigger,
+  // not the last. This ensures changes get pushed promptly even if the
+  // user is making rapid edits.
   const schedulePush = useCallback(() => {
     if (!enabled || !autoSync) return;
 
-    if (debounceTimerRef.current) {
-      clearTimeout(debounceTimerRef.current);
-    }
+    // Only start a new timer if one isn't already running
+    if (debounceTimerRef.current) return;
 
     debounceTimerRef.current = setTimeout(async () => {
+      debounceTimerRef.current = null;
       try {
-        await pushCurrentProfile();
-        addToast({
-          type: "info",
-          title: "Cloud Sync",
-          message: "Changes pushed to cloud",
-          duration: 2000,
-        });
+        await pushAllProfiles();
       } catch {
         // Error already set in store
       }
     }, DEBOUNCE_MS);
-  }, [enabled, autoSync, pushCurrentProfile]);
+  }, [enabled, autoSync, pushAllProfiles]);
 
   // Push when active profile changes
   useEffect(() => {

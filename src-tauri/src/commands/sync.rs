@@ -3,13 +3,12 @@ use crate::commands::github::{github_get_file, github_list_dir, github_put_file}
 use crate::commands::identity::get_megaload_identity;
 use crate::commands::player_data::{CharacterData, list_characters, read_character};
 use crate::models::{
-    SyncConfigHash, SyncManifest, SyncModEntry, SyncProfileEntry,
-    SyncProfileState, SyncSettings, SyncStatus, SyncThunderstoreMod,
+    SyncManifest, SyncModEntry, SyncProfileEntry,
+    SyncSettings, SyncStatus, SyncThunderstoreMod,
 };
 use serde::{Deserialize, Serialize};
-use std::collections::hash_map::DefaultHasher;
+use std::collections::HashMap;
 use std::fs;
-use std::hash::{Hash, Hasher};
 use std::path::{Path, PathBuf};
 use tauri::command;
 
@@ -42,7 +41,6 @@ fn load_sync_settings() -> SyncSettings {
             }
         }
     }
-    // Default: disabled, generate machine ID
     SyncSettings {
         enabled: false,
         auto_sync: true,
@@ -61,13 +59,29 @@ fn save_sync_settings(settings: &SyncSettings) -> Result<(), String> {
 }
 
 fn generate_machine_id() -> String {
-    // Deterministic machine ID from hostname + username
     let hostname = std::env::var("COMPUTERNAME").unwrap_or_else(|_| "unknown".to_string());
     let user = std::env::var("USERNAME").unwrap_or_else(|_| "user".to_string());
     let input = format!("{}@{}", user, hostname);
-    let mut hasher = DefaultHasher::new();
-    input.hash(&mut hasher);
-    format!("{:x}", hasher.finish())
+    format!("{:016x}", fnv1a_hash(input.as_bytes()))
+}
+
+/// Stable FNV-1a 64-bit hash — deterministic across restarts and platforms.
+fn fnv1a_hash(data: &[u8]) -> u64 {
+    let mut hash: u64 = 0xcbf29ce484222325;
+    for &byte in data {
+        hash ^= byte as u64;
+        hash = hash.wrapping_mul(0x100000001b3);
+    }
+    hash
+}
+
+/// Stable hash of file contents using FNV-1a.
+fn hash_file_contents(path: &Path) -> String {
+    if let Ok(data) = fs::read(path) {
+        format!("{:016x}", fnv1a_hash(&data))
+    } else {
+        String::new()
+    }
 }
 
 fn iso_now() -> String {
@@ -85,84 +99,64 @@ fn iso_now() -> String {
     let mut y = 1970i64;
     let mut remaining = days as i64;
     loop {
-        let days_in_year = if y % 4 == 0 && (y % 100 != 0 || y % 400 == 0) {
-            366
-        } else {
-            365
-        };
-        if remaining < days_in_year {
-            break;
-        }
+        let days_in_year = if y % 4 == 0 && (y % 100 != 0 || y % 400 == 0) { 366 } else { 365 };
+        if remaining < days_in_year { break; }
         remaining -= days_in_year;
         y += 1;
     }
     let leap = y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
-    let month_days = [
-        31,
-        if leap { 29 } else { 28 },
-        31, 30, 31, 30, 31, 31, 30, 31, 30, 31,
-    ];
+    let month_days = [31, if leap { 29 } else { 28 }, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
     let mut m = 0usize;
     for (i, &md) in month_days.iter().enumerate() {
-        if remaining < md as i64 {
-            m = i;
-            break;
-        }
+        if remaining < md as i64 { m = i; break; }
         remaining -= md as i64;
     }
     let d = remaining + 1;
-    format!(
-        "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z",
-        y, m + 1, d, hours, minutes, seconds
-    )
-}
-
-/// Hash file contents for change detection.
-fn hash_file_contents(path: &Path) -> String {
-    if let Ok(data) = fs::read(path) {
-        let mut hasher = DefaultHasher::new();
-        data.hash(&mut hasher);
-        format!("{:016x}", hasher.finish())
-    } else {
-        String::new()
-    }
+    format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z", y, m + 1, d, hours, minutes, seconds)
 }
 
 // ---------------------------------------------------------------------------
-// Profile state snapshot — reads current local state
+// Bundle model — single file per profile with all state + config contents
 // ---------------------------------------------------------------------------
 
-/// Build a snapshot of a profile's current state from the filesystem.
-fn snapshot_profile(profile_id: &str, profile_name: &str, bepinex_path: &str) -> Result<SyncProfileState, String> {
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct SyncProfileBundle {
+    pub profile_id: String,
+    pub profile_name: String,
+    pub last_updated: String,
+    pub mods: Vec<SyncModEntry>,
+    pub thunderstore_mods: Vec<SyncThunderstoreMod>,
+    /// Config file contents keyed by filename (e.g. "MegaShot.cfg" → full file text)
+    pub configs: HashMap<String, String>,
+}
+
+// ---------------------------------------------------------------------------
+// Profile snapshot — reads current local state into a bundle
+// ---------------------------------------------------------------------------
+
+fn snapshot_bundle(profile_id: &str, profile_name: &str, bepinex_path: &str) -> Result<SyncProfileBundle, String> {
     let bep = Path::new(bepinex_path);
     let plugins_dir = bep.join("plugins");
     let disabled_dir = bep.join("disabled_plugins");
 
-    // Collect mods
     let mut mods = Vec::new();
-
-    // Scan enabled mods
     if plugins_dir.exists() {
         scan_mods_for_sync(&plugins_dir, true, &mut mods)?;
     }
-    // Scan disabled mods
     if disabled_dir.exists() {
         scan_mods_for_sync(&disabled_dir, false, &mut mods)?;
     }
 
-    // Read Thunderstore tracking
     let ts_mods = read_thunderstore_tracking(bepinex_path);
+    let configs = read_all_configs(bepinex_path);
 
-    // Hash config files
-    let config_hashes = hash_config_files(bepinex_path);
-
-    Ok(SyncProfileState {
+    Ok(SyncProfileBundle {
         profile_id: profile_id.to_string(),
         profile_name: profile_name.to_string(),
         last_updated: iso_now(),
         mods,
         thunderstore_mods: ts_mods,
-        config_hashes,
+        configs,
     })
 }
 
@@ -175,24 +169,15 @@ fn scan_mods_for_sync(dir: &Path, enabled: bool, mods: &mut Vec<SyncModEntry>) -
         if path.is_file() && file_name.to_lowercase().ends_with(".dll") {
             let name = file_name.trim_end_matches(".dll").trim_end_matches(".DLL").to_string();
             mods.push(SyncModEntry {
-                name,
-                file_name,
-                version: None,
-                enabled,
-                source: "manual".to_string(),
+                name, file_name, version: None, enabled, source: "manual".to_string(),
             });
         } else if path.is_dir() {
-            // Folder-based mod (e.g., Thunderstore installs)
             if let Some(dll) = find_dll_in_folder(&path) {
                 let name = path.file_name()
                     .map(|n| n.to_string_lossy().to_string())
                     .unwrap_or_default();
                 mods.push(SyncModEntry {
-                    name,
-                    file_name: dll,
-                    version: None,
-                    enabled,
-                    source: "thunderstore".to_string(),
+                    name, file_name: dll, version: None, enabled, source: "thunderstore".to_string(),
                 });
             }
         }
@@ -216,20 +201,14 @@ fn read_thunderstore_tracking(bepinex_path: &str) -> Vec<SyncThunderstoreMod> {
     let profile_dir = Path::new(bepinex_path).parent().unwrap_or(Path::new("."));
     let ts_path = profile_dir.join("thunderstore_mods.json");
     if let Ok(data) = fs::read_to_string(&ts_path) {
-        // Try wrapped format: { "mods": [...] }
         if let Ok(wrapped) = serde_json::from_str::<TsWrappedState>(&data) {
             return wrapped.mods.into_iter().map(|m| SyncThunderstoreMod {
-                full_name: m.full_name,
-                version: m.version,
-                folder_name: m.folder_name,
+                full_name: m.full_name, version: m.version, folder_name: m.folder_name,
             }).collect();
         }
-        // Fallback: bare array [...]
         if let Ok(mods) = serde_json::from_str::<Vec<TsModEntry>>(&data) {
             return mods.into_iter().map(|m| SyncThunderstoreMod {
-                full_name: m.full_name,
-                version: m.version,
-                folder_name: m.folder_name,
+                full_name: m.full_name, version: m.version, folder_name: m.folder_name,
             }).collect();
         }
     }
@@ -237,33 +216,36 @@ fn read_thunderstore_tracking(bepinex_path: &str) -> Vec<SyncThunderstoreMod> {
 }
 
 #[derive(Deserialize)]
-struct TsWrappedState {
-    mods: Vec<TsModEntry>,
-}
+struct TsWrappedState { mods: Vec<TsModEntry> }
 
 #[derive(Deserialize)]
-struct TsModEntry {
-    full_name: String,
-    version: String,
-    folder_name: String,
-}
+struct TsModEntry { full_name: String, version: String, folder_name: String }
 
-fn hash_config_files(bepinex_path: &str) -> Vec<SyncConfigHash> {
+/// Read ALL .cfg files from config/ into a HashMap<filename, contents>.
+fn read_all_configs(bepinex_path: &str) -> HashMap<String, String> {
     let config_dir = Path::new(bepinex_path).join("config");
-    let mut hashes = Vec::new();
+    let mut configs = HashMap::new();
     if let Ok(entries) = fs::read_dir(&config_dir) {
         for entry in entries.flatten() {
             let path = entry.path();
             if path.is_file() {
                 let file_name = entry.file_name().to_string_lossy().to_string();
                 if file_name.to_lowercase().ends_with(".cfg") {
-                    let hash = hash_file_contents(&path);
-                    hashes.push(SyncConfigHash { file_name, hash });
+                    if let Ok(content) = fs::read_to_string(&path) {
+                        configs.insert(file_name, content);
+                    }
                 }
             }
         }
     }
-    hashes
+    configs
+}
+
+/// Compute a single content hash of the entire bundle for quick change detection.
+fn bundle_content_hash(bundle: &SyncProfileBundle) -> String {
+    // Hash mods + configs together — if anything changed, hash changes
+    let json = serde_json::to_string(bundle).unwrap_or_default();
+    format!("{:016x}", fnv1a_hash(json.as_bytes()))
 }
 
 // ---------------------------------------------------------------------------
@@ -274,33 +256,25 @@ fn sync_manifest_path(user_id: &str) -> String {
     format!("sync/{}/sync-manifest.json", user_id)
 }
 
-fn sync_profile_state_path(user_id: &str, profile_id: &str) -> String {
-    format!("sync/{}/profiles/{}/state.json", user_id, profile_id)
-}
-
-fn sync_config_path(user_id: &str, profile_id: &str, config_name: &str) -> String {
-    format!("sync/{}/profiles/{}/configs/{}", user_id, profile_id, config_name)
+fn sync_bundle_path(user_id: &str, profile_id: &str) -> String {
+    format!("sync/{}/profiles/{}/bundle.json", user_id, profile_id)
 }
 
 // ---------------------------------------------------------------------------
 // Tauri commands — Sync settings
 // ---------------------------------------------------------------------------
 
-/// Get current sync status.
 #[command]
 pub fn sync_get_status() -> Result<SyncStatus, String> {
     let settings = load_sync_settings();
 
     let remote_profiles = if settings.enabled {
-        // Try to fetch remote manifest for profile list
         if let Ok(identity) = get_megaload_identity() {
             match github_get_file(&sync_manifest_path(&identity.user_id)) {
                 Ok((content, _)) => {
-                    if let Ok(manifest) = serde_json::from_str::<SyncManifest>(&content) {
-                        manifest.profiles
-                    } else {
-                        Vec::new()
-                    }
+                    serde_json::from_str::<SyncManifest>(&content)
+                        .map(|m| m.profiles)
+                        .unwrap_or_default()
                 }
                 Err(_) => Vec::new(),
             }
@@ -321,7 +295,6 @@ pub fn sync_get_status() -> Result<SyncStatus, String> {
     })
 }
 
-/// Enable or disable cloud sync.
 #[command]
 pub fn sync_set_enabled(enabled: bool) -> Result<(), String> {
     let mut settings = load_sync_settings();
@@ -331,7 +304,6 @@ pub fn sync_set_enabled(enabled: bool) -> Result<(), String> {
     Ok(())
 }
 
-/// Enable or disable auto-sync.
 #[command]
 pub fn sync_set_auto_sync(auto_sync: bool) -> Result<(), String> {
     let mut settings = load_sync_settings();
@@ -341,88 +313,17 @@ pub fn sync_set_auto_sync(auto_sync: bool) -> Result<(), String> {
     Ok(())
 }
 
-/// Get sync settings (for frontend to know if auto-sync is on).
 #[command]
 pub fn sync_get_settings() -> Result<SyncSettings, String> {
     Ok(load_sync_settings())
 }
 
 // ---------------------------------------------------------------------------
-// Tauri commands — Push (local → cloud)
+// Push — bundled (local → cloud)
 // ---------------------------------------------------------------------------
 
-/// Push a single profile's state to the cloud.
-#[command]
-pub fn sync_push_profile(profile_id: String, profile_name: String, bepinex_path: String) -> Result<(), String> {
-    let settings = load_sync_settings();
-    if !settings.enabled {
-        return Err("Cloud sync is not enabled".to_string());
-    }
-
-    let identity = get_megaload_identity()?;
-    let user_id = &identity.user_id;
-
-    app_log(&format!("Sync push: profile {} ({})", profile_name, profile_id));
-
-    // 1. Snapshot current profile state
-    let state = snapshot_profile(&profile_id, &profile_name, &bepinex_path)?;
-
-    // 2. Push profile state JSON
-    let state_path = sync_profile_state_path(user_id, &profile_id);
-    let state_json = serde_json::to_string_pretty(&state).map_err(|e| e.to_string())?;
-
-    let sha = match github_get_file(&state_path) {
-        Ok((_, sha)) => Some(sha),
-        Err(_) => None,
-    };
-    github_put_file(
-        &state_path,
-        state_json.as_bytes(),
-        &format!("Sync profile {} — {}", profile_name, identity.display_name),
-        sha.as_deref(),
-    )?;
-
-    // 3. Push config files that changed
-    let config_dir = Path::new(&bepinex_path).join("config");
-    for cfg_hash in &state.config_hashes {
-        let cfg_path = config_dir.join(&cfg_hash.file_name);
-        if cfg_path.exists() {
-            let content = fs::read(&cfg_path).map_err(|e| e.to_string())?;
-            let remote_path = sync_config_path(user_id, &profile_id, &cfg_hash.file_name);
-
-            // Check if remote hash differs before uploading
-            let remote_sha = match github_get_file(&remote_path) {
-                Ok((remote_content, sha)) => {
-                    // Compare content — only upload if different
-                    if remote_content.as_bytes() == content.as_slice() {
-                        continue; // Skip unchanged configs
-                    }
-                    Some(sha)
-                }
-                Err(_) => None,
-            };
-
-            github_put_file(
-                &remote_path,
-                &content,
-                &format!("Sync config {} — {}", cfg_hash.file_name, profile_name),
-                remote_sha.as_deref(),
-            )?;
-        }
-    }
-
-    // 4. Update sync settings
-    let mut settings = load_sync_settings();
-    settings.last_push = Some(iso_now());
-    save_sync_settings(&settings)?;
-
-    app_log(&format!("Sync push complete: {} ({} mods, {} configs)",
-        profile_name, state.mods.len(), state.config_hashes.len()));
-
-    Ok(())
-}
-
-/// Push all profiles to the cloud (full sync).
+/// Push all profiles to the cloud. Each profile = 1 bundled JSON file.
+/// Total API calls: 2 (manifest) + 2 per profile (GET SHA + PUT bundle).
 #[command]
 pub fn sync_push_all(profiles_json: String) -> Result<(), String> {
     let settings = load_sync_settings();
@@ -433,56 +334,47 @@ pub fn sync_push_all(profiles_json: String) -> Result<(), String> {
     let identity = get_megaload_identity()?;
     let user_id = &identity.user_id;
 
-    // Parse profiles from frontend
     let profiles: Vec<ProfilePushInfo> = serde_json::from_str(&profiles_json)
         .map_err(|e| format!("Invalid profiles JSON: {}", e))?;
 
-    app_log(&format!("Sync push all: {} profiles", profiles.len()));
+    app_log(&format!("Sync push: {} profiles", profiles.len()));
 
-    // Build sync manifest
+    // 1. Build and push manifest (GET SHA + PUT = 2 API calls)
     let manifest = SyncManifest {
         user_id: user_id.clone(),
         last_sync: iso_now(),
         machine_id: settings.machine_id.clone(),
-        profiles: profiles
-            .iter()
-            .map(|p| SyncProfileEntry {
-                id: p.id.clone(),
-                name: p.name.clone(),
-                is_active: p.is_active,
-                is_linked: p.is_linked,
-            })
-            .collect(),
+        profiles: profiles.iter().map(|p| SyncProfileEntry {
+            id: p.id.clone(),
+            name: p.name.clone(),
+            is_active: p.is_active,
+            is_linked: false,
+        }).collect(),
     };
 
-    // Push manifest
     let manifest_path = sync_manifest_path(user_id);
     let manifest_json = serde_json::to_string_pretty(&manifest).map_err(|e| e.to_string())?;
-    let sha = match github_get_file(&manifest_path) {
-        Ok((_, sha)) => Some(sha),
-        Err(_) => None,
-    };
+    let sha = github_get_file(&manifest_path).ok().map(|(_, s)| s);
     github_put_file(
         &manifest_path,
         manifest_json.as_bytes(),
-        &format!("Sync manifest — {}", identity.display_name),
+        &format!("Sync — {}", identity.display_name),
         sha.as_deref(),
     )?;
 
-    // Push each profile
+    // 2. Push each profile bundle (GET SHA + PUT = 2 API calls per profile)
     for p in &profiles {
-        if let Err(e) = sync_push_profile_inner(user_id, &identity.display_name, p) {
-            app_log(&format!("Sync push failed for profile {}: {}", p.name, e));
-            // Continue with other profiles — don't fail the whole operation
+        if let Err(e) = push_profile_bundle(user_id, &identity.display_name, p) {
+            app_log(&format!("Sync push failed for {}: {}", p.name, e));
         }
     }
 
-    // Update sync settings
+    // 3. Update local settings
     let mut settings = load_sync_settings();
     settings.last_push = Some(iso_now());
     save_sync_settings(&settings)?;
 
-    app_log("Sync push all complete");
+    app_log("Sync push complete");
     Ok(())
 }
 
@@ -492,60 +384,61 @@ struct ProfilePushInfo {
     name: String,
     bepinex_path: String,
     is_active: bool,
+    #[allow(dead_code)]
     is_linked: bool,
 }
 
-fn sync_push_profile_inner(user_id: &str, display_name: &str, profile: &ProfilePushInfo) -> Result<(), String> {
-    let state = snapshot_profile(&profile.id, &profile.name, &profile.bepinex_path)?;
-    let state_path = sync_profile_state_path(user_id, &profile.id);
-    let state_json = serde_json::to_string_pretty(&state).map_err(|e| e.to_string())?;
+fn push_profile_bundle(user_id: &str, display_name: &str, profile: &ProfilePushInfo) -> Result<(), String> {
+    let bundle = snapshot_bundle(&profile.id, &profile.name, &profile.bepinex_path)?;
+    let bundle_path = sync_bundle_path(user_id, &profile.id);
+    let bundle_json = serde_json::to_string_pretty(&bundle).map_err(|e| e.to_string())?;
 
-    let sha = match github_get_file(&state_path) {
-        Ok((_, sha)) => Some(sha),
-        Err(_) => None,
-    };
+    // GET existing SHA, then PUT
+    let sha = github_get_file(&bundle_path).ok().map(|(_, s)| s);
     github_put_file(
-        &state_path,
-        state_json.as_bytes(),
-        &format!("Sync profile {} — {}", profile.name, display_name),
+        &bundle_path,
+        bundle_json.as_bytes(),
+        &format!("Sync {} — {}", profile.name, display_name),
         sha.as_deref(),
     )?;
 
-    // Push config files
-    let config_dir = Path::new(&profile.bepinex_path).join("config");
-    for cfg_hash in &state.config_hashes {
-        let cfg_path = config_dir.join(&cfg_hash.file_name);
-        if cfg_path.exists() {
-            let content = fs::read(&cfg_path).map_err(|e| e.to_string())?;
-            let remote_path = sync_config_path(user_id, &profile.id, &cfg_hash.file_name);
+    app_log(&format!("Pushed bundle: {} ({} mods, {} configs)", profile.name, bundle.mods.len(), bundle.configs.len()));
+    Ok(())
+}
 
-            let remote_sha = match github_get_file(&remote_path) {
-                Ok((remote_content, sha)) => {
-                    if remote_content.as_bytes() == content.as_slice() {
-                        continue;
-                    }
-                    Some(sha)
-                }
-                Err(_) => None,
-            };
-
-            github_put_file(
-                &remote_path,
-                &content,
-                &format!("Sync config {} — {}", cfg_hash.file_name, profile.name),
-                remote_sha.as_deref(),
-            )?;
-        }
+// Keep sync_push_profile for backwards compatibility (delegates to push_all pattern)
+#[command]
+pub fn sync_push_profile(profile_id: String, profile_name: String, bepinex_path: String) -> Result<(), String> {
+    let settings = load_sync_settings();
+    if !settings.enabled {
+        return Err("Cloud sync is not enabled".to_string());
     }
+
+    let identity = get_megaload_identity()?;
+    let user_id = &identity.user_id;
+
+    let profile = ProfilePushInfo {
+        id: profile_id,
+        name: profile_name,
+        bepinex_path,
+        is_active: true,
+        is_linked: false,
+    };
+
+    push_profile_bundle(user_id, &identity.display_name, &profile)?;
+
+    let mut settings = load_sync_settings();
+    settings.last_push = Some(iso_now());
+    save_sync_settings(&settings)?;
 
     Ok(())
 }
 
 // ---------------------------------------------------------------------------
-// Tauri commands — Pull (cloud → local)
+// Pull — bundled (cloud → local)
 // ---------------------------------------------------------------------------
 
-/// Pull the remote sync manifest to see what's available.
+/// Pull the remote sync manifest.
 #[command]
 pub fn sync_pull_manifest() -> Result<SyncManifest, String> {
     let identity = get_megaload_identity()?;
@@ -564,20 +457,10 @@ pub fn sync_pull_manifest() -> Result<SyncManifest, String> {
     }
 }
 
-/// Pull a single profile's state from the cloud.
+/// Pull a single profile's bundle from the cloud and apply configs locally.
+/// API calls: 1 GET bundle.
 #[command]
-pub fn sync_pull_profile_state(profile_id: String) -> Result<SyncProfileState, String> {
-    let identity = get_megaload_identity()?;
-    let path = sync_profile_state_path(&identity.user_id, &profile_id);
-
-    let (content, _) = github_get_file(&path)
-        .map_err(|_| format!("No cloud state found for profile {}", profile_id))?;
-    serde_json::from_str(&content).map_err(|e| format!("State parse error: {}", e))
-}
-
-/// Pull and apply a profile's configs from the cloud.
-#[command]
-pub fn sync_pull_configs(profile_id: String, bepinex_path: String) -> Result<u32, String> {
+pub fn sync_pull_bundle(profile_id: String, bepinex_path: String) -> Result<SyncPullResult, String> {
     let settings = load_sync_settings();
     if !settings.enabled {
         return Err("Cloud sync is not enabled".to_string());
@@ -585,112 +468,64 @@ pub fn sync_pull_configs(profile_id: String, bepinex_path: String) -> Result<u32
 
     let identity = get_megaload_identity()?;
     let user_id = &identity.user_id;
+
+    app_log(&format!("Sync pull bundle: profile {}", profile_id));
+
+    // 1. Fetch remote bundle (1 API call)
+    let bundle_path = sync_bundle_path(user_id, &profile_id);
+    let (content, _) = github_get_file(&bundle_path)
+        .map_err(|_| format!("No cloud bundle found for profile {}", profile_id))?;
+    let remote: SyncProfileBundle = serde_json::from_str(&content)
+        .map_err(|e| format!("Bundle parse error: {}", e))?;
+
+    // 2. Apply configs — write all remote configs to local, track what changed
     let config_dir = Path::new(&bepinex_path).join("config");
     fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
 
-    // Get the remote profile state to know which configs exist
-    let state_path = sync_profile_state_path(user_id, &profile_id);
-    let (state_content, _) = github_get_file(&state_path)
-        .map_err(|_| "No remote profile state found".to_string())?;
-    let state: SyncProfileState = serde_json::from_str(&state_content)
-        .map_err(|e| format!("State parse error: {}", e))?;
-
-    let mut updated_count: u32 = 0;
-
-    for cfg_hash in &state.config_hashes {
-        let local_path = config_dir.join(&cfg_hash.file_name);
-        let local_hash = if local_path.exists() {
-            hash_file_contents(&local_path)
-        } else {
-            String::new()
-        };
-
-        // Only pull if remote hash differs from local
-        if local_hash != cfg_hash.hash {
-            let remote_path = sync_config_path(user_id, &profile_id, &cfg_hash.file_name);
-            match github_get_file(&remote_path) {
-                Ok((content, _)) => {
-                    fs::write(&local_path, content.as_bytes()).map_err(|e| e.to_string())?;
-                    updated_count += 1;
-                    app_log(&format!("Sync pull config: {}", cfg_hash.file_name));
-                }
-                Err(e) => {
-                    app_log(&format!("Sync pull config failed for {}: {}", cfg_hash.file_name, e));
-                }
-            }
+    let mut configs_updated: u32 = 0;
+    for (file_name, remote_content) in &remote.configs {
+        let local_path = config_dir.join(file_name);
+        let local_content = fs::read_to_string(&local_path).unwrap_or_default();
+        if local_content != *remote_content {
+            fs::write(&local_path, remote_content).map_err(|e| e.to_string())?;
+            configs_updated += 1;
+            app_log(&format!("Sync pull config: {}", file_name));
         }
     }
 
-    // Update sync settings
-    let mut settings = load_sync_settings();
-    settings.last_pull = Some(iso_now());
-    save_sync_settings(&settings)?;
-
-    app_log(&format!("Sync pull configs complete: {} updated", updated_count));
-    Ok(updated_count)
-}
-
-/// Full pull — applies profile state + configs. Returns a summary.
-#[command]
-pub fn sync_pull_profile(profile_id: String, bepinex_path: String) -> Result<SyncPullResult, String> {
-    let settings = load_sync_settings();
-    if !settings.enabled {
-        return Err("Cloud sync is not enabled".to_string());
-    }
-
-    let identity = get_megaload_identity()?;
-    let user_id = &identity.user_id;
-
-    app_log(&format!("Sync pull: profile {}", profile_id));
-
-    // 1. Get remote state
-    let state_path = sync_profile_state_path(user_id, &profile_id);
-    let (state_content, _) = github_get_file(&state_path)
-        .map_err(|_| "No remote state found for this profile".to_string())?;
-    let remote_state: SyncProfileState = serde_json::from_str(&state_content)
-        .map_err(|e| format!("State parse error: {}", e))?;
-
-    // 2. Compare with local state
-    let local_state = snapshot_profile(&profile_id, &remote_state.profile_name, &bepinex_path)?;
-
-    // Find mods that need to be toggled (enabled/disabled mismatch)
+    // 3. Toggle mods (enabled/disabled)
+    let local_bundle = snapshot_bundle(&profile_id, &remote.profile_name, &bepinex_path)?;
     let mut toggled_mods = Vec::new();
-    for remote_mod in &remote_state.mods {
-        if let Some(local_mod) = local_state.mods.iter().find(|m| m.name == remote_mod.name) {
+    for remote_mod in &remote.mods {
+        if let Some(local_mod) = local_bundle.mods.iter().find(|m| m.name == remote_mod.name) {
             if local_mod.enabled != remote_mod.enabled {
-                // Toggle this mod
                 toggle_mod_sync(&bepinex_path, &remote_mod.file_name, remote_mod.enabled)?;
                 toggled_mods.push(remote_mod.name.clone());
             }
         }
-        // If mod doesn't exist locally, it's a "missing mod" — tracked but not auto-installed
-        // (auto-install of mods is Phase 2, requires download URL tracking)
     }
 
-    // 3. Pull configs
-    let configs_updated = sync_pull_configs_inner(user_id, &profile_id, &bepinex_path, &remote_state)?;
-
-    // 4. Find missing mods (remote has but local doesn't)
-    let missing_mods: Vec<String> = remote_state.mods.iter()
-        .filter(|rm| !local_state.mods.iter().any(|lm| lm.name == rm.name))
+    // 4. Find missing mods
+    let missing_mods: Vec<String> = remote.mods.iter()
+        .filter(|rm| !local_bundle.mods.iter().any(|lm| lm.name == rm.name))
         .map(|m| m.name.clone())
         .collect();
 
-    // Update sync settings
+    // 5. Update local settings
     let mut settings = load_sync_settings();
     settings.last_pull = Some(iso_now());
     save_sync_settings(&settings)?;
 
     let result = SyncPullResult {
-        profile_name: remote_state.profile_name,
+        profile_name: remote.profile_name,
         toggled_mods,
         configs_updated,
         missing_mods,
-        last_updated: remote_state.last_updated,
+        last_updated: remote.last_updated,
     };
 
-    app_log(&format!("Sync pull complete: {} toggled, {} configs, {} missing",
-        result.toggled_mods.len(), result.configs_updated, result.missing_mods.len()));
+    app_log(&format!("Sync pull complete: {} configs, {} toggled, {} missing",
+        result.configs_updated, result.toggled_mods.len(), result.missing_mods.len()));
 
     Ok(result)
 }
@@ -704,35 +539,28 @@ pub struct SyncPullResult {
     pub last_updated: String,
 }
 
-fn sync_pull_configs_inner(user_id: &str, profile_id: &str, bepinex_path: &str, state: &SyncProfileState) -> Result<u32, String> {
-    let config_dir = Path::new(bepinex_path).join("config");
-    fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
+/// Pull a profile's state (for Thunderstore mod info). Returns the bundle.
+#[command]
+pub fn sync_pull_profile_state(profile_id: String) -> Result<SyncProfileBundle, String> {
+    let identity = get_megaload_identity()?;
+    let bundle_path = sync_bundle_path(&identity.user_id, &profile_id);
 
-    let mut updated_count: u32 = 0;
+    let (content, _) = github_get_file(&bundle_path)
+        .map_err(|_| format!("No cloud bundle found for profile {}", profile_id))?;
+    serde_json::from_str(&content).map_err(|e| format!("Bundle parse error: {}", e))
+}
 
-    for cfg_hash in &state.config_hashes {
-        let local_path = config_dir.join(&cfg_hash.file_name);
-        let local_hash = if local_path.exists() {
-            hash_file_contents(&local_path)
-        } else {
-            String::new()
-        };
+// Legacy compat — sync_pull_configs delegates to bundle pull
+#[command]
+pub fn sync_pull_configs(profile_id: String, bepinex_path: String) -> Result<u32, String> {
+    let result = sync_pull_bundle(profile_id, bepinex_path)?;
+    Ok(result.configs_updated)
+}
 
-        if local_hash != cfg_hash.hash {
-            let remote_path = sync_config_path(user_id, profile_id, &cfg_hash.file_name);
-            match github_get_file(&remote_path) {
-                Ok((content, _)) => {
-                    fs::write(&local_path, content.as_bytes()).map_err(|e| e.to_string())?;
-                    updated_count += 1;
-                }
-                Err(e) => {
-                    app_log(&format!("Sync pull config failed for {}: {}", cfg_hash.file_name, e));
-                }
-            }
-        }
-    }
-
-    Ok(updated_count)
+// Legacy compat — sync_pull_profile delegates to bundle pull
+#[command]
+pub fn sync_pull_profile(profile_id: String, bepinex_path: String) -> Result<SyncPullResult, String> {
+    sync_pull_bundle(profile_id, bepinex_path)
 }
 
 /// Toggle a mod between plugins/ and disabled_plugins/ during sync.
@@ -747,15 +575,12 @@ fn toggle_mod_sync(bepinex_path: &str, file_name: &str, enable: bool) -> Result<
         (plugins, disabled)
     };
 
-    // Try direct file
     let from_path = from_dir.join(file_name);
     if from_path.exists() {
         fs::create_dir_all(&to_dir).map_err(|e| e.to_string())?;
-        let to_path = to_dir.join(file_name);
-        fs::rename(&from_path, &to_path).map_err(|e| e.to_string())?;
-        app_log(&format!("Sync toggle: {} -> {}", file_name, if enable { "enabled" } else { "disabled" }));
+        fs::rename(&from_path, to_dir.join(file_name)).map_err(|e| e.to_string())?;
+        app_log(&format!("Sync toggle: {} → {}", file_name, if enable { "enabled" } else { "disabled" }));
     }
-    // Also try folder-based mods (folder name = mod name without .dll)
     let folder_name = file_name.trim_end_matches(".dll").trim_end_matches(".DLL");
     let from_folder = from_dir.join(folder_name);
     if from_folder.is_dir() {
@@ -763,7 +588,7 @@ fn toggle_mod_sync(bepinex_path: &str, file_name: &str, enable: bool) -> Result<
         let to_folder = to_dir.join(folder_name);
         if !to_folder.exists() {
             fs::rename(&from_folder, &to_folder).map_err(|e| e.to_string())?;
-            app_log(&format!("Sync toggle folder: {} -> {}", folder_name, if enable { "enabled" } else { "disabled" }));
+            app_log(&format!("Sync toggle folder: {} → {}", folder_name, if enable { "enabled" } else { "disabled" }));
         }
     }
 
@@ -771,10 +596,9 @@ fn toggle_mod_sync(bepinex_path: &str, file_name: &str, enable: bool) -> Result<
 }
 
 // ---------------------------------------------------------------------------
-// Quick-check: has remote state changed since our last pull?
+// Change detection — polling
 // ---------------------------------------------------------------------------
 
-/// Check if remote state is newer than local (for polling).
 #[command]
 pub fn sync_check_remote_changed() -> Result<bool, String> {
     let settings = load_sync_settings();
@@ -788,34 +612,31 @@ pub fn sync_check_remote_changed() -> Result<bool, String> {
     match github_get_file(&path) {
         Ok((content, _)) => {
             if let Ok(manifest) = serde_json::from_str::<SyncManifest>(&content) {
-                // If the last sync was from a different machine, there might be changes
                 if manifest.machine_id != settings.machine_id {
-                    // Compare timestamps
                     if let Some(ref last_pull) = settings.last_pull {
                         Ok(manifest.last_sync > *last_pull)
                     } else {
-                        Ok(true) // Never pulled before
+                        Ok(true)
                     }
                 } else {
-                    Ok(false) // Same machine pushed last
+                    Ok(false)
                 }
             } else {
                 Ok(false)
             }
         }
-        Err(_) => Ok(false), // No remote manifest = nothing to pull
+        Err(_) => Ok(false),
     }
 }
 
 // ---------------------------------------------------------------------------
-// Player Data Sync
+// Player Data Sync (unchanged)
 // ---------------------------------------------------------------------------
 
 fn sync_character_path(user_id: &str, char_name: &str) -> String {
     format!("sync/{}/characters/{}.json", user_id, char_name)
 }
 
-/// Push all local character data to the cloud.
 #[command]
 pub fn sync_push_player_data() -> Result<u32, String> {
     let settings = load_sync_settings();
@@ -826,7 +647,6 @@ pub fn sync_push_player_data() -> Result<u32, String> {
     let identity = get_megaload_identity()?;
     let user_id = &identity.user_id;
     let characters = list_characters()?;
-
     let mut pushed: u32 = 0;
 
     for summary in &characters {
@@ -841,12 +661,9 @@ pub fn sync_push_player_data() -> Result<u32, String> {
         let remote_path = sync_character_path(user_id, &char_data.name);
         let json = serde_json::to_string_pretty(&char_data).map_err(|e| e.to_string())?;
 
-        // Check if remote already matches (skip if unchanged)
         let sha = match github_get_file(&remote_path) {
             Ok((remote_content, sha)) => {
-                if remote_content == json {
-                    continue; // Unchanged
-                }
+                if remote_content == json { continue; }
                 Some(sha)
             }
             Err(_) => None,
@@ -863,11 +680,10 @@ pub fn sync_push_player_data() -> Result<u32, String> {
         app_log(&format!("Sync pushed character: {}", char_data.name));
     }
 
-    app_log(&format!("Sync push player data complete: {} characters pushed", pushed));
+    app_log(&format!("Sync push player data: {} characters", pushed));
     Ok(pushed)
 }
 
-/// Pull all character data from the cloud (read-only — for viewing on other machines).
 #[command]
 pub fn sync_pull_player_data() -> Result<Vec<CharacterData>, String> {
     let settings = load_sync_settings();
@@ -887,9 +703,7 @@ pub fn sync_pull_player_data() -> Result<Vec<CharacterData>, String> {
 
     let mut characters = Vec::new();
     for (path, _sha) in &listing {
-        if !path.ends_with(".json") {
-            continue;
-        }
+        if !path.ends_with(".json") { continue; }
         match github_get_file(path) {
             Ok((content, _)) => {
                 match serde_json::from_str::<CharacterData>(&content) {

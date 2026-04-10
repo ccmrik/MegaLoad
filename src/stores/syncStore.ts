@@ -4,14 +4,12 @@ import {
   syncSetAutoSync,
   syncPushAll,
   syncPullManifest,
-  syncPullProfile,
-  syncPullConfigs,
+  syncPullBundle,
   syncPullProfileState,
   syncCheckRemoteChanged,
   syncGetSettings,
   syncInstallAllMods,
   syncInstallThunderstoreMods,
-  type SyncPullResult,
   type SyncProfileEntry,
 } from "../lib/tauri-api";
 import { useProfileStore } from "./profileStore";
@@ -33,9 +31,7 @@ interface SyncState {
   fetchSyncStatus: () => Promise<void>;
   setEnabled: (enabled: boolean) => Promise<void>;
   setAutoSync: (autoSync: boolean) => Promise<void>;
-  pushCurrentProfile: () => Promise<void>;
   pushAllProfiles: () => Promise<void>;
-  pullProfile: (profileId: string, bepinexPath: string) => Promise<SyncPullResult>;
   pullAllProfiles: () => Promise<void>;
   checkForRemoteChanges: () => Promise<boolean>;
   triggerAutoSync: () => Promise<void>;
@@ -64,13 +60,12 @@ export const useSyncStore = create<SyncState>((set, get) => ({
         error: null,
       });
 
-      // If enabled, also fetch remote profile list
       if (settings.enabled) {
         try {
           const manifest = await syncPullManifest();
           set({ remoteProfiles: manifest.profiles });
         } catch {
-          // Remote manifest might not exist yet — that's fine
+          // Remote manifest might not exist yet
         }
       }
     } catch (e) {
@@ -83,9 +78,7 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       await syncSetEnabled(enabled);
       set({ enabled, error: null });
 
-      // If just enabled, do an initial push
       if (enabled) {
-        // Small delay to let the UI update
         setTimeout(() => get().pushAllProfiles(), 500);
       }
     } catch (e) {
@@ -100,12 +93,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     } catch (e) {
       set({ error: String(e) });
     }
-  },
-
-  pushCurrentProfile: async () => {
-    // Delegate to pushAllProfiles so the manifest (machine_id + timestamp)
-    // is always updated — this is what the other machine polls to detect changes.
-    await get().pushAllProfiles();
   },
 
   pushAllProfiles: async () => {
@@ -132,21 +119,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     }
   },
 
-  pullProfile: async (profileId: string, bepinexPath: string) => {
-    const { enabled } = get();
-    if (!enabled) throw new Error("Cloud sync is not enabled");
-
-    set({ syncing: true, syncProgress: "Pulling profile...", error: null });
-    try {
-      const result = await syncPullProfile(profileId, bepinexPath);
-      set({ syncing: false, syncProgress: null, lastPull: new Date().toISOString() });
-      return result;
-    } catch (e) {
-      set({ syncing: false, syncProgress: null, error: String(e) });
-      throw e;
-    }
-  },
-
   pullAllProfiles: async () => {
     const { enabled, syncing } = get();
     if (!enabled || syncing) return;
@@ -154,7 +126,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     const addToast = useToastStore.getState().addToast;
     set({ syncing: true, syncProgress: "Fetching manifest...", error: null });
     try {
-      // Fetch remote manifest to see what profiles exist in the cloud
       const manifest = await syncPullManifest();
       set({ remoteProfiles: manifest.profiles });
 
@@ -167,12 +138,11 @@ export const useSyncStore = create<SyncState>((set, get) => ({
       for (const remote of manifest.profiles) {
         set({ syncProgress: `Syncing "${remote.name}" (${profilesProcessed + 1}/${total})...` });
 
-        // Check if this profile exists locally (by ID first, then by name)
+        // Find or create local profile
         let local = profileStore.profiles.find((p) => p.id === remote.id)
           ?? profileStore.profiles.find((p) => p.name === remote.name);
 
         if (!local) {
-          // Profile doesn't exist locally — create it, then re-fetch
           set({ syncProgress: `Creating "${remote.name}"...` });
           try {
             const { createProfile } = await import("../lib/tauri-api");
@@ -188,25 +158,25 @@ export const useSyncStore = create<SyncState>((set, get) => ({
 
         if (!local) continue;
 
-        // Pull configs from cloud using the REMOTE profile ID (that's where the data is stored)
-        set({ syncProgress: `Pulling configs for "${remote.name}"...` });
+        // Pull bundled profile (configs + mod state) — 1 API call
+        set({ syncProgress: `Pulling "${remote.name}"...` });
         try {
-          const configCount = await syncPullConfigs(remote.id, local.bepinex_path);
-          totalConfigs += configCount;
+          const result = await syncPullBundle(remote.id, local.bepinex_path);
+          totalConfigs += result.configs_updated;
         } catch (e) {
-          addToast({ type: "warning", title: "Sync", message: `Config pull failed for "${remote.name}": ${e}`, duration: 5000 });
+          addToast({ type: "warning", title: "Sync", message: `Pull failed for "${remote.name}": ${e}`, duration: 5000 });
         }
 
-        // Install ALL mods from manifest that aren't on disk yet
+        // Install mods from manifest that aren't on disk
         set({ syncProgress: `Installing mods for "${remote.name}"...` });
         try {
           const modsInstalled = await syncInstallAllMods(local.bepinex_path);
           totalMods += modsInstalled;
         } catch {
-          // Non-critical — mods can be installed manually
+          // Non-critical
         }
 
-        // Install Thunderstore mods from remote state
+        // Install Thunderstore mods from remote bundle
         try {
           const remoteState = await syncPullProfileState(remote.id);
           if (remoteState.thunderstore_mods && remoteState.thunderstore_mods.length > 0) {
@@ -218,13 +188,12 @@ export const useSyncStore = create<SyncState>((set, get) => ({
             totalMods += tsInstalled;
           }
         } catch {
-          // Non-critical — TS mods can be installed manually
+          // Non-critical
         }
 
         profilesProcessed++;
       }
 
-      // Refresh profile list to pick up any changes
       await useProfileStore.getState().fetchProfiles();
 
       if (profilesProcessed > 0) {
@@ -257,7 +226,6 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     const { enabled, autoSync, syncing } = get();
     if (!enabled || !autoSync || syncing) return;
 
-    // Push current profile state
-    await get().pushCurrentProfile();
+    await get().pushAllProfiles();
   },
 }));
