@@ -657,18 +657,7 @@ export function Settings() {
             </div>
 
             {/* Last sync info */}
-            <div className="space-y-1">
-              {lastPush && (
-                <p className="text-[10px] text-zinc-600">
-                  Last push: {new Date(lastPush).toLocaleString()}
-                </p>
-              )}
-              {lastPull && (
-                <p className="text-[10px] text-zinc-600">
-                  Last pull: {new Date(lastPull).toLocaleString()}
-                </p>
-              )}
-            </div>
+            <SyncTimestamp lastPush={lastPush} lastPull={lastPull} />
 
             {/* Sync error */}
             {syncError && (
@@ -721,4 +710,30 @@ export function Settings() {
       </div>
     </div>
   );
+}
+
+function SyncTimestamp({ lastPush, lastPull }: { lastPush: string | null; lastPull: string | null }) {
+  if (!lastPush && !lastPull) return null;
+  const fmt = (iso: string) => {
+    const d = new Date(iso);
+    const day = String(d.getDate()).padStart(2, "0");
+    const mon = String(d.getMonth() + 1).padStart(2, "0");
+    const yr = d.getFullYear();
+    const hr = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+    return `${day}/${mon}/${yr} ${hr}:${min}`;
+  };
+  const pushMs = lastPush ? new Date(lastPush).getTime() : 0;
+  const pullMs = lastPull ? new Date(lastPull).getTime() : 0;
+  let label: string;
+  if (pushMs && pullMs && Math.abs(pushMs - pullMs) < 5000) {
+    label = `Synced ${fmt(pushMs > pullMs ? lastPush! : lastPull!)}`;
+  } else if (pushMs >= pullMs && lastPush) {
+    label = `Pushed ${fmt(lastPush)}`;
+  } else if (lastPull) {
+    label = `Pulled ${fmt(lastPull)}`;
+  } else {
+    return null;
+  }
+  return <p className="text-[10px] text-zinc-500">{label}</p>;
 }

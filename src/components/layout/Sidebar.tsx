@@ -32,6 +32,7 @@ import { usePlayerDataStore } from "../../stores/playerDataStore";
 import { useBugStore } from "../../stores/bugStore";
 import { useIdentityStore } from "../../stores/identityStore";
 import { useSyncStore } from "../../stores/syncStore";
+import { useChatStore } from "../../stores/chatStore";
 import { detectValheimPath, launchValheim, checkGameStatus, startSteam, deployBundledPlugins } from "../../lib/tauri-api";
 import type { GameStatus } from "../../lib/tauri-api";
 
@@ -54,6 +55,8 @@ export function Sidebar() {
   const bugAccess = useBugStore((s) => s.access);
   const checkBugAccess = useBugStore((s) => s.checkAccess);
   const isAdmin = useIdentityStore((s) => s.isAdmin);
+  const chatAvailable = useChatStore((s) => s.available);
+  const checkChatAvailable = useChatStore((s) => s.checkAvailable);
   const [launching, setLaunching] = useState(false);
   const [launchPhase, setLaunchPhase] = useState<string | null>(null);
   const [valheimPath, setValheimPath] = useState<string | null>(null);
@@ -81,6 +84,11 @@ export function Sidebar() {
       checkBugAccess(profile.bepinex_path);
     }
   }, [profile?.bepinex_path, checkBugAccess]);
+
+  // Check MegaChat API key availability
+  useEffect(() => {
+    checkChatAvailable();
+  }, [checkChatAvailable]);
 
   // Auto-update on startup when profile is available (re-run on profile switch)
   const lastCheckedProfile = useRef<string | null>(null);
@@ -230,8 +238,9 @@ export function Sidebar() {
             {item.label}
           </NavLink>
         ))}
-        {/* MegaChat — always visible */}
-        <NavLink
+        {/* MegaChat — only visible when API key is configured */}
+        {chatAvailable && (
+          <NavLink
             to="/chat"
             className={({ isActive }) =>
               cn(
@@ -245,6 +254,7 @@ export function Sidebar() {
             <MessageCircle className="w-4.5 h-4.5 shrink-0" />
             MegaChat
           </NavLink>
+        )}
         {bugAccess?.enabled && (
           <NavLink
             to="/bugs"
@@ -453,10 +463,35 @@ export function Sidebar() {
   );
 }
 
+function formatSyncLabel(lastPush: string | null, lastPull: string | null): string {
+  if (!lastPush && !lastPull) return "Cloud sync on";
+  const fmt = (iso: string) => {
+    const d = new Date(iso);
+    const day = String(d.getDate()).padStart(2, "0");
+    const mon = String(d.getMonth() + 1).padStart(2, "0");
+    const yr = d.getFullYear();
+    const hr = String(d.getHours()).padStart(2, "0");
+    const min = String(d.getMinutes()).padStart(2, "0");
+    return `${day}/${mon}/${yr} ${hr}:${min}`;
+  };
+  const pushMs = lastPush ? new Date(lastPush).getTime() : 0;
+  const pullMs = lastPull ? new Date(lastPull).getTime() : 0;
+  // If both happened within 5 seconds of each other, show "Synced"
+  if (pushMs && pullMs && Math.abs(pushMs - pullMs) < 5000) {
+    return `Synced ${fmt(pushMs > pullMs ? lastPush! : lastPull!)}`;
+  }
+  // Show the most recent one
+  if (pushMs >= pullMs && lastPush) return `Pushed ${fmt(lastPush)}`;
+  if (lastPull) return `Pulled ${fmt(lastPull)}`;
+  return "Cloud sync on";
+}
+
 function SyncStatusIndicator() {
   const enabled = useSyncStore((s) => s.enabled);
   const syncing = useSyncStore((s) => s.syncing);
   const error = useSyncStore((s) => s.error);
+  const lastPush = useSyncStore((s) => s.lastPush);
+  const lastPull = useSyncStore((s) => s.lastPull);
 
   if (!enabled) return null;
 
@@ -476,7 +511,7 @@ function SyncStatusIndicator() {
         ) : (
           <>
             <Cloud className="w-3 h-3 text-cyan-500/50" />
-            <span className="text-[10px] text-zinc-600">Cloud sync on</span>
+            <span className="text-[10px] text-zinc-600">{formatSyncLabel(lastPush, lastPull)}</span>
           </>
         )}
       </div>

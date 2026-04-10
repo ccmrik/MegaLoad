@@ -1,11 +1,11 @@
 {
-  "version": "1.0.0",
-  "notes": "v1.0.0 - Cloud sync: account-based profile & config sync across PCs",
-  "pub_date": "2026-04-10T17:06:21Z",
+  "version": "1.0.1",
+  "notes": "v1.0.1 - Fix: bake obfuscated GitHub token into build for Cloud Sync",
+  "pub_date": "2026-04-10T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOVAyYzM5eWdxalpsdlV2Y0Y1OUQ1MUYrZ2VVN09LUkM0Z3VycGx6ajBZcWk2Z3pkYWxreUNUWVpWbzhRa3hrNlBWeEFQYmsyVHljSnZTUkNUN1RoM2cwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODA0NzY0CWZpbGU6TWVnYUxvYWRfMS4wLjBfeDY0LXNldHVwLm5zaXMuemlwCmg3L1hzU0tlUitsZlZIb1lYUTBGNFFqcVo1dmtWSERjMWozamxoelY1SUMxS2JCVVJLeUxDNDNPVzBwQTBkM0VHSENaU2tzK0NsT1R0MHpFOWxubkJnPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.0.0/MegaLoad_1.0.0_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU02VTVhSEdzZktCWkF5WUtiazB1dE5nckxaa1VJbSt4MlByZnVadmtxMmlqU1M3aldMa0pKL2VmMTU5NUVCcmMxZzV2dWRZMHZxQnZOQnNsYXZlbGc0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODA1OTY4CWZpbGU6TWVnYUxvYWRfMS4wLjFfeDY0LXNldHVwLm5zaXMuemlwCmc0WCtZcE8rTmsrakNvMEV2QlRSMFhnQVl6TzFwcVdtd3BxQWJXTDJJNk1OYUtIYkQ2VVVyaDRZWUYyeWU4TFVweG0xTXlaVnhVUkM4cFJ3Ty84Q0N3PT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.0.1/MegaLoad_1.0.1_x64-setup.nsis.zip"
     }
   }
 }

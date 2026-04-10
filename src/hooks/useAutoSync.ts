@@ -103,8 +103,18 @@ export function useAutoSync() {
       clearTimeout(debounceTimerRef.current);
     }
 
-    debounceTimerRef.current = setTimeout(() => {
-      pushCurrentProfile();
+    debounceTimerRef.current = setTimeout(async () => {
+      try {
+        await pushCurrentProfile();
+        addToast({
+          type: "info",
+          title: "Cloud Sync",
+          message: "Changes pushed to cloud",
+          duration: 2000,
+        });
+      } catch {
+        // Error already set in store
+      }
     }, DEBOUNCE_MS);
   }, [enabled, autoSync, pushCurrentProfile]);
 
