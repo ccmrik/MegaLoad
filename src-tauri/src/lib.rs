@@ -86,6 +86,7 @@ pub fn run() {
             set_mod_version,
             get_starter_mods,
             deploy_bundled_plugins,
+            sync_install_all_mods,
             // Thunderstore
             search_thunderstore,
             get_thunderstore_detail,

@@ -421,6 +421,18 @@ pub fn link_existing_account(display_name: String, link_code: String) -> Result<
         .map_err(|e| format!("Failed to save identity: {}", e))?;
     let _ = fs::write(dir.join(LEGACY_IDENTITY_FILE), &json);
 
+    // Sync admin status from server — create local admin key if server says admin
+    if profile.is_admin {
+        let admin_dir = std::env::var("USERPROFILE")
+            .map(|home| Path::new(&home).join(".megaload"))
+            .ok();
+        if let Some(admin_dir) = admin_dir {
+            let _ = fs::create_dir_all(&admin_dir);
+            let _ = fs::write(admin_dir.join("megabugs-admin.key"), "synced");
+            app_log("Admin key synced from server profile");
+        }
+    }
+
     // Bump last_active on server
     let _ = bump_user_activity(&identity.user_id);
 

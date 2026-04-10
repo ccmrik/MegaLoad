@@ -25,7 +25,6 @@ import {
   Search,
   Crown,
   Activity,
-  Zap,
   Bug,
   UserX,
   UserCheck,
@@ -104,10 +103,9 @@ export function AdminPanel() {
       try { return now - new Date(u.last_active).getTime() < sevenDays; } catch { return false; }
     }).length;
     const banned = users.filter((u) => u.flags.includes("banned")).length;
-    const totalTokens = users.reduce((sum, u) => sum + u.megachat_usage.total_tokens, 0);
     const openTickets = tickets.filter((t) => t.status === "open").length;
     const totalTickets = tickets.length;
-    return { total: users.length, activeRecently, banned, totalTokens, openTickets, totalTickets };
+    return { total: users.length, activeRecently, banned, openTickets, totalTickets };
   }, [users, tickets]);
 
   // Filtered users
@@ -330,13 +328,12 @@ ${messages}
       )}
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-6 gap-3">
+      <div className="grid grid-cols-5 gap-3">
         <StatCard icon={Users} label="Total Users" value={stats.total} color="text-amber-400" bg="from-amber-500/15 to-amber-600/5" border="border-amber-500/10" />
         <StatCard icon={Activity} label="Active (7d)" value={stats.activeRecently} color="text-emerald-400" bg="from-emerald-500/15 to-emerald-600/5" border="border-emerald-500/10" />
         <StatCard icon={UserX} label="Banned" value={stats.banned} color="text-red-400" bg="from-red-500/15 to-red-600/5" border="border-red-500/10" />
-        <StatCard icon={Zap} label="Chat Tokens" value={formatNumber(stats.totalTokens)} color="text-cyan-400" bg="from-cyan-500/15 to-cyan-600/5" border="border-cyan-500/10" />
-        <StatCard icon={Bug} label="Open Tickets" value={stats.openTickets} color="text-orange-400" bg="from-orange-500/15 to-orange-600/5" border="border-orange-500/10" />
-        <StatCard icon={MessageCircle} label="Total Tickets" value={stats.totalTickets} color="text-purple-400" bg="from-purple-500/15 to-purple-600/5" border="border-purple-500/10" />
+        <StatCard icon={Bug} label="Open Tickets" value={stats.openTickets} color="text-orange-400" bg="from-orange-500/15 to-orange-600/5" border="border-orange-500/10" onClick={() => { setActiveTab("tickets"); }} />
+        <StatCard icon={MessageCircle} label="Total Tickets" value={stats.totalTickets} color="text-purple-400" bg="from-purple-500/15 to-purple-600/5" border="border-purple-500/10" onClick={() => { setActiveTab("tickets"); }} />
       </div>
 
       {/* Admin Quick Actions */}
@@ -537,16 +534,20 @@ function StatusDot({ status }: { status: string }) {
   );
 }
 
-function StatCard({ icon: Icon, label, value, color, bg, border }: {
+function StatCard({ icon: Icon, label, value, color, bg, border, onClick }: {
   icon: React.ComponentType<{ className?: string }>;
   label: string;
   value: string | number;
   color: string;
   bg: string;
   border: string;
+  onClick?: () => void;
 }) {
   return (
-    <div className={cn("rounded-xl p-4 bg-gradient-to-br border", bg, border)}>
+    <div
+      className={cn("rounded-xl p-4 bg-gradient-to-br border", bg, border, onClick && "cursor-pointer hover:brightness-110 transition-all")}
+      onClick={onClick}
+    >
       <div className="flex items-center gap-2 mb-2">
         <Icon className={cn("w-4 h-4", color)} />
         <span className="text-[10px] font-medium text-zinc-500 uppercase tracking-wider">{label}</span>
@@ -612,10 +613,6 @@ function UserRow({ user, isExpanded, onToggle, isConfirming, confirmAction, acti
           <p className="text-[10px] text-zinc-600 font-mono truncate">{user.user_id}</p>
         </div>
         <div className="flex items-center gap-6 text-xs text-zinc-500 shrink-0">
-          <div className="text-right">
-            <div className="text-zinc-400 tabular-nums">{user.megachat_usage.total_tokens.toLocaleString()}</div>
-            <div className="text-[10px]">tokens</div>
-          </div>
           <div className="text-right w-20">
             <div className="text-zinc-400">{formatDate(user.last_active)}</div>
             <div className="text-[10px]">last active</div>
@@ -626,10 +623,9 @@ function UserRow({ user, isExpanded, onToggle, isConfirming, confirmAction, acti
 
       {isExpanded && (
         <div className="px-5 pb-4 pt-1 bg-zinc-900/30 animate-in fade-in slide-in-from-top-1 duration-200">
-          <div className="grid grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-3 gap-4 mb-4">
             <DetailItem label="Registered" value={formatDate(user.registered_at)} icon={Clock} />
             <DetailItem label="Last Active" value={formatDate(user.last_active)} icon={Activity} />
-            <DetailItem label="Chat Requests" value={user.megachat_usage.total_requests.toLocaleString()} icon={MessageCircle} />
             <DetailItem label="Status" value={user.is_admin ? "Administrator" : isBanned ? "Banned" : "Active"} icon={Shield} />
           </div>
           <div className="flex items-center gap-2 pt-2 border-t border-zinc-800/30">
@@ -677,8 +673,3 @@ function formatDate(iso: string): string {
   } catch { return iso; }
 }
 
-function formatNumber(n: number): string {
-  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
-  if (n >= 1_000) return `${(n / 1_000).toFixed(1)}K`;
-  return n.toLocaleString();
-}

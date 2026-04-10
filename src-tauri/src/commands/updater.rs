@@ -153,7 +153,7 @@ fn save_cache(bepinex_path: &str, mods: &[ModUpdateInfo]) {
 /// Fetch the mod manifest — a single HTTP request for all mod info.
 fn fetch_manifest() -> Result<ModManifest, String> {
     let resp = crate::commands::http::agent().get(MANIFEST_URL)
-        .set("User-Agent", "MegaLoad/1.2.1")
+        .set("User-Agent", "MegaLoad/1.2.2")
         .call()
         .map_err(|e| {
             let msg = format!("{}", e);
@@ -405,7 +405,7 @@ pub fn install_mod_update(
 
     // Download the DLL (this is a direct file download, not an API call — no rate limit)
     let resp = crate::commands::http::agent().get(&download_url)
-        .set("User-Agent", "MegaLoad/1.2.1")
+        .set("User-Agent", "MegaLoad/1.2.2")
         .call()
         .map_err(|e| format!("Download failed for {}: {}", mod_name, e))?;
 
@@ -530,4 +530,34 @@ pub fn deploy_bundled_plugins(app: AppHandle, bepinex_path: String) -> Result<u3
     }
 
     Ok(deployed)
+}
+
+/// Install ALL mods from the manifest that don't exist locally.
+/// Used during sync pull to fully replicate a profile on a new machine.
+#[command]
+pub fn sync_install_all_mods(bepinex_path: String) -> Result<u32, String> {
+    let plugins_dir = PathBuf::from(&bepinex_path).join("plugins");
+    let manifest = fetch_manifest()?;
+    let mut installed: u32 = 0;
+
+    for m in &manifest.mods {
+        let dll_path = plugins_dir.join(&m.plugin_folder).join(&m.dll_name);
+        if dll_path.exists() {
+            continue; // Already installed
+        }
+
+        app_log(&format!("Sync: installing {} v{}", m.name, m.version));
+        match install_mod_update(
+            bepinex_path.clone(),
+            m.name.clone(),
+            m.download_url.clone(),
+            m.version.clone(),
+        ) {
+            Ok(_) => installed += 1,
+            Err(e) => app_log(&format!("Sync: failed to install {}: {}", m.name, e)),
+        }
+    }
+
+    app_log(&format!("Sync: installed {} mods from manifest", installed));
+    Ok(installed)
 }

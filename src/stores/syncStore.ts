@@ -10,7 +10,7 @@ import {
   syncPullProfileState,
   syncCheckRemoteChanged,
   syncGetSettings,
-  autoUpdateMods,
+  syncInstallAllMods,
   syncInstallThunderstoreMods,
   type SyncPullResult,
   type SyncProfileEntry,
@@ -202,10 +202,10 @@ export const useSyncStore = create<SyncState>((set, get) => ({
           addToast({ type: "warning", title: "Sync", message: `Config pull failed for "${remote.name}": ${e}`, duration: 5000 });
         }
 
-        // Auto-install any missing Mega mods from the manifest
+        // Install ALL mods from manifest that aren't on disk yet
         try {
-          const result = await autoUpdateMods(local.bepinex_path, true);
-          totalMods += result.total_updates;
+          const modsInstalled = await syncInstallAllMods(local.bepinex_path);
+          totalMods += modsInstalled;
         } catch {
           // Non-critical — mods can be installed manually
         }

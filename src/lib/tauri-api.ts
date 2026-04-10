@@ -833,6 +833,9 @@ export const syncPullProfile = (profileId: string, bepinexPath: string) =>
 export const syncCheckRemoteChanged = () =>
   invoke<boolean>("sync_check_remote_changed");
 
+export const syncInstallAllMods = (bepinexPath: string) =>
+  invoke<number>("sync_install_all_mods", { bepinexPath });
+
 export const syncInstallThunderstoreMods = (bepinexPath: string, remoteModsJson: string) =>
   invoke<number>("sync_install_thunderstore_mods", { bepinexPath, remoteModsJson });
 
