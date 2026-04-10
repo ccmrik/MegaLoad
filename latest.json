@@ -1,1 +1,11 @@
-{"version":"0.17.0","notes":"v0.17.0 - MegaChat: user-provided API key instead of embedded key","pub_date":"2026-04-08T23:12:37Z","platforms":{"windows-x86_64":{"signature":"dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOURpa3A2WFpMWlZvQ2d0QkExSzFKN3pzb2tQQ3lJcnNDeXlPSFluMjg5Tk9TT3pQbUNXUmQxQ2F5ZXg2SjV3a28rOVNPWUhac1lnQTU1OHRaNk9ZY0FvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1NjUzOTIzCWZpbGU6TWVnYUxvYWRfMC4xNy4wX3g2NC1zZXR1cC5uc2lzLnppcAphQjY3Vmd6MGhHSUxDTkJSTm43Q25WNUpRN3NrWDhtbDhQSEVYZnlFUUVLbzcvZ3ovVm5ESmtIc09RZ2RqZDNmVGFaL0pHdjNLMnhHdUR1REc1YnNCZz09Cg==","url":"https://github.com/ccmrik/MegaLoad/releases/download/v0.17.0/MegaLoad_0.17.0_x64-setup.nsis.zip"}}}
+{
+  "version": "1.0.0",
+  "notes": "v1.0.0 - Cloud sync: account-based profile & config sync across PCs",
+  "pub_date": "2026-04-10T17:06:21Z",
+  "platforms": {
+    "windows-x86_64": {
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOVAyYzM5eWdxalpsdlV2Y0Y1OUQ1MUYrZ2VVN09LUkM0Z3VycGx6ajBZcWk2Z3pkYWxreUNUWVpWbzhRa3hrNlBWeEFQYmsyVHljSnZTUkNUN1RoM2cwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODA0NzY0CWZpbGU6TWVnYUxvYWRfMS4wLjBfeDY0LXNldHVwLm5zaXMuemlwCmg3L1hzU0tlUitsZlZIb1lYUTBGNFFqcVo1dmtWSERjMWozamxoelY1SUMxS2JCVVJLeUxDNDNPVzBwQTBkM0VHSENaU2tzK0NsT1R0MHpFOWxubkJnPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.0.0/MegaLoad_1.0.0_x64-setup.nsis.zip"
+    }
+  }
+}
