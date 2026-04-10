@@ -184,7 +184,11 @@ pub fn get_megabugs_identity() -> Result<UserIdentity, String> {
 /// Create or update user identity — delegates to shared identity.
 #[command]
 pub fn set_megabugs_identity(display_name: String) -> Result<UserIdentity, String> {
-    crate::commands::identity::set_megaload_identity(display_name)
+    let result = crate::commands::identity::set_megaload_identity(display_name)?;
+    Ok(UserIdentity {
+        user_id: result.user_id,
+        display_name: result.display_name,
+    })
 }
 
 /// Fetch ticket index (filtered by user_id for non-admin).

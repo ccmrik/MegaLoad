@@ -1,7 +1,9 @@
 use crate::commands::app_log::app_log;
 use crate::commands::github::{github_get_file, github_put_file, github_list_dir};
 use serde::{Deserialize, Serialize};
+use std::collections::hash_map::DefaultHasher;
 use std::fs;
+use std::hash::{Hash, Hasher};
 use std::path::{Path, PathBuf};
 use tauri::command;
 
@@ -119,6 +121,34 @@ fn iso_now() -> String {
 }
 
 // ---------------------------------------------------------------------------
+// Link code helpers — XXXX-XXXX format, no ambiguous chars (0/O, 1/I/L)
+// ---------------------------------------------------------------------------
+
+const LINK_CODE_CHARS: &[u8] = b"ABCDEFGHJKMNPQRSTUVWXYZ23456789";
+
+fn generate_link_code() -> String {
+    // Use UUID v4 bytes as entropy source
+    let uuid = uuid::Uuid::new_v4();
+    let bytes = uuid.as_bytes();
+    let mut code = String::with_capacity(9);
+    for i in 0..8 {
+        let idx = (bytes[i] as usize) % LINK_CODE_CHARS.len();
+        if i == 4 {
+            code.push('-');
+        }
+        code.push(LINK_CODE_CHARS[idx] as char);
+    }
+    code
+}
+
+fn hash_link_code(code: &str) -> String {
+    let normalized = code.trim().to_uppercase().replace('-', "");
+    let mut hasher = DefaultHasher::new();
+    normalized.hash(&mut hasher);
+    format!("{:016x}", hasher.finish())
+}
+
+// ---------------------------------------------------------------------------
 // Server-side user registry types
 // ---------------------------------------------------------------------------
 
@@ -132,6 +162,8 @@ pub struct UserProfile {
     pub flags: Vec<String>,
     pub megachat_usage: ChatUsageStats,
     pub megabugs_tickets: u32,
+    #[serde(default)]
+    pub link_code_hash: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug, Default)]
@@ -205,9 +237,19 @@ pub fn check_username_available(display_name: String) -> Result<bool, String> {
     Ok(!taken)
 }
 
+/// Result of identity creation — includes link code for new accounts.
+#[derive(Serialize, Clone, Debug)]
+pub struct IdentityResult {
+    pub user_id: String,
+    pub display_name: String,
+    /// Only present on new account creation — save this to link other devices.
+    pub link_code: Option<String>,
+}
+
 /// Set identity: validates, checks uniqueness, saves locally, registers server-side.
+/// Returns the link code for new accounts (None for existing account updates).
 #[command]
-pub fn set_megaload_identity(display_name: String) -> Result<MegaLoadIdentity, String> {
+pub fn set_megaload_identity(display_name: String) -> Result<IdentityResult, String> {
     let trimmed = display_name.trim().to_string();
     if trimmed.is_empty() {
         return Err("Display name cannot be empty".to_string());
@@ -271,6 +313,8 @@ pub fn set_megaload_identity(display_name: String) -> Result<MegaLoadIdentity, S
 
     // Register/update on server
     let admin = is_admin();
+    let mut link_code: Option<String> = None;
+
     if is_existing {
         // Update existing user profile
         if let Ok((content, sha)) =
@@ -291,7 +335,11 @@ pub fn set_megaload_identity(display_name: String) -> Result<MegaLoadIdentity, S
             }
         }
     } else {
-        // Create new user profile
+        // Create new user profile with link code
+        let code = generate_link_code();
+        let code_hash = hash_link_code(&code);
+        link_code = Some(code);
+
         let profile = UserProfile {
             user_id: user_id.clone(),
             display_name: trimmed.clone(),
@@ -301,6 +349,7 @@ pub fn set_megaload_identity(display_name: String) -> Result<MegaLoadIdentity, S
             flags: vec![],
             megachat_usage: ChatUsageStats::default(),
             megabugs_tickets: 0,
+            link_code_hash: Some(code_hash),
         };
         let json = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
         let _ = github_put_file(
@@ -315,17 +364,26 @@ pub fn set_megaload_identity(display_name: String) -> Result<MegaLoadIdentity, S
     update_user_index(&user_id, &trimmed, admin)?;
 
     app_log(&format!("MegaLoad identity set: {} ({})", trimmed, user_id));
-    Ok(identity)
+    Ok(IdentityResult {
+        user_id: identity.user_id,
+        display_name: identity.display_name,
+        link_code,
+    })
 }
 
-/// Link an existing account by display name — fetches UUID from server-side index.
+/// Link an existing account by display name + link code.
 #[command]
-pub fn link_existing_account(display_name: String) -> Result<MegaLoadIdentity, String> {
+pub fn link_existing_account(display_name: String, link_code: String) -> Result<MegaLoadIdentity, String> {
     let trimmed = display_name.trim().to_string();
+    let code = link_code.trim().to_string();
     if trimmed.is_empty() {
         return Err("Display name cannot be empty".to_string());
     }
+    if code.is_empty() {
+        return Err("Link code is required".to_string());
+    }
 
+    // Look up user in index
     let index = load_user_index()?;
     let name_lower = trimmed.to_lowercase();
     let entry = index
@@ -333,6 +391,22 @@ pub fn link_existing_account(display_name: String) -> Result<MegaLoadIdentity, S
         .iter()
         .find(|u| u.display_name.to_lowercase() == name_lower)
         .ok_or_else(|| format!("No account found with name '{}'", trimmed))?;
+
+    // Verify link code against server-side hash
+    let (profile_content, _sha) = github_get_file(&format!("users/{}.json", entry.user_id))
+        .map_err(|_| "Failed to verify account".to_string())?;
+    let profile: UserProfile = serde_json::from_str(&profile_content)
+        .map_err(|_| "Failed to verify account".to_string())?;
+
+    let stored_hash = profile
+        .link_code_hash
+        .as_deref()
+        .ok_or_else(|| "This account has no link code set. Regenerate one from the original device in Settings.".to_string())?;
+
+    let provided_hash = hash_link_code(&code);
+    if provided_hash != stored_hash {
+        return Err("Invalid link code. Check the code from your other device and try again.".to_string());
+    }
 
     let identity = MegaLoadIdentity {
         user_id: entry.user_id.clone(),
@@ -355,6 +429,27 @@ pub fn link_existing_account(display_name: String) -> Result<MegaLoadIdentity, S
         identity.display_name, identity.user_id
     ));
     Ok(identity)
+}
+
+/// Regenerate link code for the current account. Returns the new plaintext code.
+#[command]
+pub fn regenerate_link_code() -> Result<String, String> {
+    let identity = get_megaload_identity()?;
+    let code = generate_link_code();
+    let code_hash = hash_link_code(&code);
+
+    let path = format!("users/{}.json", identity.user_id);
+    let (content, sha) = github_get_file(&path)
+        .map_err(|_| "Account not found on server".to_string())?;
+    let mut profile: UserProfile = serde_json::from_str(&content)
+        .map_err(|e| format!("Parse error: {}", e))?;
+
+    profile.link_code_hash = Some(code_hash);
+    let json = serde_json::to_string_pretty(&profile).map_err(|e| e.to_string())?;
+    github_put_file(&path, json.as_bytes(), "Regenerate link code", Some(&sha))?;
+
+    app_log("Link code regenerated");
+    Ok(code)
 }
 
 /// Clear local identity — effectively "logout".

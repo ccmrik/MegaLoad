@@ -12,6 +12,7 @@ import {
   chatSaveApiKey,
   chatClearApiKey,
   chatGetApiKeyStatus,
+  regenerateLinkCode,
 } from "../lib/tauri-api";
 import { useProfileStore } from "../stores/profileStore";
 import { useSettingsStore } from "../stores/settingsStore";
@@ -52,6 +53,9 @@ export function Settings() {
   const { currentVersion } = useAppUpdateStore();
   const { identity, clearIdentity } = useIdentityStore();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [generatedCode, setGeneratedCode] = useState<string | null>(null);
+  const [regenerating, setRegenerating] = useState(false);
+  const [codeCopied, setCodeCopied] = useState(false);
   const {
     enabled: syncEnabled,
     autoSync,
@@ -294,8 +298,50 @@ export function Settings() {
               </div>
             )}
           </div>
+          {/* Link code regenerate */}
+          <div className="flex items-center gap-3">
+            {generatedCode ? (
+              <div className="flex items-center gap-2">
+                <span className="text-sm font-mono font-bold tracking-wider text-brand-400 bg-zinc-900/80 border border-zinc-700/50 rounded-lg px-4 py-2">
+                  {generatedCode}
+                </span>
+                <button
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(generatedCode);
+                    setCodeCopied(true);
+                    setTimeout(() => setCodeCopied(false), 2000);
+                  }}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 transition-colors"
+                >
+                  {codeCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Key className="w-3.5 h-3.5" />}
+                  {codeCopied ? "Copied" : "Copy"}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={async () => {
+                  setRegenerating(true);
+                  try {
+                    const code = await regenerateLinkCode();
+                    setGeneratedCode(code);
+                    setToast("New link code generated — save it to link other devices");
+                  } catch (e) {
+                    setToast(`Failed: ${e}`);
+                  } finally {
+                    setRegenerating(false);
+                  }
+                }}
+                disabled={regenerating}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium bg-brand-500/10 text-brand-400 hover:bg-brand-500/20 transition-colors disabled:opacity-50"
+              >
+                {regenerating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Key className="w-3.5 h-3.5" />}
+                Generate Link Code
+              </button>
+            )}
+          </div>
+
           <p className="text-xs text-zinc-600">
-            Your identity is shared across MegaChat, MegaBugs, and Cloud Sync.
+            Your identity is shared across MegaChat, MegaBugs, and Cloud Sync. Use a link code to connect this account on other devices.
           </p>
         </div>
       )}

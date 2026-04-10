@@ -143,6 +143,7 @@ pub fn run() {
             set_megaload_identity,
             link_existing_account,
             clear_megaload_identity,
+            regenerate_link_code,
             check_username_available,
             check_is_admin,
             check_user_banned,

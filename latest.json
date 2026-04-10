@@ -1,11 +1,11 @@
 {
-  "version": "1.0.3",
-  "notes": "v1.0.3 - Rotate GitHub PAT to fine-grained token, security hardening",
-  "pub_date": "2026-04-10T08:21:12.473Z",
+  "version": "1.1.0",
+  "notes": "v1.1.0 - Link existing account, account management, player data sync",
+  "pub_date": "2026-04-10T08:37:03.084Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU9uZzJqTlRzR21RTXJ5clo3TWFFdnZ1NWUwS1E0STJGMnhHTGorTVhFaEVjaWVYUHNEK1VlZ3RJRTJENi9NYlFBM2hCa1Z0R1dzNmZSOFErRjhISlE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODA5MjI2CWZpbGU6TWVnYUxvYWRfMS4wLjNfeDY0LXNldHVwLm5zaXMuemlwCkhJMGEyOXhmdzV2VXVZSHcyemViS2RPN3E5WmJ3LzNmSEI4RnorT0RFR1RxeFZjWWk3d0JKZzFvSktJWWI3c3YvaWdYK2NPQ3d1SjVVaXY0Y25ZWERnPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.0.3/MegaLoad_1.0.3_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUxhM0FEVTFIcFdiVG9jM0I0bjRwNFBMSkUyWW5VdVdiQi9sUmtlNDdSamg5WDhSaUJ5M1B0VjR1dnFkd09UZU84UXZnR2V4U0F4QUU2MWVRdUpyblEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODEwMTk2CWZpbGU6TWVnYUxvYWRfMS4xLjBfeDY0LXNldHVwLm5zaXMuemlwCk5Oc0lqdkkxbGRGRG5Ud1UxN3IzV1FwL2M4Sk5IYVE2SWVmbUljYXZkc1hSR25lWjJxcElFamJpWlg0M0o1UG5NdE9ZaXh0akNheEpwenVnWkVIM0N3PT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.1.0/MegaLoad_1.1.0_x64-setup.nsis.zip"
     }
   }
 }

@@ -16,11 +16,13 @@ interface IdentityState {
   isBanned: boolean;
   loading: boolean;
   error: string | null;
+  linkCode: string | null;
 
   loadIdentity: () => Promise<void>;
   saveIdentity: (displayName: string) => Promise<void>;
-  linkAccount: (displayName: string) => Promise<void>;
+  linkAccount: (displayName: string, linkCode: string) => Promise<void>;
   clearIdentity: () => Promise<void>;
+  clearLinkCode: () => void;
   checkAvailable: (displayName: string) => Promise<boolean>;
   loadAdminStatus: () => Promise<void>;
   loadBanStatus: () => Promise<void>;
@@ -32,6 +34,7 @@ export const useIdentityStore = create<IdentityState>((set) => ({
   isBanned: false,
   loading: false,
   error: null,
+  linkCode: null,
 
   loadIdentity: async () => {
     try {
@@ -45,18 +48,23 @@ export const useIdentityStore = create<IdentityState>((set) => ({
   saveIdentity: async (displayName: string) => {
     set({ loading: true, error: null });
     try {
-      const identity = await setMegaloadIdentity(displayName);
-      set({ identity, loading: false, error: null });
+      const result = await setMegaloadIdentity(displayName);
+      set({
+        identity: { user_id: result.user_id, display_name: result.display_name },
+        linkCode: result.link_code,
+        loading: false,
+        error: null,
+      });
     } catch (e) {
       set({ loading: false, error: String(e) });
       throw e;
     }
   },
 
-  linkAccount: async (displayName: string) => {
+  linkAccount: async (displayName: string, linkCode: string) => {
     set({ loading: true, error: null });
     try {
-      const identity = await linkExistingAccount(displayName);
+      const identity = await linkExistingAccount(displayName, linkCode);
       set({ identity, loading: false, error: null });
     } catch (e) {
       set({ loading: false, error: String(e) });
@@ -67,11 +75,13 @@ export const useIdentityStore = create<IdentityState>((set) => ({
   clearIdentity: async () => {
     try {
       await clearMegaloadIdentity();
-      set({ identity: null, isAdmin: false, isBanned: false, error: null });
+      set({ identity: null, isAdmin: false, isBanned: false, error: null, linkCode: null });
     } catch (e) {
       set({ error: String(e) });
     }
   },
+
+  clearLinkCode: () => set({ linkCode: null }),
 
   checkAvailable: async (displayName: string) => {
     try {

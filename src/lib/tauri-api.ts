@@ -680,20 +680,29 @@ export interface ChatHistoryFile {
   last_updated: string;
 }
 
+export interface IdentityResult {
+  user_id: string;
+  display_name: string;
+  link_code: string | null;
+}
+
 export const getMegaloadIdentity = () =>
   invoke<MegaLoadIdentity>("get_megaload_identity");
 
 export const setMegaloadIdentity = (displayName: string) =>
-  invoke<MegaLoadIdentity>("set_megaload_identity", { displayName });
+  invoke<IdentityResult>("set_megaload_identity", { displayName });
 
 export const checkUsernameAvailable = (displayName: string) =>
   invoke<boolean>("check_username_available", { displayName });
 
-export const linkExistingAccount = (displayName: string) =>
-  invoke<MegaLoadIdentity>("link_existing_account", { displayName });
+export const linkExistingAccount = (displayName: string, linkCode: string) =>
+  invoke<MegaLoadIdentity>("link_existing_account", { displayName, linkCode });
 
 export const clearMegaloadIdentity = () =>
   invoke<void>("clear_megaload_identity");
+
+export const regenerateLinkCode = () =>
+  invoke<string>("regenerate_link_code");
 
 export const checkIsAdmin = () =>
   invoke<boolean>("check_is_admin");
