@@ -156,18 +156,42 @@ export const useSyncStore = create<SyncState>((set, get) => ({
     const { enabled, syncing } = get();
     if (!enabled || syncing) return;
 
-    const profileStore = useProfileStore.getState();
-    const profiles = profileStore.profiles;
-
     set({ syncing: true, error: null });
     try {
-      for (const p of profiles) {
-        try {
-          await syncPullProfile(p.id, p.bepinex_path);
-        } catch {
-          // Profile might not exist in cloud yet — skip
+      // Fetch remote manifest to see what profiles exist in the cloud
+      const manifest = await syncPullManifest();
+      set({ remoteProfiles: manifest.profiles });
+
+      const profileStore = useProfileStore.getState();
+
+      for (const remote of manifest.profiles) {
+        // Check if this profile exists locally
+        let local = profileStore.profiles.find((p) => p.id === remote.id);
+
+        if (!local) {
+          // Profile doesn't exist locally — create it, then re-fetch
+          try {
+            const { createProfile } = await import("../lib/tauri-api");
+            await createProfile(remote.name);
+            await profileStore.fetchProfiles();
+            // Find the newly created profile (it gets a new ID locally, but we need its bepinex_path)
+            const updated = useProfileStore.getState();
+            local = updated.profiles.find((p) => p.name === remote.name);
+          } catch {
+            // Profile creation failed — skip
+            continue;
+          }
+        }
+
+        if (local) {
+          try {
+            await syncPullProfile(remote.id, local.bepinex_path);
+          } catch {
+            // Profile might not have cloud state yet — skip
+          }
         }
       }
+
       set({ syncing: false, lastPull: new Date().toISOString() });
     } catch (e) {
       set({ syncing: false, error: String(e) });
