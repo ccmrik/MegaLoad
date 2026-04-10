@@ -1,11 +1,11 @@
 {
-  "version": "1.2.1",
-  "notes": "v1.2.1 - Thunderstore mod sync + update checking",
-  "pub_date": "2026-04-10T10:19:40.887Z",
+  "version": "1.2.2",
+  "notes": "v1.2.2 - Fix sync mod install, admin sync, remove chat references",
+  "pub_date": "2026-04-10T10:30:05.620Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFpZFNUNVdWNHZNd2NCVDNvdzh6djZBWktwYnBKak5MTWtnZkt2c0pjNllVZW5WS0xZQWZJV3FCaFErR2VnSENHdzd3ZUJsakdabnRBaXZOZTZZc3drPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODE2MzYyCWZpbGU6TWVnYUxvYWRfMS4yLjFfeDY0LXNldHVwLm5zaXMuemlwCnVDejFHbFFybmVjdDB5OSt5eXdzY0F3TUNqelhmMG9XRjdCTEZEdFhIc1BrTUw4NHkxWHpaUGNZRzNZZHVnS3grVzlxN3F0WGNMQ1prNVVJTDlhdkNRPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.2.1/MegaLoad_1.2.1_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUlVYTlKOGg0MGZCNmlSaGgwd2N1MUFNN3B5Q2x5UnNQNWdJdnhUaW4rMXZLdElBUXdabStXNWtDS1FCeWt4bHBGSmVjekJsejhkMzFVTWZ2ZnVrWmdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODE2OTg1CWZpbGU6TWVnYUxvYWRfMS4yLjJfeDY0LXNldHVwLm5zaXMuemlwCmljNFNwbC9lQ2xtMzYrSXlLdTRhZDMrcTAweVh5T2hHMytnMnJEamhjbVBVOUFjdGVvVjFHRHBJNHRRSVJZSVFCU05BdVJlMERvSStXUHQwVjdybkR3PT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.2.2/MegaLoad_1.2.2_x64-setup.nsis.zip"
     }
   }
 }

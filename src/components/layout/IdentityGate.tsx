@@ -125,7 +125,7 @@ export function IdentityGate({ children }: { children: React.ReactNode }) {
   const canSubmit = isNew
     ? nameInput.trim() && !loading && !checking
     : isExisting
-      ? nameInput.trim() && !loading && !checking && codeInput.trim().length >= 4
+      ? nameInput.trim() && !loading && !checking && codeInput.trim().length >= 12
       : false;
 
   const handleCopyCode = async () => {
@@ -257,7 +257,7 @@ export function IdentityGate({ children }: { children: React.ReactNode }) {
             <div className="space-y-1 animate-in fade-in slide-in-from-top-2 duration-300">
               <input
                 className="w-full bg-zinc-900/50 border border-zinc-700/50 rounded-lg px-4 py-3 text-sm text-zinc-200 placeholder-zinc-500 focus:outline-none focus:border-cyan-500/50 font-mono tracking-wider uppercase"
-                placeholder="XXXX-XXXX"
+                placeholder="XXXX-XXXX-XXXX"
                 value={codeInput}
                 onChange={(e) => setCodeInput(e.target.value.toUpperCase())}
                 maxLength={9}

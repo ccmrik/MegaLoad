@@ -127,13 +127,13 @@ fn iso_now() -> String {
 const LINK_CODE_CHARS: &[u8] = b"ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
 fn generate_link_code() -> String {
-    // Use UUID v4 bytes as entropy source
+    // 12 chars in XXXX-XXXX-XXXX format — 30^12 = ~531 trillion combos
     let uuid = uuid::Uuid::new_v4();
     let bytes = uuid.as_bytes();
-    let mut code = String::with_capacity(9);
-    for i in 0..8 {
+    let mut code = String::with_capacity(14);
+    for i in 0..12 {
         let idx = (bytes[i] as usize) % LINK_CODE_CHARS.len();
-        if i == 4 {
+        if i == 4 || i == 8 {
             code.push('-');
         }
         code.push(LINK_CODE_CHARS[idx] as char);

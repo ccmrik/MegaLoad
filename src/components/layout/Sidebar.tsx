@@ -33,20 +33,20 @@ import { useBugStore } from "../../stores/bugStore";
 import { useIdentityStore } from "../../stores/identityStore";
 import { useSyncStore } from "../../stores/syncStore";
 import { useChatStore } from "../../stores/chatStore";
+import { useSettingsStore } from "../../stores/settingsStore";
 import { detectValheimPath, launchValheim, checkGameStatus, startSteam, deployBundledPlugins } from "../../lib/tauri-api";
 import type { GameStatus } from "../../lib/tauri-api";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, label: "Dashboard" },
+  { to: "/profiles", icon: Users, label: "Profiles" },
   { to: "/mods", icon: Package, label: "Mods" },
-  { to: "/browse", icon: Globe, label: "Browse" },
+  { to: "/browse", icon: Globe, label: "Browse Mods" },
   { to: "/config", icon: Settings2, label: "Config Editor" },
   { to: "/trainer", icon: Gamepad2, label: "Trainer" },
   { to: "/valheim-data", icon: Database, label: "Valheim Data" },
   { to: "/player-data", icon: UserCircle, label: "Player Data" },
   { to: "/logs", icon: ScrollText, label: "Log Viewer" },
-  { to: "/profiles", icon: Users, label: "Profiles" },
-  { to: "/settings", icon: Cog, label: "Settings" },
 ];
 
 export function Sidebar() {
@@ -57,6 +57,7 @@ export function Sidebar() {
   const isAdmin = useIdentityStore((s) => s.isAdmin);
   const chatAvailable = useChatStore((s) => s.available);
   const checkChatAvailable = useChatStore((s) => s.checkAvailable);
+  const megabugsEnabled = useSettingsStore((s) => s.megabugsEnabled);
   const [launching, setLaunching] = useState(false);
   const [launchPhase, setLaunchPhase] = useState<string | null>(null);
   const [valheimPath, setValheimPath] = useState<string | null>(null);
@@ -255,7 +256,7 @@ export function Sidebar() {
             MegaChat
           </NavLink>
         )}
-        {bugAccess?.enabled && (
+        {megabugsEnabled && bugAccess?.enabled && (
           <NavLink
             to="/bugs"
             className={({ isActive }) =>
@@ -271,6 +272,20 @@ export function Sidebar() {
             MegaBugs
           </NavLink>
         )}
+        <NavLink
+          to="/settings"
+          className={({ isActive }) =>
+            cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200",
+              isActive
+                ? "bg-brand-500/15 text-brand-400 shadow-sm"
+                : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
+            )
+          }
+        >
+          <Cog className="w-4.5 h-4.5 shrink-0" />
+          Settings
+        </NavLink>
         {isAdmin && (
           <NavLink
             to="/admin"

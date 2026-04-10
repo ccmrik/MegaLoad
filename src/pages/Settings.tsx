@@ -48,7 +48,7 @@ import { cn } from "../lib/utils";
 
 export function Settings() {
   const { fetchProfiles } = useProfileStore();
-  const { loggingEnabled, loaded: settingsLoaded, fetchSettings, setLoggingEnabled } = useSettingsStore();
+  const { loggingEnabled, megabugsEnabled, loaded: settingsLoaded, fetchSettings, setLoggingEnabled, setMegabugsEnabled } = useSettingsStore();
   const { debugEnabled, debugLoaded, fetchDebug, setDebugEnabled } = useChatStore();
   const { currentVersion } = useAppUpdateStore();
   const { identity, clearIdentity } = useIdentityStore();
@@ -768,6 +768,34 @@ export function Settings() {
             )}
           </div>
         )}
+      </div>
+
+      {/* MegaBugs */}
+      <div className="glass rounded-xl p-5 border border-zinc-800/50 space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4 h-4 text-orange-400" />
+            <h2 className="text-sm font-semibold text-zinc-300">MegaBugs</h2>
+          </div>
+          <button
+            onClick={() => {
+              setMegabugsEnabled(!megabugsEnabled);
+              setToast(megabugsEnabled ? "MegaBugs hidden from sidebar" : "MegaBugs visible in sidebar");
+            }}
+            className="shrink-0"
+          >
+            {megabugsEnabled ? (
+              <ToggleRight className="w-8 h-8 text-brand-400" />
+            ) : (
+              <ToggleLeft className="w-8 h-8 text-zinc-600" />
+            )}
+          </button>
+        </div>
+        <p className="text-xs text-zinc-500">
+          {megabugsEnabled
+            ? "MegaBugs is visible in the sidebar — submit bug reports and feature requests."
+            : "MegaBugs is hidden from the sidebar. Enable to submit bug reports and feature requests."}
+        </p>
       </div>
 
       {/* Data Location */}
