@@ -143,7 +143,7 @@ fn fetch_packages() -> Result<Vec<ThunderstorePackage>, String> {
 
     app_log("Fetching Thunderstore package list...");
     let resp = crate::commands::http::agent().get(TS_API_URL)
-        .set("User-Agent", "MegaLoad/0.16.2")
+        .set("User-Agent", concat!("MegaLoad/", env!("CARGO_PKG_VERSION")))
         .set("Accept", "application/json")
         .call()
         .map_err(|e| format!("Thunderstore API error: {}", e))?;

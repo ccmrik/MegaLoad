@@ -65,7 +65,7 @@ export function LogViewer() {
   // Load update log when tab switches
   useEffect(() => {
     if (activeTab === "updates") {
-      getUpdateLog().then((entries) => setUpdateEntries(entries.reverse())).catch(() => {});
+      getUpdateLog().then((entries) => setUpdateEntries(entries.reverse())).catch((e) => console.warn("[MegaLoad]", e));
     }
   }, [activeTab]);
 

@@ -73,7 +73,7 @@ export function Sidebar() {
   const addToast = useToastStore((s) => s.addToast);
 
   useEffect(() => {
-    detectValheimPath().then(setValheimPath).catch(() => {});
+    detectValheimPath().then(setValheimPath).catch((e) => console.warn("[MegaLoad]", e));
   }, []);
 
   // Check MegaChat API key availability
@@ -92,7 +92,7 @@ export function Sidebar() {
     if (bep !== lastCheckedProfile.current) {
       lastCheckedProfile.current = bep;
       // Deploy bundled internal plugins (MegaBugs, MegaDataExtractor)
-      deployBundledPlugins(bep).catch(() => {});
+      deployBundledPlugins(bep).catch((e) => console.warn("[MegaLoad]", e));
       if (gameStatus?.valheim_running) {
         checkUpdates(bep);
       } else {
@@ -120,7 +120,7 @@ export function Sidebar() {
   useEffect(() => {
     if (!valheimPath) return;
     const poll = () =>
-      checkGameStatus(valheimPath).then(setGameStatus).catch(() => {});
+      checkGameStatus(valheimPath).then(setGameStatus).catch((e) => console.warn("[MegaLoad]", e));
     poll();
     const id = setInterval(poll, 3000);
     return () => clearInterval(id);

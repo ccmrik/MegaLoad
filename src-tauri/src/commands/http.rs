@@ -26,7 +26,9 @@ impl ureq::Resolver for Ipv4Resolver {
 /// Build a ureq Agent using the OS native TLS stack (Windows Schannel)
 /// with forced IPv4 resolution to avoid broken IPv6 on some CDNs.
 pub fn agent() -> ureq::Agent {
-    let tls = native_tls::TlsConnector::new().expect("Failed to init native TLS");
+    let tls = native_tls::TlsConnector::new()
+        .map_err(|e| format!("Failed to init native TLS: {}", e))
+        .expect("TLS unavailable — cannot make HTTPS requests");
     ureq::AgentBuilder::new()
         .tls_connector(Arc::new(tls))
         .resolver(Ipv4Resolver)

@@ -68,22 +68,29 @@ pub fn validate_download_url(url: &str) -> Result<(), String> {
 }
 
 /// Validate that a config file path is within a BepInEx config directory
-/// and has a .cfg extension.
-pub fn validate_config_path(config_path: &str, _bepinex_hint: &str) -> Result<(), String> {
+/// and has a .cfg extension. Uses canonical path containment for safety.
+pub fn validate_config_path(config_path: &str, bepinex_hint: &str) -> Result<(), String> {
     let path = Path::new(config_path);
     // Must have .cfg extension
     match path.extension().and_then(|e| e.to_str()) {
         Some("cfg") => {}
         _ => return Err("Config file must have .cfg extension".to_string()),
     }
-    // Must contain "BepInEx" and "config" in the path
-    let normalized = config_path.replace('\\', "/").to_lowercase();
-    if !normalized.contains("bepinex") || !normalized.contains("config") {
-        return Err("Config path must be within a BepInEx/config directory".to_string());
-    }
     // Must not contain traversal
     if config_path.contains("..") {
         return Err("Config path must not contain path traversal".to_string());
+    }
+    // Use canonical path containment when BepInEx hint is available
+    let bep = Path::new(bepinex_hint);
+    let config_dir = bep.join("config");
+    if config_dir.exists() && path.exists() {
+        ensure_path_containment(path, &config_dir)?;
+    } else {
+        // Fallback to substring check for paths that don't exist yet
+        let normalized = config_path.replace('\\', "/").to_lowercase();
+        if !normalized.contains("bepinex") || !normalized.contains("config") {
+            return Err("Config path must be within a BepInEx/config directory".to_string());
+        }
     }
     Ok(())
 }

@@ -50,7 +50,7 @@ export function Mods() {
       fetchMods(profile.bepinex_path);
       validateBepinex(profile.bepinex_path)
         .then(setBepStatus)
-        .catch(() => {});
+        .catch((e) => console.warn("[MegaLoad]", e));
     }
   }, [profile?.bepinex_path, fetchMods]);
 

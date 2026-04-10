@@ -100,7 +100,7 @@ export function ConfigEditor() {
     if (profile?.bepinex_path) {
       setLoading(true);
       cleanOrphanConfigs(profile.bepinex_path)
-        .catch(() => {})
+        .catch((e) => console.warn("[MegaLoad]", e))
         .then(() => reloadConfigs(true))
         .finally(() => setLoading(false));
     }
@@ -110,14 +110,14 @@ export function ConfigEditor() {
   useEffect(() => {
     if (!profile?.bepinex_path) return;
 
-    startConfigWatcher(profile.bepinex_path).catch(() => {});
+    startConfigWatcher(profile.bepinex_path).catch((e) => console.warn("[MegaLoad]", e));
 
     const unlistenPromise = listen("config-files-changed", () => {
       reloadConfigs();
     });
 
     return () => {
-      stopConfigWatcher().catch(() => {});
+      stopConfigWatcher().catch((e) => console.warn("[MegaLoad]", e));
       unlistenPromise.then((fn) => fn());
     };
   }, [profile?.bepinex_path, reloadConfigs]);

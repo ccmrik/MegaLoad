@@ -46,21 +46,21 @@ export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
 
     set({ status: "checking", error: null });
     try {
-      logFromFrontend("App update check started").catch(() => {});
+      logFromFrontend("App update check started").catch((e) => console.warn("[MegaLoad]", e));
       const update = await check();
       if (update) {
-        logFromFrontend(`App update found: v${update.version}`).catch(() => {});
+        logFromFrontend(`App update found: v${update.version}`).catch((e) => console.warn("[MegaLoad]", e));
         set({
           status: "update-available",
           newVersion: update.version,
           pendingUpdate: update,
         });
       } else {
-        logFromFrontend("App update check: up to date").catch(() => {});
+        logFromFrontend("App update check: up to date").catch((e) => console.warn("[MegaLoad]", e));
         set({ status: "idle" });
       }
     } catch (e) {
-      logFromFrontend(`App update check failed: ${e}`).catch(() => {});
+      logFromFrontend(`App update check failed: ${e}`).catch((e) => console.warn("[MegaLoad]", e));
       set({ status: "error", error: String(e) });
     }
   },
@@ -71,7 +71,7 @@ export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
 
     set({ status: "downloading", downloadProgress: 0 });
     try {
-      logFromFrontend(`Downloading app update v${pendingUpdate.version}`).catch(() => {});
+      logFromFrontend(`Downloading app update v${pendingUpdate.version}`).catch((e) => console.warn("[MegaLoad]", e));
       let totalBytes = 0;
       let downloadedBytes = 0;
 
@@ -92,7 +92,7 @@ export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
             break;
           case "Finished":
             set({ status: "ready", downloadProgress: 100 });
-            recordAppUpdate(get().currentVersion, pendingUpdate.version).catch(() => {});
+            recordAppUpdate(get().currentVersion, pendingUpdate.version).catch((e) => console.warn("[MegaLoad]", e));
             break;
         }
       });

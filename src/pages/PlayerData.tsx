@@ -167,14 +167,14 @@ export function PlayerData() {
 
   // File watcher: live-update when .fch files change (game saves, cloud sync, etc.)
   useEffect(() => {
-    startPlayerDataWatcher().catch(() => {});
+    startPlayerDataWatcher().catch((e) => console.warn("[MegaLoad]", e));
 
     const unlistenPromise = listen("player-data-changed", () => {
       refreshSelected();
     });
 
     return () => {
-      stopPlayerDataWatcher().catch(() => {});
+      stopPlayerDataWatcher().catch((e) => console.warn("[MegaLoad]", e));
       unlistenPromise.then((fn) => fn());
     };
   }, [refreshSelected]);

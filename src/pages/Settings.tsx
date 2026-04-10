@@ -90,13 +90,13 @@ export function Settings() {
     fetchSettings();
     fetchDebug();
     fetchSyncStatus();
-    chatGetApiKeyStatus().then(setApiKeyHasKey).catch(() => {});
+    chatGetApiKeyStatus().then(setApiKeyHasKey).catch((e) => console.warn("[MegaLoad]", e));
     detectValheimPath()
       .then((p) => {
         setValheimPath(p);
         ensureDoorstop(p).then(setDoorstopOk).catch(() => setDoorstopOk(false));
       })
-      .catch(() => {});
+      .catch((e) => console.warn("[MegaLoad]", e));
     // R2Modman detection — completely optional, silent failure
     detectR2modmanProfiles()
       .then(setR2Profiles)

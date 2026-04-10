@@ -89,7 +89,7 @@ export function useLiveUpdateChecks() {
           duration: 0, // sticky
         });
       }
-    }).catch(() => {});
+    }).catch((e) => console.warn("[MegaLoad]", e));
   }, [profile?.bepinex_path, addToast]);
 
   // --- Toast: new mod updates detected ---

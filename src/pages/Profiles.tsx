@@ -49,13 +49,13 @@ export function Profiles() {
     fetchProfiles();
     detectR2modmanProfiles()
       .then(setR2Profiles)
-      .catch(() => {});
+      .catch((e) => console.warn("[MegaLoad]", e));
     getStarterMods()
       .then((mods) => {
         setStarterMods(mods);
         setSelectedStarters(new Set(mods.map((m) => m.name)));
       })
-      .catch(() => {});
+      .catch((e) => console.warn("[MegaLoad]", e));
   }, [fetchProfiles]);
 
   useEffect(() => {

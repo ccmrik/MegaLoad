@@ -74,7 +74,7 @@ export function Browse() {
     loadCategories();
     getStarterMods()
       .then(setOurMods)
-      .catch(() => {});
+      .catch((e) => console.warn("[MegaLoad]", e));
   }, []);
 
   useEffect(() => {

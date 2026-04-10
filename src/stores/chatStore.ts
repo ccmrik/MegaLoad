@@ -303,7 +303,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
         input_tokens: m.inputTokens,
         output_tokens: m.outputTokens,
       }));
-      chatSaveHistory(historyMessages).catch(() => {});
+      chatSaveHistory(historyMessages).catch((e) => console.warn("[MegaLoad]", e));
     } catch (e) {
       set({ error: String(e), loading: false });
     }
@@ -312,7 +312,7 @@ export const useChatStore = create<ChatState>((set, get) => ({
   clearChat: () => {
     set({ messages: [], error: null });
     // Clear server history too (save empty)
-    chatSaveHistory([]).catch(() => {});
+    chatSaveHistory([]).catch((e) => console.warn("[MegaLoad]", e));
   },
 
   fetchUsage: async () => {
