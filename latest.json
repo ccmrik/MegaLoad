@@ -1,11 +1,11 @@
 {
-  "version": "1.4.2",
-  "notes": "v1.4.2 - Re-enable TypeScript checking on Cart, PlayerData, ValheimData pages",
-  "pub_date": "2026-04-11T14:00:00.000Z",
+  "version": "1.4.3",
+  "notes": "v1.4.3 - Record Thunderstore mod installs/updates in Update History log",
+  "pub_date": "2026-04-11T15:00:00.000Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUlsWVVxNmFwdWJackJxbWpUV0J5dElzSDBXeDQrTTZwZkhXdDl2TWlmT2FlVjNGaTFmNWp4cFZrY0hqTlp3MzA1QTdXbFltTThHQzZuNjFHV2JNdUFzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODYyMzc2CWZpbGU6TWVnYUxvYWRfMS40LjJfeDY0LXNldHVwLm5zaXMuemlwClp1dWxjaUlvZGFYbGJ2YjUydmIvYy82S3F0TUwxcHpNZS9JaWI3ajlxRm5rU3lUQ0RhRUdvM2Z5RnUza2dWb0tsVVNGRld4UXREZFNLNEhHbWlodkFRPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.4.2/MegaLoad_1.4.2_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOVBIYXJIekhWSzF0SGI5WTN2NHFIZWJ5YVdjclgvUWJCbEEweklVM0dPQmk1TWNiUDRNcXBZUXd4MkQxdnFRVWp5SlY4RnJSRDVlUFBVZWduOW5JSFFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODYyODkwCWZpbGU6TWVnYUxvYWRfMS40LjNfeDY0LXNldHVwLm5zaXMuemlwClpvWDlKOFVLZkpObmpWU21ab2hPR3hEMXJzQVA1WmZtMTBWdHBsQy9lUEEzai9vZk5mRS9XbytjQ0I3djRRMDEvdVJXVHczaXFlb3NaS2lrY1FrU0NBPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.4.3/MegaLoad_1.4.3_x64-setup.nsis.zip"
     }
   }
 }

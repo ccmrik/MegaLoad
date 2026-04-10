@@ -1,5 +1,6 @@
 use crate::commands::app_log::app_log;
 use crate::commands::security::{sanitize_path_component, validate_download_url};
+use crate::commands::updater::record_update;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::io::{Cursor, Read};
@@ -364,6 +365,9 @@ pub fn install_thunderstore_mod(
     // 3. Track the installed version
     save_ts_installed_mod(&bepinex_path, &full_name, &version, &mod_folder_name);
 
+    // 4. Record in update log
+    record_update("thunderstore", &full_name, None, &version);
+
     app_log(&format!("Installed {} v{}", full_name, version));
     Ok(format!("Installed {} v{}", full_name, version))
 }
@@ -386,6 +390,13 @@ pub fn update_thunderstore_mod(
     validate_download_url(&download_url)?;
     sanitize_path_component(&folder_name)?;
 
+    // Get old version before overwriting
+    let old_version = load_ts_state(&bepinex_path)
+        .mods
+        .iter()
+        .find(|m| m.full_name == full_name)
+        .map(|m| m.version.clone());
+
     let bytes = download_ts_file(&download_url)?;
     let plugins_dir = PathBuf::from(&bepinex_path).join("plugins");
     let mod_dir = plugins_dir.join(&folder_name);
@@ -397,6 +408,9 @@ pub fn update_thunderstore_mod(
 
     extract_thunderstore_zip(&bytes, &mod_dir)?;
     save_ts_installed_mod(&bepinex_path, &full_name, &version, &folder_name);
+
+    // Record in update log
+    record_update("thunderstore", &full_name, old_version.as_deref(), &version);
 
     app_log(&format!("Updated {} to v{}", full_name, version));
     Ok(format!("Updated {} to v{}", full_name, version))
