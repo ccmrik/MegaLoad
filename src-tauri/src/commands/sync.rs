@@ -128,6 +128,9 @@ pub struct SyncProfileBundle {
     pub thunderstore_mods: Vec<SyncThunderstoreMod>,
     /// Config file contents keyed by filename (e.g. "MegaShot.cfg" → full file text)
     pub configs: HashMap<String, String>,
+    /// MegaTrainer state (trainer_state.json contents, if present)
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub trainer_state: Option<String>,
 }
 
 // ---------------------------------------------------------------------------
@@ -149,6 +152,7 @@ fn snapshot_bundle(profile_id: &str, profile_name: &str, bepinex_path: &str) -> 
 
     let ts_mods = read_thunderstore_tracking(bepinex_path);
     let configs = read_all_configs(bepinex_path);
+    let trainer_state = read_trainer_state(bepinex_path);
 
     Ok(SyncProfileBundle {
         profile_id: profile_id.to_string(),
@@ -157,6 +161,7 @@ fn snapshot_bundle(profile_id: &str, profile_name: &str, bepinex_path: &str) -> 
         mods,
         thunderstore_mods: ts_mods,
         configs,
+        trainer_state,
     })
 }
 
@@ -239,6 +244,24 @@ fn read_all_configs(bepinex_path: &str) -> HashMap<String, String> {
         }
     }
     configs
+}
+
+/// Read trainer_state.json from the profile directory (parent of BepInEx path).
+fn read_trainer_state(bepinex_path: &str) -> Option<String> {
+    let path = Path::new(bepinex_path)
+        .parent()
+        .unwrap_or_else(|| Path::new("."))
+        .join("trainer_state.json");
+    fs::read_to_string(&path).ok()
+}
+
+/// Write trainer_state.json to the profile directory (parent of BepInEx path).
+fn write_trainer_state(bepinex_path: &str, content: &str) {
+    let path = Path::new(bepinex_path)
+        .parent()
+        .unwrap_or_else(|| Path::new("."))
+        .join("trainer_state.json");
+    let _ = fs::write(&path, content);
 }
 
 /// Compute a single content hash of the entire bundle for quick change detection.
@@ -490,6 +513,16 @@ pub fn sync_pull_bundle(profile_id: String, bepinex_path: String) -> Result<Sync
             fs::write(&local_path, remote_content).map_err(|e| e.to_string())?;
             configs_updated += 1;
             app_log(&format!("Sync pull config: {}", file_name));
+        }
+    }
+
+    // 2b. Apply trainer state if present in remote bundle
+    if let Some(ref remote_trainer) = remote.trainer_state {
+        let local_trainer = read_trainer_state(&bepinex_path).unwrap_or_default();
+        if local_trainer != *remote_trainer {
+            write_trainer_state(&bepinex_path, remote_trainer);
+            configs_updated += 1;
+            app_log("Sync pull: trainer_state.json");
         }
     }
 
