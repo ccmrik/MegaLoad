@@ -1,11 +1,11 @@
 {
-  "version": "1.4.8",
-  "notes": "v1.4.8 - Fix MegaBugs: optimistic status updates, notification badge clears on read",
-  "pub_date": "2026-04-11T20:00:00.000Z",
+  "version": "1.4.9",
+  "notes": "v1.4.9 - Fix MegaBugs: persistent optimistic status, notification clears on read",
+  "pub_date": "2026-04-11T20:30:00.000Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUlteWNsWDcxMjZRejRyYmd3L1dtU3ltbXltR3p5RnBsb1B0ZlovdU1neTljRzAyWFV4ZnNaSTRRZ2NDQVBaaDRQa25PbmQvOXpSR25rVUU4QnZGWUFBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODc1ODMyCWZpbGU6TWVnYUxvYWRfMS40LjhfeDY0LXNldHVwLm5zaXMuemlwClhpaGxBeUVnZW1KZjhpL1pFRVFLalNxMHlCL2h6cjNHZEdtM0hVWW43STR0czFEa0w1Nlp6a1RtM1NoOUMwbGc4cUNrVXd5cG8wQjRCUVRzWWdxRURnPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.4.8/MegaLoad_1.4.8_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdLRnVjZGlaM0d5NUNQcGxHekplSzB5VXZjeS9rMnJZNVIva2xhSVBWZG1lVnZtVWxMcHlvQzBJVUlIUFZhMFNxN0xZcjRGaWJRNjQ5dkhnWEpBWGdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODc2MjY3CWZpbGU6TWVnYUxvYWRfMS40LjlfeDY0LXNldHVwLm5zaXMuemlwCmh3Z21ldEVJSU9nRjhEVGsxVVEzblVjYlVDZWpjQkxiN0xqaEEyWEZSOUZ2dkhYMlZDNmlhWWo1dDVraElRWkZNRWxKYVZPWkl1Z0JLTUdNUTViMkRnPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.4.9/MegaLoad_1.4.9_x64-setup.nsis.zip"
     }
   }
 }

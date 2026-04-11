@@ -91,9 +91,26 @@ function isOfflineError(e: unknown): boolean {
 
 let _notifInterval: ReturnType<typeof setInterval> | null = null;
 
-function computeNotificationCount(tickets: TicketSummary[], isAdmin: boolean): number {
-  if (isAdmin) return tickets.filter((t) => t.status === "open").length;
-  return tickets.filter((t) => hasUnread(t)).length;
+// Optimistic status overrides — persisted across re-fetches until CDN catches up
+const _statusOverrides: Map<string, { status: string; labels: string[]; expiresAt: number }> = new Map();
+const OVERRIDE_TTL_MS = 120_000; // 2 minutes — enough for GitHub CDN to propagate
+
+function applyOverrides(tickets: TicketSummary[]): TicketSummary[] {
+  const now = Date.now();
+  // Clean expired overrides
+  for (const [id, ov] of _statusOverrides) {
+    if (now > ov.expiresAt) _statusOverrides.delete(id);
+  }
+  if (_statusOverrides.size === 0) return tickets;
+  return tickets.map((t) => {
+    const ov = _statusOverrides.get(t.id);
+    return ov ? { ...t, status: ov.status, labels: ov.labels } : t;
+  });
+}
+
+function computeNotificationCount(tickets: TicketSummary[]): number {
+  // Count tickets with unread activity (works for both admin and user)
+  return tickets.filter((t) => t.status === "open" && hasUnread(t)).length;
 }
 
 export const useBugStore = create<BugState>((set, get) => ({
@@ -141,9 +158,9 @@ export const useBugStore = create<BugState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const userId = access?.is_admin ? undefined : identity.user_id;
-      const tickets = await fetchTickets(userId);
-      const isAdmin = access?.is_admin ?? false;
-      set({ tickets, loading: false, offline: false, notificationCount: computeNotificationCount(tickets, isAdmin) });
+      const raw = await fetchTickets(userId);
+      const tickets = applyOverrides(raw);
+      set({ tickets, loading: false, offline: false, notificationCount: computeNotificationCount(tickets) });
     } catch (e) {
       const offline = isOfflineError(e);
       set({ error: offline ? "Unable to reach MegaBugs — check your internet connection." : String(e), loading: false, offline });
@@ -220,24 +237,20 @@ export const useBugStore = create<BugState>((set, get) => ({
 
   setStatus: async (ticketId: string, status: string, labels: string[]) => {
     set({ error: null });
-    // Optimistically update the ticket list so the UI reflects the change immediately
-    // (GitHub CDN may serve stale index.json on re-fetch)
-    const { tickets, access } = get();
-    const isAdmin = access?.is_admin ?? false;
-    const updatedTickets = tickets.map((t) =>
-      t.id === ticketId ? { ...t, status, labels, updated_at: new Date().toISOString() } : t
-    );
-    set({ tickets: updatedTickets, notificationCount: computeNotificationCount(updatedTickets, isAdmin) });
+    // Register optimistic override that persists through re-fetches (CDN may be stale)
+    _statusOverrides.set(ticketId, { status, labels, expiresAt: Date.now() + OVERRIDE_TTL_MS });
+    const { tickets } = get();
+    const updatedTickets = applyOverrides(tickets);
+    set({ tickets: updatedTickets, notificationCount: computeNotificationCount(updatedTickets) });
     try {
       await updateTicketStatus(ticketId, status, labels);
       const ticket = await fetchTicketDetail(ticketId);
       set({ activeTicket: ticket, offline: false });
-      // Background re-fetch to sync with server (non-blocking)
-      get().loadTickets();
     } catch (e) {
+      // Revert optimistic override on failure
+      _statusOverrides.delete(ticketId);
       const offline = isOfflineError(e);
       set({ error: offline ? "Unable to reach MegaBugs — check your internet connection." : String(e), offline });
-      // Revert optimistic update on failure
       get().loadTickets();
     }
   },
@@ -262,9 +275,8 @@ export const useBugStore = create<BugState>((set, get) => ({
   markTicketRead: (ticketId: string) => {
     setLastRead(ticketId);
     // Recompute notification count after marking as read
-    const { tickets, access } = get();
-    const isAdmin = access?.is_admin ?? false;
-    set({ notificationCount: computeNotificationCount(tickets, isAdmin) });
+    const { tickets } = get();
+    set({ notificationCount: computeNotificationCount(tickets) });
   },
 
   clearActiveTicket: () => set({ activeTicket: null }),
