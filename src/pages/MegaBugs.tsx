@@ -197,7 +197,7 @@ export function MegaBugs() {
     return () => clearInterval(interval);
   }, [cooldownRemaining, useBugStore.getState().lastSubmitTime]);
 
-  // Scroll to top of messages when ticket loads or new message added (newest-first order)
+  // Scroll to bottom of messages when ticket loads or new message added
   useEffect(() => {
     if (view === "detail" && activeTicket) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -355,8 +355,8 @@ export function MegaBugs() {
     const StatusIcon = statusIcons[activeTicket.status] || AlertCircle;
     return (
       <div className="flex-1 flex flex-col min-h-0 animate-in">
-        {/* Header */}
-        <div className="flex items-center gap-3 px-6 py-4 border-b border-zinc-800/50">
+        {/* Header (pinned top) */}
+        <div className="shrink-0 flex items-center gap-3 px-6 py-4 border-b border-zinc-800/50 bg-zinc-950/80 backdrop-blur-sm z-10">
           <button onClick={goBack} className="text-zinc-400 hover:text-zinc-200 transition-colors" aria-label="Go back">
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -437,45 +437,47 @@ export function MegaBugs() {
         {/* Offline banner */}
         {offline && <OfflineBanner />}
 
-        {/* Messages (newest first) */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-          <div ref={messagesEndRef} />
-          {[...activeTicket.messages].reverse().map((msg) => (
-            <div
-              key={msg.id}
-              className={cn(
-                "rounded-xl p-4 max-w-[85%]",
-                msg.is_admin
-                  ? "ml-auto bg-brand-500/10 border border-brand-500/20"
-                  : "bg-zinc-800/50 border border-zinc-700/30",
-              )}
-            >
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-xs font-medium text-zinc-300">
-                  {msg.author_name}
-                  {msg.is_admin && (
-                    <span className="ml-1.5 text-[10px] text-brand-400 font-semibold">ADMIN</span>
-                  )}
-                </span>
-                <span className="text-[11px] text-zinc-500">
-                  {formatTimestamp(msg.timestamp)}
-                </span>
+        {/* Messages (chat-style: chronological, gravity to bottom) */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex flex-col justify-end min-h-full px-6 py-4 space-y-4">
+            {loading && (
+              <div className="flex justify-center py-4">
+                <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />
               </div>
-              <p className="text-sm text-zinc-300 whitespace-pre-wrap">{msg.text}</p>
-              {msg.images.length > 0 && (
-                <div className="flex gap-2 mt-3 flex-wrap">
-                  {msg.images.map((path, i) => (
-                    <AttachmentThumb key={i} path={path} onClick={(src) => setLightboxSrc(src)} />
-                  ))}
+            )}
+            {activeTicket.messages.map((msg) => (
+              <div
+                key={msg.id}
+                className={cn(
+                  "rounded-xl p-4 max-w-[85%]",
+                  msg.is_admin
+                    ? "ml-auto bg-brand-500/10 border border-brand-500/20"
+                    : "bg-zinc-800/50 border border-zinc-700/30",
+                )}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs font-medium text-zinc-300">
+                    {msg.author_name}
+                    {msg.is_admin && (
+                      <span className="ml-1.5 text-[10px] text-brand-400 font-semibold">ADMIN</span>
+                    )}
+                  </span>
+                  <span className="text-[11px] text-zinc-500">
+                    {formatTimestamp(msg.timestamp)}
+                  </span>
                 </div>
-              )}
-            </div>
-          ))}
-          {loading && (
-            <div className="flex justify-center py-4">
-              <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />
-            </div>
-          )}
+                <p className="text-sm text-zinc-300 whitespace-pre-wrap">{msg.text}</p>
+                {msg.images.length > 0 && (
+                  <div className="flex gap-2 mt-3 flex-wrap">
+                    {msg.images.map((path, i) => (
+                      <AttachmentThumb key={i} path={path} onClick={(src) => setLightboxSrc(src)} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
         </div>
 
         {/* Lightbox */}

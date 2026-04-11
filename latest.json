@@ -1,11 +1,11 @@
 {
-  "version": "1.5.3",
-  "notes": "v1.5.3 - MegaBugs: newest messages first, pinned reply box",
-  "pub_date": "2026-04-11T03:42:07.000Z",
+  "version": "1.5.4",
+  "notes": "v1.5.4 - MegaBugs: chat-style ticket view",
+  "pub_date": "2026-04-11T03:55:00.000Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUZ2L3dwUngxMmx2dFRsYkVoQnFFQzVRL2Y3NFJaYkowYlpNTURsWmpoLzYyTkhyZlVDcFo5Q3VkeFJ2alI2ZG5URlZpWUV6MXVIYUEvY0F3NGdDendrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODc4OTEzCWZpbGU6TWVnYUxvYWRfMS41LjNfeDY0LXNldHVwLm5zaXMuemlwCldBZFVQeGRCYTQxSnJlak5YWHE1ai94ZnZkMVpjamkwR0M5bCs1cGZSSVlCSzZTdE0wQzNrVVcveHduVzl6ZDFiU2FQb1lPVnd3K2MxUHhTOHNZR0R3PT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.3/MegaLoad_1.5.3_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUxYYXlSbUROVHBPT0tPRTFDdXhSR1N5WHcveGZ3eXBQTEVwQVU5cjdMU3lGOWJFMi9FRXQ3QTlPRWdISjgvU3N5RkxHSFR5dFhQS0tVTmVFYmNxa2dVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODc5NTk4CWZpbGU6TWVnYUxvYWRfMS41LjRfeDY0LXNldHVwLm5zaXMuemlwCkIrY2VDOEUrK1lEbmlWektKR3N1RXNid2Q0R3dQZ2IvTmhCTXE4eGlML0hVTlZzYlRRbTFxdTY3Z2JIZ0pKTVZMNS9aSnY0eFRSczhXekFZc2R3dkN3PT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.4/MegaLoad_1.5.4_x64-setup.nsis.zip"
     }
   }
 }
