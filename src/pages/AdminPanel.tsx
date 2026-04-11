@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useIdentityStore } from "../stores/identityStore";
+import { useBugStore } from "../stores/bugStore";
 import {
   adminListUsers,
   adminBanUser,
@@ -85,7 +86,10 @@ export function AdminPanel() {
   }, []);
 
   useEffect(() => {
-    if (isAdmin) loadData();
+    if (isAdmin) {
+      loadData();
+      useBugStore.getState().markUsersSeen();
+    }
   }, [isAdmin, loadData]);
 
   useEffect(() => {

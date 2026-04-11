@@ -57,6 +57,7 @@ export function Sidebar() {
   const checkChatAvailable = useChatStore((s) => s.checkAvailable);
   const megabugsEnabled = useSettingsStore((s) => s.megabugsEnabled);
   const notificationCount = useBugStore((s) => s.notificationCount);
+  const newUserCount = useBugStore((s) => s.newUserCount);
   const startNotificationPolling = useBugStore((s) => s.startNotificationPolling);
   const [launching, setLaunching] = useState(false);
   const [launchPhase, setLaunchPhase] = useState<string | null>(null);
@@ -303,9 +304,9 @@ export function Sidebar() {
           >
             <Shield className="w-4.5 h-4.5 shrink-0" />
             Admin
-            {notificationCount > 0 && (
+            {(notificationCount + newUserCount) > 0 && (
               <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500/90 text-[10px] font-bold text-white leading-none">
-                {notificationCount}
+                {notificationCount + newUserCount}
               </span>
             )}
           </NavLink>

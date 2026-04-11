@@ -9,6 +9,7 @@ import {
   replyToTicket,
   updateTicketStatus,
   deleteTicket as apiDeleteTicket,
+  adminListUsers,
   type MegaBugsAccess,
   type UserIdentity,
   type TicketSummary,
@@ -18,6 +19,19 @@ import {
 
 // ── Unread tracking via localStorage ──────────────────────────────
 const UNREAD_KEY = "megabugs_last_read";
+const SEEN_USERS_KEY = "megabugs_seen_users";
+
+function getSeenUserIds(): Set<string> {
+  try {
+    return new Set(JSON.parse(localStorage.getItem(SEEN_USERS_KEY) || "[]"));
+  } catch {
+    return new Set();
+  }
+}
+
+function markAllUsersSeen(userIds: string[]) {
+  localStorage.setItem(SEEN_USERS_KEY, JSON.stringify(userIds));
+}
 
 function getLastReadMap(): Record<string, string> {
   try {
@@ -57,6 +71,8 @@ interface BugState {
   lastSubmitTime: number;
   /** Open ticket count for notification badges (admin: all open, user: own unread) */
   notificationCount: number;
+  /** New users not yet seen by admin */
+  newUserCount: number;
 
   checkAccess: (bepinexPath: string) => Promise<void>;
   loadIdentity: () => Promise<void>;
@@ -82,6 +98,8 @@ interface BugState {
   startNotificationPolling: () => void;
   /** Stop background polling */
   stopNotificationPolling: () => void;
+  /** Mark all current users as seen (call when admin views user list) */
+  markUsersSeen: () => void;
 }
 
 function isOfflineError(e: unknown): boolean {
@@ -124,6 +142,7 @@ export const useBugStore = create<BugState>((set, get) => ({
   offline: false,
   lastSubmitTime: 0,
   notificationCount: 0,
+  newUserCount: 0,
 
   checkAccess: async (bepinexPath: string) => {
     try {
@@ -295,12 +314,41 @@ export const useBugStore = create<BugState>((set, get) => ({
 
   startNotificationPolling: () => {
     if (_notifInterval) return;
-    // Do an initial fetch
-    get().loadTickets();
+    // Ensure identity + access are loaded before first fetch
+    const init = async () => {
+      const { identity, access } = get();
+      if (!identity) await get().loadIdentity();
+      if (!access) {
+        try {
+          const { useProfileStore } = await import("./profileStore");
+          const profile = useProfileStore.getState().activeProfile();
+          if (profile?.bepinex_path) await get().checkAccess(profile.bepinex_path);
+        } catch { /* non-critical */ }
+      }
+      get().loadTickets();
+      // Fetch user count for admin
+      if (get().access?.is_admin) {
+        try {
+          const users = await adminListUsers();
+          const seen = getSeenUserIds();
+          const newCount = users.filter((u) => !seen.has(u.user_id)).length;
+          set({ newUserCount: newCount });
+        } catch { /* non-critical */ }
+      }
+    };
+    init();
     // Poll every 60s for badge updates
-    _notifInterval = setInterval(() => {
-      const { identity } = get();
+    _notifInterval = setInterval(async () => {
+      const { identity, access } = get();
       if (identity) get().loadTickets();
+      if (access?.is_admin) {
+        try {
+          const users = await adminListUsers();
+          const seen = getSeenUserIds();
+          const newCount = users.filter((u) => !seen.has(u.user_id)).length;
+          set({ newUserCount: newCount });
+        } catch { /* non-critical */ }
+      }
     }, 60_000);
   },
 
@@ -309,5 +357,13 @@ export const useBugStore = create<BugState>((set, get) => ({
       clearInterval(_notifInterval);
       _notifInterval = null;
     }
+  },
+
+  markUsersSeen: () => {
+    // Call when admin views the user list to clear the badge
+    adminListUsers().then((users) => {
+      markAllUsersSeen(users.map((u) => u.user_id));
+      set({ newUserCount: 0 });
+    }).catch(() => {});
   },
 }));
