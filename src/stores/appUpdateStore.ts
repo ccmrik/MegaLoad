@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { check, type Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
+import { getVersion } from "@tauri-apps/api/app";
 import { logFromFrontend, recordAppUpdate } from "../lib/tauri-api";
 
 /** Poll every 5 minutes for app updates */
@@ -32,13 +33,20 @@ let pollTimer: ReturnType<typeof setInterval> | null = null;
 
 export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
   status: "idle",
-  currentVersion: "1.4.3",
+  currentVersion: "",
   newVersion: null,
   downloadProgress: 0,
   error: null,
   pendingUpdate: null,
 
   checkForAppUpdate: async () => {
+    // Lazy-init version from Tauri on first check
+    if (!get().currentVersion) {
+      try {
+        const v = await getVersion();
+        set({ currentVersion: v });
+      } catch { /* fallback: leave empty */ }
+    }
     const { status } = get();
     // Don't interrupt an active download or re-check if already checking
     if (status === "downloading" || status === "ready" || status === "checking")
@@ -121,3 +129,6 @@ export const useAppUpdateStore = create<AppUpdateState>((set, get) => ({
     }
   },
 }));
+
+// Eagerly load the version from Tauri so the title bar shows it immediately
+getVersion().then((v) => useAppUpdateStore.setState({ currentVersion: v })).catch(() => {});

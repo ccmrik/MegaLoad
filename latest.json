@@ -1,11 +1,11 @@
 {
-  "version": "1.4.6",
-  "notes": "v1.4.6 - Admin notification badges for MegaBugs open tickets",
-  "pub_date": "2026-04-11T19:00:00.000Z",
+  "version": "1.4.7",
+  "notes": "v1.4.7 - Fix version display: read from Tauri at runtime instead of hardcoded",
+  "pub_date": "2026-04-11T19:30:00.000Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUlYbG5lZUI5bnpveWRBWU5NUXFmNG1Fek8wOWxSZDJlblBmTHl3STJJU2MxRmhWWlI4S0t5c0V3TzVaRk5YUG1jRlJPN2hxZzRDalZ0NVpHZUxpV2dRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODc0Nzg0CWZpbGU6TWVnYUxvYWRfMS40LjZfeDY0LXNldHVwLm5zaXMuemlwCi9scnRHUDdYNGxoWGR4SDNqTjBWc3lqcVhNSWtaSUFpakVzb3M4TXpQZ0NOZHFCaWdHNW1KanVpdVp2dDBUM2RBOEEzZ0tZT20wa1lrQ1hQN3daK0FRPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.4.6/MegaLoad_1.4.6_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU5OU3VPVThpbkJTWUxUb2dET2R0aXh2K2F1NzU4WndFditGQ0U2a0t6amN1ZFE1bkdYUGFUUEVKLysvb3dtQUhEWWh0VFdoTlRKcG9MZjhvc2Z1SHdBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODc1NTA1CWZpbGU6TWVnYUxvYWRfMS40LjdfeDY0LXNldHVwLm5zaXMuemlwCmZyZ0kyb2FnSFdoU2VGdlNid3E5YU5TYjUwMHBzbXZIbjRhRTZtS1pFZ3Y2RUttRUxrSWRpRC9BUVJyemgrYWM5RDNPQXNRQXB0RzV6ak1Fc01HbEN3PT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.4.7/MegaLoad_1.4.7_x64-setup.nsis.zip"
     }
   }
 }
