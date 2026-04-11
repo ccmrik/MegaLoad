@@ -197,7 +197,7 @@ export function MegaBugs() {
     return () => clearInterval(interval);
   }, [cooldownRemaining, useBugStore.getState().lastSubmitTime]);
 
-  // Scroll to bottom of messages when ticket loads or new message added
+  // Scroll to top of messages when ticket loads or new message added (newest-first order)
   useEffect(() => {
     if (view === "detail" && activeTicket) {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -437,9 +437,10 @@ export function MegaBugs() {
         {/* Offline banner */}
         {offline && <OfflineBanner />}
 
-        {/* Messages */}
+        {/* Messages (newest first) */}
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-          {activeTicket.messages.map((msg) => (
+          <div ref={messagesEndRef} />
+          {[...activeTicket.messages].reverse().map((msg) => (
             <div
               key={msg.id}
               className={cn(
@@ -475,14 +476,13 @@ export function MegaBugs() {
               <Loader2 className="w-5 h-5 animate-spin text-zinc-500" />
             </div>
           )}
-          <div ref={messagesEndRef} />
         </div>
 
         {/* Lightbox */}
         {lightboxSrc && <ImageLightbox src={lightboxSrc} onClose={() => setLightboxSrc(null)} />}
 
-        {/* Reply box */}
-        <div className="px-6 py-4 border-t border-zinc-800/50">
+        {/* Reply box (pinned) */}
+        <div className="shrink-0 px-6 py-4 border-t border-zinc-800/50 bg-zinc-950/80 backdrop-blur-sm shadow-[0_-4px_12px_rgba(0,0,0,0.3)]">
           {error && (
             <div className="mb-3 text-xs text-red-400 flex items-center gap-1.5">
               <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {error}
