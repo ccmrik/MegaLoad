@@ -171,7 +171,13 @@ export const useBugStore = create<BugState>((set, get) => ({
     set({ loading: true, error: null });
     try {
       const ticket = await fetchTicketDetail(ticketId);
-      set({ activeTicket: ticket, loading: false, offline: false });
+      // Sync accurate status from ticket file back to the list
+      // (ticket file is authoritative; index.json from CDN may be stale)
+      const { tickets } = get();
+      const updatedTickets = tickets.map((t) =>
+        t.id === ticketId ? { ...t, status: ticket.status, updated_at: ticket.updated_at } : t
+      );
+      set({ activeTicket: ticket, tickets: updatedTickets, loading: false, offline: false, notificationCount: computeNotificationCount(updatedTickets) });
     } catch (e) {
       const offline = isOfflineError(e);
       set({ error: offline ? "Unable to reach MegaBugs — check your internet connection." : String(e), loading: false, offline });

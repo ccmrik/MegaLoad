@@ -1,11 +1,11 @@
 {
-  "version": "1.4.9",
-  "notes": "v1.4.9 - Fix MegaBugs: persistent optimistic status, notification clears on read",
-  "pub_date": "2026-04-11T20:30:00.000Z",
+  "version": "1.5.0",
+  "notes": "v1.5.0 - Fix GitHub token for release builds, fix ticket status sync",
+  "pub_date": "2026-04-11T21:00:00.000Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdLRnVjZGlaM0d5NUNQcGxHekplSzB5VXZjeS9rMnJZNVIva2xhSVBWZG1lVnZtVWxMcHlvQzBJVUlIUFZhMFNxN0xZcjRGaWJRNjQ5dkhnWEpBWGdNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODc2MjY3CWZpbGU6TWVnYUxvYWRfMS40LjlfeDY0LXNldHVwLm5zaXMuemlwCmh3Z21ldEVJSU9nRjhEVGsxVVEzblVjYlVDZWpjQkxiN0xqaEEyWEZSOUZ2dkhYMlZDNmlhWWo1dDVraElRWkZNRWxKYVZPWkl1Z0JLTUdNUTViMkRnPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.4.9/MegaLoad_1.4.9_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUVqRGdqTkVSVEdOeHUzK1V4eElHd3pJNGFkM0xIRU1rU2pyQ2NhbkxVb2lIM3Jja0xoZk9lTVJnNnhmclI1aXpGc0VOV1lVZURoOERReTlGdFJXWlFjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODc3MTQ3CWZpbGU6TWVnYUxvYWRfMS41LjBfeDY0LXNldHVwLm5zaXMuemlwCjQxNDFFaFozRjc4N3oxMGJOb1Nqd3RZK0xqVWxjSjZHWVJNWWpEd2k1WlRSWXBQOWlsRHpqTFQ5T1FmNGJXbmZhc2hlRnhaYUpPdTVkL3dwVWI4OURBPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.0/MegaLoad_1.5.0_x64-setup.nsis.zip"
     }
   }
 }
