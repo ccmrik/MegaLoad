@@ -1,11 +1,11 @@
 {
-  "version": "1.4.5",
-  "notes": "v1.4.5 - Sync MegaTrainer settings between accounts",
-  "pub_date": "2026-04-11T18:30:00.000Z",
+  "version": "1.4.6",
+  "notes": "v1.4.6 - Admin notification badges for MegaBugs open tickets",
+  "pub_date": "2026-04-11T19:00:00.000Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUlYQVRpYk53dUhVU1MybXpNQW5MdURSNUFheTY3R1dXT1JrRUFIektMNElaMGxYczJTTUhzRDVXRTlMTEJOaFZxQVlCRGtJK21mZHJxVVJIRVAxcFE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODc0MDIyCWZpbGU6TWVnYUxvYWRfMS40LjVfeDY0LXNldHVwLm5zaXMuemlwCllVdWpGT0tKNjlxOVNyU0F4ZWp2MG52TTVkRkw2Mjh3SjZTbEZjQzM3a0JvUGthUUpIT2dtTTA4MndQSXVNOXMwa2FMRVpsWTR4WVhDdFJ2YzlJY0RRPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.4.5/MegaLoad_1.4.5_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUlYbG5lZUI5bnpveWRBWU5NUXFmNG1Fek8wOWxSZDJlblBmTHl3STJJU2MxRmhWWlI4S0t5c0V3TzVaRk5YUG1jRlJPN2hxZzRDalZ0NVpHZUxpV2dRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc1ODc0Nzg0CWZpbGU6TWVnYUxvYWRfMS40LjZfeDY0LXNldHVwLm5zaXMuemlwCi9scnRHUDdYNGxoWGR4SDNqTjBWc3lqcVhNSWtaSUFpakVzb3M4TXpQZ0NOZHFCaWdHNW1KanVpdVp2dDBUM2RBOEEzZ0tZT20wa1lrQ1hQN3daK0FRPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.4.6/MegaLoad_1.4.6_x64-setup.nsis.zip"
     }
   }
 }

@@ -55,6 +55,8 @@ interface BugState {
   offline: boolean;
   /** Epoch ms of last successful submit — drives cooldown UI */
   lastSubmitTime: number;
+  /** Open ticket count for notification badges (admin: all open, user: own unread) */
+  notificationCount: number;
 
   checkAccess: (bepinexPath: string) => Promise<void>;
   loadIdentity: () => Promise<void>;
@@ -76,11 +78,22 @@ interface BugState {
   clearError: () => void;
   /** Seconds remaining on cooldown (0 = ready) */
   cooldownRemaining: () => number;
+  /** Start background polling for notification badges */
+  startNotificationPolling: () => void;
+  /** Stop background polling */
+  stopNotificationPolling: () => void;
 }
 
 function isOfflineError(e: unknown): boolean {
   const msg = String(e).toLowerCase();
   return msg.includes("network") || msg.includes("dns") || msg.includes("connect") || msg.includes("unreachable") || msg.includes("timed out");
+}
+
+let _notifInterval: ReturnType<typeof setInterval> | null = null;
+
+function computeNotificationCount(tickets: TicketSummary[], isAdmin: boolean): number {
+  if (isAdmin) return tickets.filter((t) => t.status === "open").length;
+  return tickets.filter((t) => hasUnread(t)).length;
 }
 
 export const useBugStore = create<BugState>((set, get) => ({
@@ -93,6 +106,7 @@ export const useBugStore = create<BugState>((set, get) => ({
   error: null,
   offline: false,
   lastSubmitTime: 0,
+  notificationCount: 0,
 
   checkAccess: async (bepinexPath: string) => {
     try {
@@ -128,7 +142,8 @@ export const useBugStore = create<BugState>((set, get) => ({
     try {
       const userId = access?.is_admin ? undefined : identity.user_id;
       const tickets = await fetchTickets(userId);
-      set({ tickets, loading: false, offline: false });
+      const isAdmin = access?.is_admin ?? false;
+      set({ tickets, loading: false, offline: false, notificationCount: computeNotificationCount(tickets, isAdmin) });
     } catch (e) {
       const offline = isOfflineError(e);
       set({ error: offline ? "Unable to reach MegaBugs — check your internet connection." : String(e), loading: false, offline });
@@ -245,5 +260,23 @@ export const useBugStore = create<BugState>((set, get) => ({
   cooldownRemaining: () => {
     const elapsed = Date.now() - get().lastSubmitTime;
     return Math.max(0, Math.ceil((COOLDOWN_MS - elapsed) / 1000));
+  },
+
+  startNotificationPolling: () => {
+    if (_notifInterval) return;
+    // Do an initial fetch
+    get().loadTickets();
+    // Poll every 60s for badge updates
+    _notifInterval = setInterval(() => {
+      const { identity } = get();
+      if (identity) get().loadTickets();
+    }, 60_000);
+  },
+
+  stopNotificationPolling: () => {
+    if (_notifInterval) {
+      clearInterval(_notifInterval);
+      _notifInterval = null;
+    }
   },
 }));

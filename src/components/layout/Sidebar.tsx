@@ -33,6 +33,7 @@ import { useIdentityStore } from "../../stores/identityStore";
 import { useSyncStore } from "../../stores/syncStore";
 import { useChatStore } from "../../stores/chatStore";
 import { useSettingsStore } from "../../stores/settingsStore";
+import { useBugStore } from "../../stores/bugStore";
 import { detectValheimPath, launchValheim, checkGameStatus, startSteam, deployBundledPlugins } from "../../lib/tauri-api";
 import type { GameStatus } from "../../lib/tauri-api";
 
@@ -55,6 +56,8 @@ export function Sidebar() {
   const chatAvailable = useChatStore((s) => s.available);
   const checkChatAvailable = useChatStore((s) => s.checkAvailable);
   const megabugsEnabled = useSettingsStore((s) => s.megabugsEnabled);
+  const notificationCount = useBugStore((s) => s.notificationCount);
+  const startNotificationPolling = useBugStore((s) => s.startNotificationPolling);
   const [launching, setLaunching] = useState(false);
   const [launchPhase, setLaunchPhase] = useState<string | null>(null);
   const [valheimPath, setValheimPath] = useState<string | null>(null);
@@ -80,6 +83,11 @@ export function Sidebar() {
   useEffect(() => {
     checkChatAvailable();
   }, [checkChatAvailable]);
+
+  // Start MegaBugs notification polling for badge counts
+  useEffect(() => {
+    if (megabugsEnabled && isAdmin) startNotificationPolling();
+  }, [megabugsEnabled, isAdmin, startNotificationPolling]);
 
   // Auto-update on startup when profile is available (re-run on profile switch)
   const lastCheckedProfile = useRef<string | null>(null);
@@ -260,6 +268,11 @@ export function Sidebar() {
           >
             <Bug className="w-4.5 h-4.5 shrink-0" />
             MegaBugs
+            {notificationCount > 0 && (
+              <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-red-500/90 text-[10px] font-bold text-white leading-none">
+                {notificationCount}
+              </span>
+            )}
           </NavLink>
         )}
         <NavLink
@@ -290,6 +303,11 @@ export function Sidebar() {
           >
             <Shield className="w-4.5 h-4.5 shrink-0" />
             Admin
+            {notificationCount > 0 && (
+              <span className="ml-auto flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-orange-500/90 text-[10px] font-bold text-white leading-none">
+                {notificationCount}
+              </span>
+            )}
           </NavLink>
         )}
       </nav>
