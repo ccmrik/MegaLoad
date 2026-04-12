@@ -19,7 +19,16 @@ fn load_profiles() -> ProfileStore {
     let path = get_profiles_file();
     if path.exists() {
         let content = fs::read_to_string(&path).unwrap_or_default();
-        serde_json::from_str(&content).unwrap_or_default()
+        let mut store: ProfileStore = serde_json::from_str(&content).unwrap_or_default();
+        // Deduplicate profiles by ID — keep the first occurrence of each
+        let before = store.profiles.len();
+        let mut seen = std::collections::HashSet::new();
+        store.profiles.retain(|p| seen.insert(p.id.clone()));
+        if store.profiles.len() < before {
+            // Persist the cleaned-up store
+            let _ = save_profiles(&store);
+        }
+        store
     } else {
         ProfileStore::default()
     }
@@ -43,6 +52,12 @@ pub fn create_profile(name: String) -> Result<Profile, String> {
     app_log(&format!("Creating profile: {}", name));
     let mut store = load_profiles();
     let id = format!("{:x}", md5_hash(&name));
+
+    // Return existing profile if one with this ID already exists
+    if let Some(existing) = store.profiles.iter().find(|p| p.id == id) {
+        app_log(&format!("Profile already exists: {} ({})", name, id));
+        return Ok(existing.clone());
+    }
 
     let data_dir = get_data_dir();
     let profile_dir = data_dir.join("profiles").join(&id);
