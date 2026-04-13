@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-04-12T12:00:00Z",
+  "updated_at": "2026-04-13T13:30:00Z",
   "mods": [
     {
       "name": "MegaHoe",
@@ -36,11 +36,19 @@
     },
     {
       "name": "MegaQoL",
-      "version": "1.9.30",
-      "download_url": "https://github.com/ccmrik/MegaQoL/releases/download/v1.9.30/MegaQoL.dll",
+      "version": "1.10.1",
+      "download_url": "https://github.com/ccmrik/MegaQoL/releases/download/v1.10.1/MegaQoL.dll",
       "dll_name": "MegaQoL.dll",
       "plugin_folder": "MegaQoL",
-      "description": "Quality of life — auto repair, refueller, pet feeder, craft from containers, map teleport, mass farming"
+      "description": "Quality of life — auto repair, refueller, ballista, map teleport, plant anywhere, instant mining"
+    },
+    {
+      "name": "MegaStuff",
+      "version": "1.0.11",
+      "download_url": "https://github.com/ccmrik/MegaStuff/releases/download/v1.0.11/MegaStuff.dll",
+      "dll_name": "MegaStuff.dll",
+      "plugin_folder": "MegaStuff",
+      "description": "Storage & farming — quick deposit, chest auto-pickup, craft from containers, pet feeder, mass harvest, grid planting"
     },
     {
       "name": "MegaFishing",
@@ -52,8 +60,8 @@
     },
     {
       "name": "MegaFactory",
-      "version": "1.1.14",
-      "download_url": "https://github.com/ccmrik/MegaFactory/releases/download/v1.1.14/MegaFactory.dll",
+      "version": "1.1.15",
+      "download_url": "https://github.com/ccmrik/MegaFactory/releases/download/v1.1.15/MegaFactory.dll",
       "dll_name": "MegaFactory.dll",
       "plugin_folder": "MegaFactory",
       "description": "Auto-feed factory stations (Kiln, Smelter, Blast Furnace, Windmill, Spinning Wheel, Eitr Refinery) with work order system"
@@ -76,8 +84,8 @@
     },
     {
       "name": "MegaSkeletons",
-      "version": "1.0.7",
-      "download_url": "https://github.com/ccmrik/MegaSkeletons/releases/download/v1.0.7/MegaSkeletons.dll",
+      "version": "1.0.8",
+      "download_url": "https://github.com/ccmrik/MegaSkeletons/releases/download/v1.0.8/MegaSkeletons.dll",
       "dll_name": "MegaSkeletons.dll",
       "plugin_folder": "MegaSkeletons",
       "description": "Summoned skeleton buffs (health, speed, HoT, attack speed) + portal/dungeon persistence"
