@@ -1,11 +1,11 @@
 {
-  "version": "1.5.11",
-  "notes": "Station Required Materials: toggle to see all ingredients needed by selected stations, with multi-station cascade support",
-  "pub_date": "2026-04-14T05:15:00Z",
+  "version": "1.5.12",
+  "notes": "Station materials: split Craft Materials / Build Materials, filter out weapon upgrade ingredients",
+  "pub_date": "2026-04-14T05:45:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUNtbmV2RkhJSThGc0J6OCs5RzluemRYKzRCSFFudDd6UTVXdXNEdWdveDZReCtXT1U3QWQwVnd3YiszUkptZ3JWZ2lPbjRqY0dOL3RkdDg5cy9oMGc0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2MTQzNTc5CWZpbGU6TWVnYUxvYWRfMS41LjExX3g2NC1zZXR1cC5uc2lzLnppcAp0ZEE5SXhRSFhHMWFlQk44SVU0TXAwRXJ1NlFNTG1YUG9TMzRrdm9SU3VKQ3hmZHRFRlZEOUpsaDNQQmJYWlpkcG5nTW12YmhWNlBPTVRtZVV3WC9EUT09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.11/MegaLoad_1.5.11_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFqZGJHeGJEa1lvc1pLcUVlaXRqYkJZQjFCeGU3OVBIM0UrK3Y2eUExL2g2eFE1ZStTWmphMGtDT24ydnR3SE4yd2lnMW5OZnlaY0s1dGdIYml4QlE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2MTQ0OTMwCWZpbGU6TWVnYUxvYWRfMS41LjEyX3g2NC1zZXR1cC5uc2lzLnppcAp2a2NVM0dwb2IyYkpoakVtSjU4WUVmZHdJZlNHNzNjQXVUdk9KOXVaRWlNVEN6ZGpGTWN3Qys2cUhLM21KQ2J0dWxGcTUwa0psMmdtdkZkZXFJRVBEZz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.12/MegaLoad_1.5.12_x64-setup.nsis.zip"
     }
   }
 }

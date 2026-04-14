@@ -440,7 +440,7 @@ export function ValheimData() {
 
   const stationMaterials = useMemo(() => {
     if (!stationMaterialsMode || activeStations.length === 0) return [];
-    return getStationMaterials(activeStations);
+    return getStationMaterials(activeStations, stationMaterialsMode);
   }, [stationMaterialsMode, activeStations]);
   const subcategoryEntries = Object.entries(subcategoryCounts).sort((a, b) => b[1] - a[1]);
   const hasActiveFilters = query || activeTypes.length > 0 || activeSubcategories.length > 0 || activeBiomes.length > 0 || activeStations.length > 0 || activeFactories.length > 0 || activeVendors.length > 0 || sortBy !== "name-asc";
@@ -782,25 +782,37 @@ export function ValheimData() {
                   <button
                     onClick={() => setStationMaterialsMode(false)}
                     className={cn(
-                      "flex-1 flex items-center justify-center gap-1 py-1 text-[10px] font-medium transition-colors",
+                      "flex-1 flex items-center justify-center py-1 text-[10px] font-medium transition-colors",
                       !stationMaterialsMode
                         ? "bg-brand-500/15 text-brand-400"
                         : "text-zinc-500 hover:text-zinc-300"
                     )}
                   >
-                    Crafted
+                    Items
                   </button>
                   <div className="w-px h-3 bg-zinc-700/50" />
                   <button
-                    onClick={() => setStationMaterialsMode(true)}
+                    onClick={() => setStationMaterialsMode("craft")}
                     className={cn(
-                      "flex-1 flex items-center justify-center gap-1 py-1 text-[10px] font-medium transition-colors",
-                      stationMaterialsMode
+                      "flex-1 flex items-center justify-center py-1 text-[10px] font-medium transition-colors",
+                      stationMaterialsMode === "craft"
                         ? "bg-amber-500/15 text-amber-400"
                         : "text-zinc-500 hover:text-zinc-300"
                     )}
                   >
-                    Materials
+                    Craft Mats
+                  </button>
+                  <div className="w-px h-3 bg-zinc-700/50" />
+                  <button
+                    onClick={() => setStationMaterialsMode("build")}
+                    className={cn(
+                      "flex-1 flex items-center justify-center py-1 text-[10px] font-medium transition-colors",
+                      stationMaterialsMode === "build"
+                        ? "bg-amber-500/15 text-amber-400"
+                        : "text-zinc-500 hover:text-zinc-300"
+                    )}
+                  >
+                    Build Mats
                   </button>
                 </div>
               )}
@@ -934,7 +946,7 @@ export function ValheimData() {
               ))}
               {stationMaterialsMode && activeStations.length > 0 && (
                 <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 text-[11px] text-amber-300 border border-amber-500/20">
-                  Materials View
+                  {stationMaterialsMode === "craft" ? "Craft Materials" : "Build Materials"}
                   <button title="Switch back to items" onClick={() => setStationMaterialsMode(false)}>
                     <X className="w-3 h-3 text-amber-300/50 hover:text-amber-300" />
                   </button>
@@ -968,7 +980,7 @@ export function ValheimData() {
           )}
 
           {stationMaterialsMode && activeStations.length > 0 ? (
-            <StationMaterialsView materials={stationMaterials} stations={activeStations} onItemClick={selectItem} />
+            <StationMaterialsView materials={stationMaterials} stations={activeStations} mode={stationMaterialsMode} onItemClick={selectItem} />
           ) : items.length === 0 ? (
             <div className="text-center py-12">
               <Package className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
@@ -1838,16 +1850,24 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
 }
 
 // ── Station Materials View ─────────────────────────────────
-function StationMaterialsView({ materials, stations, onItemClick }: {
+function StationMaterialsView({ materials, stations, mode, onItemClick }: {
   materials: { id: string; name: string; amount: number }[];
   stations: string[];
+  mode: "craft" | "build";
   onItemClick: (item: ValheimItem) => void;
 }) {
   const totalCraftable = useMemo(() => {
     let count = 0;
-    for (const s of stations) count += getStationItems(s).length;
+    for (const s of stations) {
+      for (const item of getStationItems(s)) {
+        if (mode === "craft" && item.type !== "BuildPiece") count++;
+        if (mode === "build" && item.type === "BuildPiece") count++;
+      }
+    }
     return count;
-  }, [stations]);
+  }, [stations, mode]);
+  const modeLabel = mode === "craft" ? "Crafting Materials" : "Building Materials";
+  const modeDesc = mode === "craft" ? "craft" : "build";
 
   return (
     <div className="space-y-3">
@@ -1857,13 +1877,13 @@ function StationMaterialsView({ materials, stations, onItemClick }: {
           <Package className="w-5 h-5 text-amber-400 shrink-0" />
           <div>
             <h2 className="text-sm font-semibold text-zinc-200">
-              Required Materials
+              {modeLabel}
               <span className="text-zinc-500 font-normal ml-2">
                 ({materials.length} unique)
               </span>
             </h2>
             <p className="text-[11px] text-zinc-500 mt-0.5">
-              All ingredients needed to craft {totalCraftable} items at{" "}
+              All ingredients needed to {modeDesc} {totalCraftable} items at{" "}
               {stations.join(", ")}
             </p>
           </div>

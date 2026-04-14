@@ -456,11 +456,17 @@ export function getStationItems(stationName: string): ValheimItem[] {
   return VALHEIM_ITEMS.filter((i) => i.station === stationName);
 }
 
-/** Get all unique ingredients needed to craft everything at the given stations */
-export function getStationMaterials(stationNames: string[]): CartMaterial[] {
+// Types that are "items in their own right" — exclude from materials lists when used as ingredients
+const ITEM_INGREDIENT_TYPES = new Set(["Weapon", "Armor", "Tool", "Ammo"]);
+
+/** Get all unique raw ingredients needed to craft/build at the given stations */
+export function getStationMaterials(stationNames: string[], mode: "craft" | "build"): CartMaterial[] {
   const totals = new Map<string, CartMaterial>();
   for (const name of stationNames) {
     for (const item of getStationItems(name)) {
+      // Split: "craft" = non-BuildPiece items, "build" = BuildPiece items
+      if (mode === "craft" && item.type === "BuildPiece") continue;
+      if (mode === "build" && item.type !== "BuildPiece") continue;
       for (const ing of item.recipe) {
         const prev = totals.get(ing.id);
         totals.set(ing.id, { id: ing.id, name: ing.name, amount: (prev?.amount || 0) + ing.amount });
@@ -471,6 +477,15 @@ export function getStationMaterials(stationNames: string[]): CartMaterial[] {
           totals.set(r.id, { id: r.id, name: r.name, amount: (prev?.amount || 0) + r.amount });
         }
       }
+    }
+  }
+  // Filter out ingredients that are themselves craftable weapons/armor/tools
+  // (e.g. Berserkir Axes used to craft Bleeding Berserkir Axes — that's an upgrade path, not a raw material)
+  const itemMap = new Map(VALHEIM_ITEMS.map(i => [i.id, i]));
+  for (const [id] of totals) {
+    const ingItem = itemMap.get(id);
+    if (ingItem && ITEM_INGREDIENT_TYPES.has(ingItem.type)) {
+      totals.delete(id);
     }
   }
   return [...totals.values()].sort((a, b) => a.name.localeCompare(b.name));
@@ -547,9 +562,9 @@ interface ValheimDataState {
   setSelectedVendor: (vendor: string | null) => void;
   setViewMode: (mode: ViewMode) => void;
   setTableSort: (key: TableSortKey) => void;
-  // Station materials mode
-  stationMaterialsMode: boolean;
-  setStationMaterialsMode: (on: boolean) => void;
+  // Station materials mode: false = show items, "craft" = craft materials, "build" = build materials
+  stationMaterialsMode: false | "craft" | "build";
+  setStationMaterialsMode: (mode: false | "craft" | "build") => void;
   // Cart
   cartItems: CartEntry[];
   cartOpen: boolean;
