@@ -1,11 +1,11 @@
 {
-  "version": "1.5.12",
-  "notes": "Station materials: split Craft Materials / Build Materials, filter out weapon upgrade ingredients",
-  "pub_date": "2026-04-14T05:45:00Z",
+  "version": "1.5.13",
+  "notes": "Fix Food Preparation Table: uncooked items now listed correctly, cooked items are Stone Oven outputs",
+  "pub_date": "2026-04-14T06:30:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFqZGJHeGJEa1lvc1pLcUVlaXRqYkJZQjFCeGU3OVBIM0UrK3Y2eUExL2g2eFE1ZStTWmphMGtDT24ydnR3SE4yd2lnMW5OZnlaY0s1dGdIYml4QlE0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2MTQ0OTMwCWZpbGU6TWVnYUxvYWRfMS41LjEyX3g2NC1zZXR1cC5uc2lzLnppcAp2a2NVM0dwb2IyYkpoakVtSjU4WUVmZHdJZlNHNzNjQXVUdk9KOXVaRWlNVEN6ZGpGTWN3Qys2cUhLM21KQ2J0dWxGcTUwa0psMmdtdkZkZXFJRVBEZz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.12/MegaLoad_1.5.12_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdKcEdVVW9wYnFtMzZMb3Badk9OZE9UaDk4MTdESXhNSTBzY2YzUHhZcUpGTUN0RW5Mc3pXOHlHNXpQZkxDTkhQNEl1ZGxuTy9qR2tWMW9GWjc5Q1FRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2MTQ2MDk2CWZpbGU6TWVnYUxvYWRfMS41LjEzX3g2NC1zZXR1cC5uc2lzLnppcAo4bk11TjZMalZ5cTgxUDlSVVRJaUVlT1JXTkcvaGFCNlNSZnVIdEJOd1pyQTdwampEYkFER21PdmFtQ2pyT3FjNTdDK3E0OXpLRkNGM0VwOWR2cVJDUT09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.13/MegaLoad_1.5.13_x64-setup.nsis.zip"
     }
   }
 }

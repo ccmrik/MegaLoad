@@ -1537,19 +1537,6 @@ const seenIds = new Set();
 // Feast*_Material items are craft intermediates with the same display name as the base feast.
 // We skip them as standalone entries and merge their recipe/station/description into the base.
 const feastMaterialMap = {};
-// Also handle oven-baked foods: Uncooked/Dough intermediates → cooked final product
-const OVEN_FOOD_MAP = {
-  "BreadDough": "Bread",
-  "FishAndBreadUncooked": "FishAndBread",
-  "HoneyGlazedChickenUncooked": "HoneyGlazedChicken",
-  "LoxPieUncooked": "LoxPie",
-  "MagicallyStuffedShroomUncooked": "MagicallyStuffedShroom",
-  "MeatPlatterUncooked": "MeatPlatter",
-  "MisthareSupremeUncooked": "MisthareSupreme",
-  "PiquantPieUncooked": "PiquantPie",
-  "RoastedCrustPieUncooked": "RoastedCrustPie",
-  "VikingCupcakeUncooked": "VikingCupcake",
-};
 for (const item of items) {
   if (item.prefab.endsWith("_Material") && item.prefab.startsWith("Feast")) {
     const basePrefab = item.prefab.replace("_Material", "");
@@ -1559,14 +1546,10 @@ for (const item of items) {
       stack: item.maxStackSize,
     };
   }
-  if (OVEN_FOOD_MAP[item.prefab]) {
-    feastMaterialMap[OVEN_FOOD_MAP[item.prefab]] = {
-      recipe: recipeMap[item.prefab],
-      description: item.description,
-      stack: item.maxStackSize,
-    };
-  }
 }
+// Note: Oven food intermediates (BreadDough, LoxPieUncooked, etc.) are NO LONGER merged
+// into cooked products. They exist as standalone Food Prep Table items, and the cooked
+// products come from the Stone Oven (a processing station).
 
 // Process items
 for (const item of items) {
@@ -1576,9 +1559,8 @@ for (const item of items) {
   // Skip DvergerArbalest_shoot variants (these are attack actions, not the actual crossbow)
   if (item.prefab.includes("_shoot")) continue;
 
-  // Skip feast material variants and oven food intermediates (merged into base entries above)
+  // Skip feast material variants (merged into base entries above)
   if (item.prefab.endsWith("_Material") && item.prefab.startsWith("Feast")) continue;
-  if (OVEN_FOOD_MAP[item.prefab]) continue;
   
   const name = loc(item.name);
   if (!name || name.startsWith("$")) continue; // Skip if localization failed
@@ -2091,6 +2073,17 @@ const ITEM_FIXUPS = {
   // Creature renames / subcategory fixes
   "GoblinShaman_Hildir": { name: "Zil", subcategory: "Miniboss" },
   "GoblinBrute_Hildir":  { name: "Thungr", subcategory: "Miniboss" },
+  // Stone Oven outputs — these have no recipe in the game data, they're baked from uncooked items
+  "Bread":                    { source: ["Cooking"] },
+  "FishAndBread":             { source: ["Cooking"] },
+  "HoneyGlazedChicken":      { source: ["Cooking"] },
+  "LoxPie":                   { source: ["Cooking"] },
+  "MagicallyStuffedShroom":   { source: ["Cooking"] },
+  "MeatPlatter":              { source: ["Cooking"] },
+  "MisthareSupreme":          { source: ["Cooking"] },
+  "PiquantPie":               { source: ["Cooking"] },
+  "RoastedCrustPie":          { source: ["Cooking"] },
+  "VikingCupcake":            { source: ["Cooking"] },
 };
 
 // Items to remove entirely (internal duplicates / bogus entries)
@@ -2101,10 +2094,9 @@ const ITEM_REMOVE = new Set([
   "Hive",               // Redundant with SeekerQueen (The Queen)
 ]);
 
-// Items to add (missing from extraction — oven intermediates merged away, but still used as ingredients)
+// Items to add (missing from extraction)
 const ITEM_ADDITIONS = [
   {id:"Pot_Shard_Red",token:"$item_pot_shard_red",name:"Red Pot Shard",type:"Material",subcategory:"Material",description:"A fragment of something brittle.",biomes:["Ashlands"],source:["Destructible"],station:"",stationLevel:0,maxQuality:1,stack:50,weight:2,value:0,recipe:[],upgradeCosts:[],drops:[],worldSources:[],stats:[],wikiUrl:"https://valheim.fandom.com/wiki/Pot_shard",wikiGroup:""},
-  {id:"BreadDough",token:"$item_breaddough",name:"Bread Dough",type:"Material",subcategory:"Material",description:"Ready for the oven.",biomes:["Plains"],source:["Crafting"],station:"Food Preparation Table",stationLevel:1,maxQuality:1,stack:20,weight:0.5,value:0,recipe:[{"id":"BarleyFlour","name":"Barley Flour","amount":10}],upgradeCosts:[],drops:[],worldSources:[],stats:[],wikiUrl:"","wikiGroup":""},
 ];
 
 // Remove blacklisted items
