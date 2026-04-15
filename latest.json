@@ -1,11 +1,11 @@
 {
-  "version": "1.5.15",
-  "notes": "Biome column sorts by progression order (Meadows→Deep North), not alphabetically",
-  "pub_date": "2026-04-14T07:15:00Z",
+  "version": "1.5.16",
+  "notes": "Auto-sync player data characters — runs globally, no more manual Push required",
+  "pub_date": "2026-04-15T19:11:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUhxREd5ZzJWWWJ3b09hK2wvUUQ5U2cxMXVUT1N1b1FWWDZETXAzTjVJakRCWW9HV3VFay9EazhucittUzdqakxpZy8yT3JsZjRzREV6VUM3ZFlURFFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2MTQ4MDQyCWZpbGU6TWVnYUxvYWRfMS41LjE1X3g2NC1zZXR1cC5uc2lzLnppcAovRUJnZ0FHUHNjYjR5WHhuTGRvUWdMaHl3dkNuYW54NTZuOGhmTy9oYlJWbFZUc0Z1Tk5BRm0wdE05SXJ1c0wvYWFadXdDQmpqT1NOZXhLMlkzUmpCQT09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.15/MegaLoad_1.5.15_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUF6V1lXaGZURkRlV2d0Z1FYNm9EaWE0SkJrN09JRjJHbnVPOGlzMW1Dcy9sVmYyU0Y3Q2g2NWM1VzFPQzdjSlpUcHIzRU8xTU52TUNqTEhGWjZNU3dBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2MjQ0Mjg4CWZpbGU6TWVnYUxvYWRfMS41LjE2X3g2NC1zZXR1cC5uc2lzLnppcApTbnA5ZFZUVG9SVEpEN3ZqZFRZRVBJY0dRUXBkMTBqZ3hGT2lSbk4wTkhQRFhPaGI1aVVPdDZHbUxKTTU3S2ZadDBzWGN4bk13RWt0a2FNdThWeFNDQT09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.16/MegaLoad_1.5.16_x64-setup.nsis.zip"
     }
   }
 }
