@@ -30,6 +30,7 @@ import {
   Crown,
 } from "lucide-react";
 import { cn } from "../lib/utils";
+import { SyncingOverlay } from "../components/SyncingOverlay";
 
 export function Browse() {
   const { activeProfile } = useProfileStore();
@@ -227,7 +228,8 @@ export function Browse() {
   }
 
   return (
-    <div className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="relative flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <SyncingOverlay />
       {/* Toast */}
       {toast && (
         <div className="fixed top-14 right-6 z-50 px-4 py-2.5 rounded-lg bg-brand-500/90 text-zinc-950 text-sm font-medium shadow-xl animate-in slide-in-from-top-2 duration-300 max-w-sm">

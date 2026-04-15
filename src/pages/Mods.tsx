@@ -14,6 +14,7 @@ import {
 import { cn } from "../lib/utils";
 import { open } from "@tauri-apps/plugin-dialog";
 import { installMod, validateBepinex, findBepinexSources, installBepinexCore, downloadBepinex, detectValheimPath, type BepInExStatus } from "../lib/tauri-api";
+import { SyncingOverlay } from "../components/SyncingOverlay";
 
 export function Mods() {
   const { activeProfile } = useProfileStore();
@@ -153,7 +154,8 @@ export function Mods() {
   }
 
   return (
-    <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+    <div className="relative space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <SyncingOverlay />
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-zinc-100">Mods</h1>

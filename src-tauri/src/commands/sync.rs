@@ -671,7 +671,15 @@ fn sync_character_path(user_id: &str, char_name: &str) -> String {
 }
 
 #[command]
-pub fn sync_push_player_data() -> Result<u32, String> {
+pub async fn sync_push_player_data() -> Result<u32, String> {
+    // Run on a blocking thread so the Tauri IPC pool stays free for other
+    // commands (IdentityGate, identity checks, UI queries, etc.)
+    tauri::async_runtime::spawn_blocking(sync_push_player_data_impl)
+        .await
+        .map_err(|e| format!("Player sync task panicked: {}", e))?
+}
+
+fn sync_push_player_data_impl() -> Result<u32, String> {
     app_log("Sync push player data: starting");
     let settings = load_sync_settings();
     if !settings.enabled {
@@ -742,7 +750,13 @@ pub fn sync_push_player_data() -> Result<u32, String> {
 }
 
 #[command]
-pub fn sync_pull_player_data() -> Result<Vec<CharacterData>, String> {
+pub async fn sync_pull_player_data() -> Result<Vec<CharacterData>, String> {
+    tauri::async_runtime::spawn_blocking(sync_pull_player_data_impl)
+        .await
+        .map_err(|e| format!("Player pull task panicked: {}", e))?
+}
+
+fn sync_pull_player_data_impl() -> Result<Vec<CharacterData>, String> {
     let settings = load_sync_settings();
     if !settings.enabled {
         return Err("Cloud sync is not enabled".to_string());

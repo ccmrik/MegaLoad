@@ -1,10 +1,12 @@
 import { useEffect, useRef, useCallback } from "react";
 import { useSyncStore } from "../stores/syncStore";
 import { useProfileStore } from "../stores/profileStore";
+import { useIdentityStore } from "../stores/identityStore";
 import { useToastStore } from "../stores/toastStore";
 
 const POLL_INTERVAL_MS = 30_000; // Check for remote changes every 30s
 const DEBOUNCE_MS = 3_000; // Push 3s after FIRST change (non-resetting)
+const INITIAL_PULL_DELAY_MS = 2_000; // Let IdentityGate clear first
 
 /**
  * Auto-sync hook — handles:
@@ -24,9 +26,11 @@ export function useAutoSync() {
   const pushAllProfiles = useSyncStore((s) => s.pushAllProfiles);
   const addToast = useToastStore((s) => s.addToast);
   const activeProfileId = useProfileStore((s) => s.activeProfileId);
+  const identity = useIdentityStore((s) => s.identity);
 
   const pollTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const debounceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const initialPullTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const initialPullDone = useRef(false);
 
   // Load sync status on mount
@@ -34,30 +38,39 @@ export function useAutoSync() {
     fetchSyncStatus();
   }, [fetchSyncStatus]);
 
-  // Initial pull when sync is enabled and app starts
+  // Deferred initial pull — wait for identity + 2s so IdentityGate renders first
   useEffect(() => {
-    if (!enabled || !autoSync || initialPullDone.current) return;
+    if (!enabled || !autoSync || !identity || initialPullDone.current) return;
 
-    const doPull = async () => {
-      try {
-        const hasChanges = await checkForRemoteChanges();
-        if (hasChanges) {
-          await pullAllProfiles();
-          addToast({
-            type: "info",
-            title: "Cloud Sync",
-            message: "Profiles synced from cloud",
-            duration: 3000,
-          });
-        }
-      } catch {
-        // Silent fail on initial pull
-      }
+    initialPullTimerRef.current = setTimeout(() => {
+      initialPullTimerRef.current = null;
       initialPullDone.current = true;
-    };
 
-    doPull();
-  }, [enabled, autoSync, checkForRemoteChanges, pullAllProfiles, addToast]);
+      (async () => {
+        try {
+          const hasChanges = await checkForRemoteChanges();
+          if (hasChanges) {
+            await pullAllProfiles();
+            addToast({
+              type: "info",
+              title: "Cloud Sync",
+              message: "Profiles synced from cloud",
+              duration: 3000,
+            });
+          }
+        } catch {
+          // Silent fail on initial pull
+        }
+      })();
+    }, INITIAL_PULL_DELAY_MS);
+
+    return () => {
+      if (initialPullTimerRef.current) {
+        clearTimeout(initialPullTimerRef.current);
+        initialPullTimerRef.current = null;
+      }
+    };
+  }, [enabled, autoSync, identity, checkForRemoteChanges, pullAllProfiles, addToast]);
 
   // Periodic polling for remote changes
   useEffect(() => {
