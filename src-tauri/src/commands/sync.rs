@@ -672,21 +672,33 @@ fn sync_character_path(user_id: &str, char_name: &str) -> String {
 
 #[command]
 pub fn sync_push_player_data() -> Result<u32, String> {
+    app_log("Sync push player data: starting");
     let settings = load_sync_settings();
     if !settings.enabled {
+        app_log("Sync push player data: aborted — cloud sync disabled");
         return Err("Cloud sync is not enabled".to_string());
     }
 
     let identity = get_megaload_identity()?;
     let user_id = &identity.user_id;
-    let characters = list_characters()?;
+    let characters = match list_characters() {
+        Ok(c) => c,
+        Err(e) => {
+            app_log(&format!("Sync push player data: list_characters failed — {}", e));
+            return Err(e);
+        }
+    };
+    app_log(&format!("Sync push player data: found {} local characters", characters.len()));
+
     let mut pushed: u32 = 0;
+    let mut skipped: u32 = 0;
 
     for summary in &characters {
         let char_data = match read_character(summary.path.clone()) {
             Ok(data) => data,
             Err(e) => {
                 app_log(&format!("Sync: skipping {} — {}", summary.name, e));
+                skipped += 1;
                 continue;
             }
         };
@@ -696,24 +708,36 @@ pub fn sync_push_player_data() -> Result<u32, String> {
 
         let sha = match github_get_file(&remote_path) {
             Ok((remote_content, sha)) => {
-                if remote_content == json { continue; }
+                if remote_content == json {
+                    skipped += 1;
+                    continue;
+                }
                 Some(sha)
             }
             Err(_) => None,
         };
 
-        github_put_file(
+        match github_put_file(
             &remote_path,
             json.as_bytes(),
             &format!("Sync character {} — {}", char_data.name, identity.display_name),
             sha.as_deref(),
-        )?;
-
-        pushed += 1;
-        app_log(&format!("Sync pushed character: {}", char_data.name));
+        ) {
+            Ok(_) => {
+                pushed += 1;
+                app_log(&format!("Sync pushed character: {}", char_data.name));
+            }
+            Err(e) => {
+                app_log(&format!("Sync push failed for {}: {}", char_data.name, e));
+                return Err(e);
+            }
+        }
     }
 
-    app_log(&format!("Sync push player data: {} characters", pushed));
+    app_log(&format!(
+        "Sync push player data: {} pushed, {} skipped (unchanged or unreadable)",
+        pushed, skipped
+    ));
     Ok(pushed)
 }
 

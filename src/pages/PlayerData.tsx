@@ -344,7 +344,7 @@ export function PlayerData() {
                     setTimeout(() => setSyncToast(null), 3000);
                   }
                 }}
-                disabled={syncing || !character}
+                disabled={syncing}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-cyan-500/10 text-cyan-400 hover:bg-cyan-500/20 transition-colors disabled:opacity-40"
                 title="Push character data to cloud"
               >

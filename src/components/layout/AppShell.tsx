@@ -5,10 +5,12 @@ import { IdentityGate } from "./IdentityGate";
 import { ToastContainer } from "../ToastContainer";
 import { useLiveUpdateChecks } from "../../hooks/useLiveUpdateChecks";
 import { useAutoSync } from "../../hooks/useAutoSync";
+import { useAutoPlayerSync } from "../../hooks/useAutoPlayerSync";
 
 export function AppShell() {
   useLiveUpdateChecks();
   useAutoSync();
+  useAutoPlayerSync();
 
   return (
     <div className="h-screen w-screen flex flex-col overflow-hidden">
