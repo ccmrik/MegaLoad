@@ -475,18 +475,18 @@ const RAW_MATERIAL_BIOME = {
   "ElderBark": "Black Forest",
   "YmirRemains": "Black Forest",
   "CryptKey": "Black Forest",
-  "FishingRod": "Black Forest",
-  "FishingBait": "Black Forest",
-  "BarberKit": "Black Forest",
-  "BarrelRings": "Black Forest",
-  "HelmetDverger": "Black Forest",
-  "BeltStrength": "Black Forest",
-  "HelmetSweatBand": "Black Forest",
-  "Thunderstone": "Black Forest",
+  "FishingRod": "Black Forest",           // Haldor vendor (BF)
+  "FishingBait": "Black Forest",          // Haldor vendor (BF)
+  "BarrelRings": "Black Forest",          // Haldor vendor (BF)
+  "HelmetDverger": "Black Forest",        // Haldor vendor (BF)
+  "BeltStrength": "Black Forest",         // Haldor vendor (BF)
+  "HelmetSweatBand": "Meadows",           // Hildir vendor (Meadows)
+  "Thunderstone": "Black Forest",         // Haldor vendor (BF) — after Elder
   "AncientSeed": "Black Forest",
-  "FireworksRocket_White": "Black Forest", // Haldor vendor — base firework ingredient
-  "CandleWick": "Black Forest",           // Haldor vendor — candle ingredient
-  "Ironpit": "Black Forest",              // Haldor vendor (also found in Ashlands, lowest tier for calc)
+  "BarberKit": "Meadows",                 // Hildir vendor (Meadows)
+  "FireworksRocket_White": "Meadows",     // Hildir vendor (Meadows) — after Bronze Chest
+  "CandleWick": "Swamp",                  // Bog Witch vendor (Swamp) — moved in Bog Witch update
+  "Ironpit": "Meadows",                   // Hildir vendor (Meadows) — also decorative in Ashlands
   // Amber, AmberPearl, Ruby, SilverNecklace, Coins moved to BIOME_OVERRIDE (multi-biome loot)
   "BirchSeeds": "Meadows",
 
@@ -591,7 +591,7 @@ const RAW_MATERIAL_BIOME = {
   "Pot_Shard_Green": "Ashlands",
   "Pot_Shard_Red": "Ashlands",
   "BellFragment": "Ashlands",
-  "VineGreenSeeds": "Black Forest",  // Purchased from Haldor
+  "VineGreenSeeds": "Swamp",  // Bog Witch vendor — moved from Haldor in Bog Witch update
   "Proustitite": "Ashlands",
   "Grausten": "Ashlands",
   "BoneMawSerpentMeat": "Ashlands",
@@ -664,7 +664,7 @@ const BIOME_OVERRIDE = {
   // Regional spices
   "SpicePlains": ["Plains"],
   "SpiceMountains": ["Mountain"],
-  "SpiceForests": ["Black Forest"],
+  "SpiceForests": ["Swamp"],          // Bog Witch vendor — moved from Haldor in Bog Witch update
   // Hildir quest keys
   "HildirKey_forestcrypt": ["Black Forest"],
   "HildirKey_plainsfortress": ["Plains"],
@@ -730,7 +730,7 @@ const BIOME_OVERRIDE = {
   // ─── Ores & mining materials ───
   "IronOre": ["Swamp"],
   "FlametalOreNew": ["Ashlands"],
-  "CopperScrap": ["Black Forest"],
+  "CopperScrap": ["Black Forest", "Mistlands"],  // BF copper deposits + Mistlands ancient armor/sword mounds
   "BronzeScrap": ["Ashlands"],
   "Bronze": ["Black Forest", "Mountain", "Ashlands"],
   "BlackCore": ["Mistlands"],
@@ -784,11 +784,15 @@ const BIOME_OVERRIDE = {
   "PungentPebbles": ["Ashlands"],
 
   // ─── Vendor items (biome of the vendor) ───
-  "CandleWick": ["Black Forest"],        // Haldor vendor
+  "CandleWick": ["Swamp"],                // Bog Witch vendor (moved from Haldor)
   "BlobVial": ["Swamp"],                  // Bog Witch vendor
-  "FireworksRocket_White": ["Black Forest"], // Haldor vendor
-  "Ironpit": ["Black Forest", "Ashlands"], // Haldor vendor + found in Ashlands
-  "VineGreenSeeds": ["Black Forest"],      // Haldor vendor (Ivy Seeds)
+  "FireworksRocket_White": ["Meadows"],   // Hildir vendor (after Bronze Chest)
+  "Ironpit": ["Meadows"],                 // Hildir vendor (also decorative in Ashlands)
+  "VineGreenSeeds": ["Swamp"],            // Bog Witch vendor (Ivy Seeds — moved from Haldor)
+  "BarberKit": ["Meadows"],               // Hildir vendor
+  "HelmetSweatBand": ["Meadows"],         // Hildir vendor (Headband)
+  "TankardOdin": [],                      // DLC-only beta supporter item — no biome
+  "AxeHead1": ["Meadows"],                // Found in Abandoned House ruins (variant 6) in Meadows
 
   // ─── Trophies (biome of the creature) ───
   "TrophyDraugr": ["Meadows", "Swamp", "Mountain"],
@@ -822,7 +826,7 @@ const BIOME_OVERRIDE = {
   "StaminaUpgrade_Troll": ["Black Forest"],
   "StaminaUpgrade_Wraith": ["Swamp"],
   "VegvisirShard_Bonemass": ["Swamp"],
-  "AxeHead1": ["Black Forest"],
+  // AxeHead1 moved to Vendor section above (Meadows)
   "AxeHead2": ["Swamp"],
 
   // ─── Miscellaneous ───
@@ -1040,24 +1044,8 @@ const WORLD_DROPS = {
     {source: "Farming", biome: "Mountain", type: "Pickup"},
   ],
   // ─── Spices ───
-  "SpiceForests": [
-    {source: "Herb Node", biome: "Black Forest", type: "Pickup"},
-  ],
-  "SpicePlains": [
-    {source: "Herb Node", biome: "Plains", type: "Pickup"},
-  ],
-  "SpiceMountains": [
-    {source: "Herb Node", biome: "Mountain", type: "Pickup"},
-  ],
-  "SpiceOceans": [
-    {source: "Herb Node", biome: "Ocean", type: "Pickup"},
-  ],
-  "SpiceMistlands": [
-    {source: "Herb Node", biome: "Mistlands", type: "Pickup"},
-  ],
-  "SpiceAshlands": [
-    {source: "Herb Node", biome: "Ashlands", type: "Pickup"},
-  ],
+  // All spices are sold by Bog Witch (after defeating the corresponding boss/serpent).
+  // No world pickup source — removed obsolete "Herb Node" entries.
   "VineberrySeeds": [
     {source: "Ground Spawn", biome: "Ashlands", type: "Pickup"},
   ],
@@ -1150,26 +1138,31 @@ const WORLD_DROPS = {
 const CHEST_LOOT = {
   "Meadows Chest": {
     biome: "Meadows",
-    items: ["Coins", "Amber", "AmberPearl", "Feathers", "Flint", "ArrowFlint", "ArrowFire", "Torch"],
+    // Verified: Meadows treasure chests / viking graveyard / abandoned house ruins
+    items: ["Coins", "Amber", "AmberPearl", "Ruby", "SilverNecklace", "Feathers", "Flint", "ArrowFlint", "ArrowFire", "Torch"],
   },
   "Burial Chamber Chest": {
     biome: "Black Forest",
+    // Verified: Burial Chamber chests. LeatherScraps removed (not confirmed - confused with Troll Cave / floor loot).
     items: ["Coins", "Amber", "AmberPearl", "Ruby", "SurtlingCore", "BoneFragments",
-            "Feathers", "ArrowFlint", "ArrowFire", "LeatherScraps"],
+            "Feathers", "ArrowFlint", "ArrowFire"],
   },
   "Troll Cave Chest": {
     biome: "Black Forest",
-    items: ["Coins", "Ruby", "BoneFragments", "DeerHide", "TrollHide",
-            "LeatherScraps", "ArrowFlint"],
+    // Verified: Troll Cave chests. TrollHide removed (mob drop only). Amber/AmberPearl reported by guides.
+    items: ["Coins", "Amber", "AmberPearl", "Ruby", "BoneFragments", "DeerHide", "LeatherScraps"],
   },
   "Sunken Crypt Chest": {
     biome: "Swamp",
+    // Verified: Sunken Crypt chests. Feathers removed (not confirmed). Added Entrails, Ooze, ArrowIron (Ironhead).
     items: ["Coins", "Amber", "AmberPearl", "Ruby", "IronScrap", "Chain",
-            "WitheredBone", "ElderBark", "Feathers", "ArrowPoison"],
+            "WitheredBone", "ElderBark", "Entrails", "Ooze", "ArrowPoison", "ArrowIron"],
   },
   "Frost Cave Chest": {
     biome: "Mountain",
-    items: ["Coins", "OnionSeeds", "ArrowFrost", "WolfClaw", "WolfHairBundle"],
+    // Verified: Frost Cave chests contain coins, valuables, obsidian. Fenris Hair/Claw, Frost Arrows, OnionSeeds REMOVED.
+    // (Fenris Hair/Claw drop from altars/wall hangings inside caves, not chests. Onion Seeds are in surface ruined towers.)
+    items: ["Coins", "Obsidian", "Ruby", "SilverNecklace"],
   },
   "Fuling Village Chest": {
     biome: "Plains",
@@ -1177,12 +1170,16 @@ const CHEST_LOOT = {
   },
   "Dvergr Chest": {
     biome: "Mistlands",
-    items: ["Coins", "Softtissue", "DvergrNeedle", "BlackCore", "JuteRed"],
+    // Verified: Infested Mine treasure-room chests contain coins, sausages, minor meads, jute, soft tissue.
+    // BlackCore REMOVED (found on stands/poles in mines, not chests).
+    // DvergrNeedle REMOVED (only from Dvergr Component Crates in surface settlements).
+    items: ["Coins", "Softtissue", "JuteRed", "Sausages", "MeadHealthMinor", "MeadStaminaMinor", "MeadTasty"],
   },
   "Charred Fortress Chest": {
     biome: "Ashlands",
     items: ["Coins", "FlametalNew", "GemstoneBlue", "GemstoneGreen", "GemstoneRed",
-            "CeramicPlate", "BronzeScrap", "CharredBone", "CharredCogwheel", "MoltenCore"],
+            "CeramicPlate", "BronzeScrap", "CharredBone", "CharredCogwheel", "MoltenCore",
+            "Charredskull", "CelestialFeather"],
   },
 };
 
@@ -2061,8 +2058,24 @@ const ITEM_FIXUPS = {
   "MoltenCore":       { source: ["Pickup", "Chest Loot"] },
   "VoltureEgg":       { source: ["Creature Drop", "Pickup"] },
   "Fish11":           { source: ["Fishing"] },  // Magmafish
-  "Ironpit":          { biomes: ["Meadows", "Ashlands"], source: ["Vendor", "Pickup"] },
+  "Ironpit":          { biomes: ["Meadows"], source: ["Vendor"] },  // Hildir vendor (decorative in Ashlands but not pickable there)
   "PungentPebbles":   { biomes: ["Swamp"], source: ["Vendor"] },
+  // Mistlands materials wrongly tagged as chest loot
+  "BlackCore":        { source: ["Pickup", "Creature Drop"] },  // Stand pickup in Infested Mines + Seeker Soldier drops
+  "DvergrNeedle":     { source: ["Destructible"] },              // Dvergr Component Crates (surface settlements)
+  "JuteRed":          { source: ["Chest Loot", "Destructible"] }, // Dvergr Chests + Dvergr curtains/banners
+  // Vendor-source overrides (items moved to vendors / fix from extraction)
+  "CandleWick":              { biomes: ["Swamp"],   source: ["Vendor"] },     // Bog Witch
+  "VineGreenSeeds":          { biomes: ["Swamp"],   source: ["Vendor"] },     // Bog Witch (Ivy Seeds)
+  "SpiceForests":            { biomes: ["Swamp"],   source: ["Vendor"] },     // Bog Witch (Woodland Herb Blend)
+  "FireworksRocket_White":   { biomes: ["Meadows"], source: ["Vendor"] },     // Hildir
+  "BarberKit":               { biomes: ["Meadows"], source: ["Vendor"] },     // Hildir
+  "HelmetSweatBand":         { biomes: ["Meadows"], source: ["Vendor"] },     // Hildir
+  "Sparkler":                { biomes: ["Meadows"], source: ["Vendor"] },     // Hildir
+  "AxeHead1":                { biomes: ["Meadows"], source: ["Pickup"] },     // Abandoned House ruins (variant 6)
+  "TankardOdin":             { biomes: [],          source: ["DLC (Unobtainable)"] },  // Beta supporter DLC only
+  "Tankard":                 { source: ["Crafting"] },                         // Workbench-crafted only
+  "BogWitchKvastur":         { biomes: ["Swamp"] },
   "CeramicPlate":     { biomes: ["Mistlands"], source: ["Crafting"] },
   "BoneFragments":    { biomes: ["Meadows", "Black Forest", "Swamp", "Mountain", "Plains"] },
   // Flametal is smelted at Blast Furnace, not chest loot

@@ -1,11 +1,11 @@
 {
-  "version": "1.5.17",
-  "notes": "Fast startup — player sync deferred to background, runs on blocking thread pool. Mod pages lock during profile sync; all other pages stay usable.",
-  "pub_date": "2026-04-15T19:29:00Z",
+  "version": "1.5.18",
+  "notes": "Valheim data accuracy: corrected Dvergr Chest contents (no Black Core/Extractor — added Sausages, Minor Healing/Stamina/Tasty Mead), reworked Frost Cave / Sunken Crypt / Burial Chamber / Troll Cave / Meadows / Charred Fortress chest loot, moved Hildir/Bog Witch vendor items to correct biomes (Barber Kit, Basic Fireworks → Meadows; Candle Wick, Ivy Seeds, Woodland Herb Blend → Swamp).",
+  "pub_date": "2026-04-15T22:45:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUVDbDZ0aUJzRDR5VzRVd2FpNUZ4M1BoRGswVXEwUUtFQ3J3eUp6Qkx6Y0VyNDkzVWdGQVZSTVg3L09vVnBzcU4xNDR4bTQxN3VSek03TDVDcmxuU3c0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2MjQ1Mzc0CWZpbGU6TWVnYUxvYWRfMS41LjE3X3g2NC1zZXR1cC5uc2lzLnppcAp2NTk1a2VLYi8ySjdkRGhNM2xldnhmRnU5WGI0Z1BUMTBFNSsxZTNoUStLWjk5d0FDa3N2RGxaNDdDVXF4MkVxQktTZjFiTS9MRHRNa2d3L1BHSk5CQT09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.17/MegaLoad_1.5.17_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUtRY3ZienIzN3pjbWtmMUxzdzNBbVNRdThnREZPTzZyYkgrYjRrQ2xta203YjJHT2hXNTQxRVRKM2Z0bWN5N2RMRVhFOUZJNWZXcEw3bkdPZzhIc1FVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2MjkyNzc0CWZpbGU6TWVnYUxvYWRfMS41LjE4X3g2NC1zZXR1cC5uc2lzLnppcAowMlBCdnMwalBiZXkrdm1ETG5MYW9vYW5OVUE1eG8xWnNmM0ZaYTk5S3dDRlprMVJGeGNlNTZ3MnBaNGorVFlQWEVTODViZ3NCcXdIays3Ky8xeXRDUT09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.5.18/MegaLoad_1.5.18_x64-setup.nsis.zip"
     }
   }
 }
