@@ -27,6 +27,7 @@ import {
 import { cn } from "../../lib/utils";
 import { useProfileStore } from "../../stores/profileStore";
 import { useUpdateStore } from "../../stores/updateStore";
+import { useAppUpdateStore } from "../../stores/appUpdateStore";
 import { useToastStore } from "../../stores/toastStore";
 import { usePlayerDataStore } from "../../stores/playerDataStore";
 import { useIdentityStore } from "../../stores/identityStore";
@@ -188,6 +189,9 @@ export function Sidebar() {
 
   const handleCheckUpdates = () => {
     if (!profile?.bepinex_path) return;
+    // Always check MegaLoad itself alongside mod updates — the Tauri updater
+    // populates the Titlebar badge + Settings surface if a new version is out.
+    useAppUpdateStore.getState().checkForAppUpdate().catch((e) => console.warn("[MegaLoad]", e));
     if (gameStatus?.valheim_running) {
       addToast({
         type: "warning",
@@ -195,7 +199,7 @@ export function Sidebar() {
         message: "Mods can't be updated while the game is running. Close Valheim and try again.",
         duration: 5000,
       });
-      // Still check for available updates, just don't install
+      // Still check for available mod updates, just don't install
       checkUpdates(profile.bepinex_path, true);
       return;
     }
