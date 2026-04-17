@@ -493,10 +493,21 @@ pub fn set_mod_version(bepinex_path: String, mod_name: String, version: String) 
 
 /// Internal plugins bundled as Tauri resources. These are deployed to BepInEx/plugins
 /// on every profile activation, always overwriting with the bundled version since
-/// MegaLoad is their sole distribution channel.
-const BUNDLED_PLUGINS: &[(&str, &str)] = &[
-    ("MegaDataExtractor", "MegaDataExtractor.dll"),
+/// MegaLoad is their sole distribution channel. Tuple is (folder, dll_name, version).
+/// Version is shown in the Mods page and must be bumped alongside the bundled DLL.
+const BUNDLED_PLUGINS: &[(&str, &str, &str)] = &[
+    ("MegaDataExtractor", "MegaDataExtractor.dll", "1.2.0"),
 ];
+
+/// Version lookup for bundled plugins — used by the Mods page so bundled mods
+/// display a version like user-installed ones. Bundled mods don't appear in
+/// `mod-manifest.json`, so this is the only source of truth for their version.
+pub fn bundled_plugin_version(mod_name: &str) -> Option<&'static str> {
+    BUNDLED_PLUGINS
+        .iter()
+        .find(|(folder, _, _)| *folder == mod_name)
+        .map(|(_, _, version)| *version)
+}
 
 /// Deploy all bundled internal plugins to the active profile's BepInEx/plugins folder.
 /// Always overwrites existing DLLs since these only update through MegaLoad builds.
@@ -505,7 +516,7 @@ pub fn deploy_bundled_plugins(app: AppHandle, bepinex_path: String) -> Result<u3
     let plugins_dir = PathBuf::from(&bepinex_path).join("plugins");
     let mut deployed = 0u32;
 
-    for &(folder, dll) in BUNDLED_PLUGINS {
+    for &(folder, dll, _version) in BUNDLED_PLUGINS {
         let dest_dir = plugins_dir.join(folder);
         let dest_dll = dest_dir.join(dll);
 

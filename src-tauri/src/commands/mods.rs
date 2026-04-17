@@ -109,6 +109,20 @@ pub fn get_mods(bepinex_path: String) -> Result<Vec<ModInfo>, String> {
         }
     }
 
+    // Bundled plugins (e.g. MegaDataExtractor) aren't in the manifest and update
+    // only with MegaLoad itself — stamp their version here so they aren't the
+    // odd-one-out on the Mods page.
+    for m in &mut mods {
+        if m.version.is_none() {
+            if let Some(v) = crate::commands::updater::bundled_plugin_version(&m.name) {
+                m.version = Some(v.to_string());
+                if m.description.is_none() {
+                    m.description = Some("Bundled with MegaLoad — updates with the app itself".to_string());
+                }
+            }
+        }
+    }
+
     mods.sort_by(|a, b| a.name.to_lowercase().cmp(&b.name.to_lowercase()));
     let enabled_count = mods.iter().filter(|m| m.enabled).count();
     let disabled_count = mods.iter().filter(|m| !m.enabled).count();
