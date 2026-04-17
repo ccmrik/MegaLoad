@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useProfileStore } from "../stores/profileStore";
+import { useIdentityStore } from "../stores/identityStore";
 import {
   readLogTail,
   clearLog,
@@ -28,9 +29,21 @@ import { cn } from "../lib/utils";
 type LogLevel = "all" | "error" | "warning" | "info" | "debug";
 type LogTab = "bepinex" | "updates";
 
+// Format: LogOutput_YYYY-MM-DD_HH-MM-SS_{player_id}.log
+// Timestamp and player_id make each export uniquely identifiable per-user,
+// so support can distinguish "latest log for player X" from "latest overall".
+function buildLogFilename(playerId: string | undefined): string {
+  const d = new Date();
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const stamp = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
+  const idSegment = playerId ? `_${playerId}` : "";
+  return `LogOutput_${stamp}${idSegment}.log`;
+}
+
 export function LogViewer() {
   const { activeProfile } = useProfileStore();
   const profile = activeProfile();
+  const identity = useIdentityStore((s) => s.identity);
   const [activeTab, setActiveTab] = useState<LogTab>("bepinex");
   const [lines, setLines] = useState<LogLine[]>([]);
   const [loading, setLoading] = useState(false);
@@ -94,7 +107,7 @@ export function LogViewer() {
   const handleExport = async () => {
     const text = filteredLines.map((l) => l.text).join("\n");
     const dest = await save({
-      defaultPath: `LogOutput_${new Date().toISOString().slice(0, 10)}.log`,
+      defaultPath: buildLogFilename(identity?.user_id),
       filters: [{ name: "Log Files", extensions: ["log", "txt"] }],
     });
     if (!dest) return;
@@ -109,7 +122,7 @@ export function LogViewer() {
   const handleDownload = async () => {
     if (!profile?.bepinex_path) return;
     const dest = await save({
-      defaultPath: `LogOutput_${new Date().toISOString().slice(0, 10)}.log`,
+      defaultPath: buildLogFilename(identity?.user_id),
       filters: [{ name: "Log Files", extensions: ["log", "txt"] }],
     });
     if (!dest) return;
