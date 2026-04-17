@@ -1,11 +1,11 @@
 {
-  "version": "1.6.4",
-  "notes": "Valheim data: split Cooking Station and Iron Cooking Station — Lox, Serpent, Seeker, Hare, Bonemaw, Asksvin and Volture meats now correctly route to the Iron rack, while Boar/Deer/Wolf/Chicken/Bear/Egg/Fish stay on the basic Cooking Station. Both stations are listed in Processing Stations with their full conversion tables.",
-  "pub_date": "2026-04-17T23:55:00Z",
+  "version": "1.6.5",
+  "notes": "Valheim data fixes: (1) Cooked Egg is back on the Cauldron where it belongs — v1.6.4 wrongly routed it to the Cooking Station. (2) Filtering by Iron Cooking Station now also surfaces everything the basic Cooking Station can grill, since the iron rack is a superset.",
+  "pub_date": "2026-04-18T00:15:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUM5RW9zdXh4aXYrM0ZiSUpYWGhKek1QWEJxL3h3UXhVMG5wVUJQcTdreXY1L1Q2SWpnWnhwV3dXSzBKN3l2ei9FYW1Rd21UNCtDUE5YQVI4QlRaakFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NDMzNDE2CWZpbGU6TWVnYUxvYWRfMS42LjRfeDY0LXNldHVwLm5zaXMuemlwCnVKT0kyQjJhUUhSK2tnMGNuMXRJTUhqTHJGbkpPcjc0b3IzeXdBM1NncU5EOHRHeC9oTTRrb01DemMwZjVTQmlmd0llTTJ3M001Z1pHRVNWSkVSNkR3PT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.6.4/MegaLoad_1.6.4_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUZ3RXFiSmpGQ09zb3JQWmNkWDYva1V0ZU5URCt5QkEzb0Fxb1dNclMvZUhMOGVHZG0zSHErU25UVkp5VWtFK20wS1MvSWpXUVloZ1hwMG10LzFEQlEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NDM0MTY0CWZpbGU6TWVnYUxvYWRfMS42LjVfeDY0LXNldHVwLm5zaXMuemlwCnhDS1RJNEdBaEdVM2RJUE0ybzArQTBjZ1MyVVVMQ0h0L3dNeWYwOXJDd09QK05rUjBUazZOVlZHOThscUc5YysvQWRpWjVwOFUvUFNRNi9kZE4rUERRPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.6.5/MegaLoad_1.6.5_x64-setup.nsis.zip"
     }
   }
 }

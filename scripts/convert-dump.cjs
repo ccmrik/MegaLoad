@@ -1375,9 +1375,10 @@ function guessBiomes(prefab, recipePrefab) {
 
 // ── Items cooked on fire/cooking station (no recipe in dump, source should be "Cooking") ──
 // Basic Cooking Station handles smaller/faster-cooking meats.
+// CookedEgg is NOT here — it's crafted at the Cauldron, not grilled on a rack.
 const COOKING_STATION_ITEMS = new Set([
   "CookedMeat", "NeckTailGrilled", "CookedDeerMeat", "FishCooked",
-  "CookedChickenMeat", "CookedWolfMeat", "CookedEgg", "CookedBjornMeat",
+  "CookedChickenMeat", "CookedWolfMeat", "CookedBjornMeat",
 ]);
 // Iron Cooking Station adds the tougher high-tier meats the basic rack can't handle.
 const IRON_COOKING_STATION_ITEMS = new Set([

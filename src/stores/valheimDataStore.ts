@@ -272,7 +272,6 @@ export const PROCESSING_STATIONS: Record<string, ProcessingStation> = {
       { inputId: "FishRaw", inputName: "Raw Fish", outputId: "FishCooked", outputName: "Cooked Fish" },
       { inputId: "WolfMeat", inputName: "Wolf Meat", outputId: "CookedWolfMeat", outputName: "Cooked Wolf Meat" },
       { inputId: "ChickenMeat", inputName: "Chicken Meat", outputId: "CookedChickenMeat", outputName: "Cooked Chicken" },
-      { inputId: "ChickenEgg", inputName: "Chicken Egg", outputId: "CookedEgg", outputName: "Cooked Egg" },
       { inputId: "BjornMeat", inputName: "Bear Meat", outputId: "CookedBjornMeat", outputName: "Cooked Bear Meat" },
     ],
   },
@@ -288,7 +287,6 @@ export const PROCESSING_STATIONS: Record<string, ProcessingStation> = {
       { inputId: "FishRaw", inputName: "Raw Fish", outputId: "FishCooked", outputName: "Cooked Fish" },
       { inputId: "WolfMeat", inputName: "Wolf Meat", outputId: "CookedWolfMeat", outputName: "Cooked Wolf Meat" },
       { inputId: "ChickenMeat", inputName: "Chicken Meat", outputId: "CookedChickenMeat", outputName: "Cooked Chicken" },
-      { inputId: "ChickenEgg", inputName: "Chicken Egg", outputId: "CookedEgg", outputName: "Cooked Egg" },
       { inputId: "BjornMeat", inputName: "Bear Meat", outputId: "CookedBjornMeat", outputName: "Cooked Bear Meat" },
       { inputId: "LoxMeat", inputName: "Lox Meat", outputId: "CookedLoxMeat", outputName: "Cooked Lox Meat" },
       { inputId: "SerpentMeat", inputName: "Serpent Meat", outputId: "SerpentMeatCooked", outputName: "Cooked Serpent Meat" },
@@ -754,7 +752,12 @@ export function getFilteredItems(
     items = items.filter((i) => i.biomes.some(b => activeBiomes.includes(b)));
   }
   if (activeStations.length > 0) {
-    items = items.filter((i) => i.station != null && activeStations.includes(i.station));
+    // Iron Cooking Station is a superset of Cooking Station — anything grilled on
+    // the basic rack also grills on the iron one, so include both when Iron is selected.
+    const stationMatch = activeStations.includes("Iron Cooking Station")
+      ? new Set([...activeStations, "Cooking Station"])
+      : new Set(activeStations);
+    items = items.filter((i) => i.station != null && stationMatch.has(i.station));
   }
   if (activeFactories.length > 0) {
     const factoryIds = new Set<string>();
