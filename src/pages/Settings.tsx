@@ -15,6 +15,9 @@ import {
   regenerateLinkCode,
   getDiagnosticLogsPath,
   setDiagnosticLogsPath,
+  getMegaDebugStatus,
+  toggleAllMegaDebug,
+  type MegaDebugEntry,
 } from "../lib/tauri-api";
 import { useBugStore } from "../stores/bugStore";
 import { open as openFolderDialog } from "@tauri-apps/plugin-dialog";
@@ -47,11 +50,13 @@ import {
   Upload,
   User,
   LogOut,
+  Bug,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
 export function Settings() {
   const { fetchProfiles } = useProfileStore();
+  const activeProfile = useProfileStore((s) => s.activeProfile());
   const { loggingEnabled, megabugsEnabled, loaded: settingsLoaded, fetchSettings, setLoggingEnabled, setMegabugsEnabled } = useSettingsStore();
   const { debugEnabled, debugLoaded, fetchDebug, setDebugEnabled } = useChatStore();
   const { currentVersion } = useAppUpdateStore();
@@ -92,6 +97,9 @@ export function Settings() {
   const bugsRole = useBugStore((s) => s.role);
   const isOwner = bugsRole === "owner";
   const [diagLogsPath, setDiagLogsPath] = useState<string>("");
+  const [megaDebug, setMegaDebug] = useState<MegaDebugEntry[]>([]);
+  const [megaDebugBusy, setMegaDebugBusy] = useState(false);
+  const [megaDebugLoaded, setMegaDebugLoaded] = useState(false);
 
   useEffect(() => {
     fetchSettings();
@@ -117,6 +125,50 @@ export function Settings() {
       return () => clearTimeout(t);
     }
   }, [toast]);
+
+  useEffect(() => {
+    if (!activeProfile?.bepinex_path) {
+      setMegaDebug([]);
+      setMegaDebugLoaded(true);
+      return;
+    }
+    getMegaDebugStatus(activeProfile.bepinex_path)
+      .then((entries) => {
+        setMegaDebug(entries);
+        setMegaDebugLoaded(true);
+      })
+      .catch((e) => {
+        console.warn("[MegaLoad] mega debug status:", e);
+        setMegaDebugLoaded(true);
+      });
+  }, [activeProfile?.bepinex_path]);
+
+  const megaDebugAllOn =
+    megaDebug.length > 0 && megaDebug.every((e) => e.debug_mode === true);
+  const megaDebugEnabledCount = megaDebug.filter((e) => e.debug_mode === true).length;
+
+  const handleToggleAllMegaDebug = async () => {
+    if (!activeProfile?.bepinex_path || megaDebugBusy) return;
+    const nextEnabled = !megaDebugAllOn;
+    setMegaDebugBusy(true);
+    try {
+      const result = await toggleAllMegaDebug(activeProfile.bepinex_path, nextEnabled);
+      const refreshed = await getMegaDebugStatus(activeProfile.bepinex_path);
+      setMegaDebug(refreshed);
+      const label = nextEnabled ? "ON" : "OFF";
+      if (result.skipped.length > 0) {
+        setToast(
+          `Debug ${label} on ${result.updated.length} Mega mod${result.updated.length === 1 ? "" : "s"} (${result.skipped.length} skipped — likely not launched yet)`
+        );
+      } else {
+        setToast(`Debug ${label} on ${result.updated.length} Mega mod${result.updated.length === 1 ? "" : "s"}`);
+      }
+    } catch (e) {
+      setToast(`Failed to toggle Mega debug: ${e}`);
+    } finally {
+      setMegaDebugBusy(false);
+    }
+  };
 
   const handleDetect = async () => {
     setDetecting(true);
@@ -695,6 +747,72 @@ export function Settings() {
               </div>
             )}
           </div>
+        )}
+      </div>
+
+      {/* Mega mods debug — bulk toggle DebugMode across every Mega* cfg */}
+      <div className="glass rounded-xl p-5 border border-zinc-800/50 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Bug className="w-4 h-4 text-brand-400" />
+            <h2 className="text-sm font-semibold text-zinc-300">Mega Mods Debug</h2>
+          </div>
+          {megaDebugLoaded && megaDebug.length > 0 && (
+            <button
+              onClick={handleToggleAllMegaDebug}
+              disabled={megaDebugBusy}
+              className="shrink-0 disabled:opacity-40"
+              title={megaDebugAllOn ? "Turn DebugMode OFF on every Mega mod" : "Turn DebugMode ON on every Mega mod"}
+            >
+              {megaDebugBusy ? (
+                <Loader2 className="w-8 h-8 text-brand-400 animate-spin" />
+              ) : megaDebugAllOn ? (
+                <ToggleRight className="w-8 h-8 text-brand-400" />
+              ) : (
+                <ToggleLeft className="w-8 h-8 text-zinc-600" />
+              )}
+            </button>
+          )}
+        </div>
+        {!megaDebugLoaded ? (
+          <p className="text-xs text-zinc-500">Scanning BepInEx configs…</p>
+        ) : !activeProfile ? (
+          <p className="text-xs text-zinc-500">Select a profile to manage Mega mods debug.</p>
+        ) : megaDebug.length === 0 ? (
+          <p className="text-xs text-zinc-500">
+            No Mega mod configs found in this profile yet. Launch Valheim once so each mod writes its default config, then come back.
+          </p>
+        ) : (
+          <>
+            <p className="text-xs text-zinc-500">
+              Flips <span className="font-mono text-zinc-400">DebugMode</span> under
+              <span className="font-mono text-zinc-400"> [99. Debug]</span> in every Mega mod config for the active profile.
+              Handy before asking a user for a log — one click instead of twelve.
+            </p>
+            <div className="text-xs text-zinc-400">
+              {megaDebugEnabledCount} of {megaDebug.length} Mega mod config{megaDebug.length === 1 ? "" : "s"} currently have DebugMode
+              <span className={megaDebugEnabledCount > 0 ? "text-brand-400 font-medium" : "text-zinc-500"}> ON</span>.
+            </div>
+            <div className="flex flex-wrap gap-1.5">
+              {megaDebug.map((e) => (
+                <span
+                  key={e.file_name}
+                  className={cn(
+                    "inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono border",
+                    e.debug_mode === true
+                      ? "bg-brand-500/10 text-brand-400 border-brand-500/30"
+                      : e.debug_mode === false
+                      ? "bg-zinc-800/40 text-zinc-500 border-zinc-700/50"
+                      : "bg-amber-500/10 text-amber-400 border-amber-500/30"
+                  )}
+                  title={e.file_name + (e.debug_mode === null ? " — [99. Debug]/DebugMode not found" : "")}
+                >
+                  {e.mod_name}
+                  {e.debug_mode === null && "?"}
+                </span>
+              ))}
+            </div>
+          </>
         )}
       </div>
 

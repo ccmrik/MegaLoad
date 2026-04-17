@@ -111,6 +111,21 @@ export const startConfigWatcher = (bepinexPath: string) =>
 export const stopConfigWatcher = () =>
   invoke<void>("stop_config_watcher");
 
+export interface MegaDebugEntry {
+  file_name: string;
+  mod_name: string;
+  debug_mode: boolean | null;
+}
+export interface MegaDebugResult {
+  enabled: boolean;
+  updated: string[];
+  skipped: string[];
+}
+export const getMegaDebugStatus = (bepinexPath: string) =>
+  invoke<MegaDebugEntry[]>("get_mega_debug_status", { bepinexPath });
+export const toggleAllMegaDebug = (bepinexPath: string, enabled: boolean) =>
+  invoke<MegaDebugResult>("toggle_all_mega_debug", { bepinexPath, enabled });
+
 // --- Log types & commands ---
 
 export interface LogLine {

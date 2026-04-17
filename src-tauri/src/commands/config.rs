@@ -431,3 +431,170 @@ pub fn delete_config_file(config_path: String) -> Result<(), String> {
     fs::remove_file(path).map_err(|e| format!("Failed to delete {}: {}", file_name, e))?;
     Ok(())
 }
+
+// ---------------------------------------------------------------------------
+// Bulk DebugMode toggle across all Mega* mod configs
+// ---------------------------------------------------------------------------
+
+#[derive(serde::Serialize)]
+pub struct MegaDebugEntry {
+    pub file_name: String,
+    pub mod_name: String,
+    pub debug_mode: Option<bool>,
+}
+
+#[derive(serde::Serialize)]
+pub struct MegaDebugResult {
+    pub enabled: bool,
+    pub updated: Vec<String>,
+    pub skipped: Vec<String>,
+}
+
+fn is_mega_config_name(file_name: &str) -> bool {
+    // Match any cfg whose name contains "Mega" (covers "MegaHoe.cfg",
+    // "ccmrik.MegaHoe.cfg", "com.author.MegaX.cfg"). Case-sensitive on purpose —
+    // our mods always capitalise the M, third-party mods rarely do.
+    file_name.contains("Mega")
+}
+
+fn read_debug_mode(path: &Path) -> Option<bool> {
+    let raw = fs::read_to_string(path).ok()?;
+    let content = raw.strip_prefix('\u{FEFF}').unwrap_or(&raw);
+    let mut in_section = false;
+    for line in content.lines() {
+        let trimmed = line.trim();
+        if trimmed.starts_with('[') && trimmed.ends_with(']') {
+            in_section = trimmed == "[99. Debug]";
+            continue;
+        }
+        if in_section {
+            if let Some(eq_pos) = trimmed.find('=') {
+                if trimmed[..eq_pos].trim() == "DebugMode" {
+                    let val = trimmed[eq_pos + 1..].trim();
+                    return Some(val.eq_ignore_ascii_case("true"));
+                }
+            }
+        }
+    }
+    None
+}
+
+/// Set [99. Debug] DebugMode in a cfg. Returns true if the key existed and was (re)written.
+fn write_debug_mode(path: &Path, enabled: bool) -> Result<bool, String> {
+    let raw = fs::read_to_string(path).map_err(|e| e.to_string())?;
+    let content = raw.strip_prefix('\u{FEFF}').unwrap_or(&raw);
+    let line_ending = if content.contains("\r\n") { "\r\n" } else { "\n" };
+    let value = if enabled { "true" } else { "false" };
+
+    let mut lines: Vec<String> = content.lines().map(|l| l.to_string()).collect();
+    let mut in_section = false;
+    let mut updated = false;
+
+    for line in &mut lines {
+        let trimmed = line.trim();
+        if trimmed.starts_with('[') && trimmed.ends_with(']') {
+            in_section = trimmed == "[99. Debug]";
+            continue;
+        }
+        if in_section {
+            if let Some(eq_pos) = trimmed.find('=') {
+                if trimmed[..eq_pos].trim() == "DebugMode" {
+                    *line = format!("DebugMode = {}", value);
+                    updated = true;
+                    break;
+                }
+            }
+        }
+    }
+
+    if updated {
+        fs::write(path, lines.join(line_ending)).map_err(|e| e.to_string())?;
+    }
+    Ok(updated)
+}
+
+/// Returns the DebugMode status for every Mega* cfg in the active profile.
+#[command]
+pub fn get_mega_debug_status(bepinex_path: String) -> Result<Vec<MegaDebugEntry>, String> {
+    let config_dir = Path::new(&bepinex_path).join("config");
+    if !config_dir.exists() {
+        return Ok(Vec::new());
+    }
+
+    let mut out = Vec::new();
+    let entries = fs::read_dir(&config_dir).map_err(|e| e.to_string())?;
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.extension().and_then(|e| e.to_str()) != Some("cfg") {
+            continue;
+        }
+        let file_name = entry.file_name().to_string_lossy().to_string();
+        if !is_mega_config_name(&file_name) {
+            continue;
+        }
+        let mod_name = parse_config_file(&path)
+            .map(|c| c.mod_name)
+            .unwrap_or_else(|_| file_name.trim_end_matches(".cfg").to_string());
+        out.push(MegaDebugEntry {
+            file_name,
+            mod_name,
+            debug_mode: read_debug_mode(&path),
+        });
+    }
+
+    out.sort_by(|a, b| a.mod_name.to_lowercase().cmp(&b.mod_name.to_lowercase()));
+    Ok(out)
+}
+
+/// Flip DebugMode under [99. Debug] to the given value across every Mega* cfg.
+/// A cfg is "updated" only if the DebugMode key existed; otherwise it's "skipped"
+/// (mod hasn't been launched yet or uses a legacy section we don't migrate here).
+#[command]
+pub fn toggle_all_mega_debug(
+    bepinex_path: String,
+    enabled: bool,
+) -> Result<MegaDebugResult, String> {
+    let config_dir = Path::new(&bepinex_path).join("config");
+    if !config_dir.exists() {
+        return Ok(MegaDebugResult {
+            enabled,
+            updated: Vec::new(),
+            skipped: Vec::new(),
+        });
+    }
+
+    let mut updated = Vec::new();
+    let mut skipped = Vec::new();
+    let entries = fs::read_dir(&config_dir).map_err(|e| e.to_string())?;
+    for entry in entries.flatten() {
+        let path = entry.path();
+        if path.extension().and_then(|e| e.to_str()) != Some("cfg") {
+            continue;
+        }
+        let file_name = entry.file_name().to_string_lossy().to_string();
+        if !is_mega_config_name(&file_name) {
+            continue;
+        }
+        match write_debug_mode(&path, enabled) {
+            Ok(true) => updated.push(file_name),
+            Ok(false) => skipped.push(file_name),
+            Err(_) => skipped.push(file_name),
+        }
+    }
+
+    updated.sort();
+    skipped.sort();
+
+    app_log(&format!(
+        "toggle_all_mega_debug(enabled={}): {} updated, {} skipped",
+        enabled,
+        updated.len(),
+        skipped.len()
+    ));
+
+    Ok(MegaDebugResult {
+        enabled,
+        updated,
+        skipped,
+    })
+}

@@ -58,6 +58,8 @@ pub fn run() {
             delete_config_file,
             start_config_watcher,
             stop_config_watcher,
+            get_mega_debug_status,
+            toggle_all_mega_debug,
             // Logs
             read_log_file,
             read_log_tail,
