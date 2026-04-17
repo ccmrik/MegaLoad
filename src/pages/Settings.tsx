@@ -13,7 +13,11 @@ import {
   chatClearApiKey,
   chatGetApiKeyStatus,
   regenerateLinkCode,
+  getDiagnosticLogsPath,
+  setDiagnosticLogsPath,
 } from "../lib/tauri-api";
+import { useBugStore } from "../stores/bugStore";
+import { open as openFolderDialog } from "@tauri-apps/plugin-dialog";
 import { useProfileStore } from "../stores/profileStore";
 import { useSettingsStore } from "../stores/settingsStore";
 import { useAppUpdateStore } from "../stores/appUpdateStore";
@@ -85,12 +89,16 @@ export function Settings() {
   const [apiKeyHasKey, setApiKeyHasKey] = useState(false);
   const [apiKeySaving, setApiKeySaving] = useState(false);
   const [apiKeyVisible, setApiKeyVisible] = useState(false);
+  const bugsRole = useBugStore((s) => s.role);
+  const isOwner = bugsRole === "owner";
+  const [diagLogsPath, setDiagLogsPath] = useState<string>("");
 
   useEffect(() => {
     fetchSettings();
     fetchDebug();
     fetchSyncStatus();
     chatGetApiKeyStatus().then(setApiKeyHasKey).catch((e) => console.warn("[MegaLoad]", e));
+    getDiagnosticLogsPath().then((p) => setDiagLogsPath(p ?? "")).catch((e) => console.warn("[MegaLoad]", e));
     detectValheimPath()
       .then((p) => {
         setValheimPath(p);
@@ -168,6 +176,20 @@ export function Settings() {
   const handleToggleLogging = async () => {
     await setLoggingEnabled(!loggingEnabled);
     setToast(loggingEnabled ? "Logging disabled" : "Logging enabled");
+  };
+
+  const handlePickDiagLogsPath = async () => {
+    const picked = await openFolderDialog({ directory: true, multiple: false });
+    if (typeof picked !== "string") return;
+    await setDiagnosticLogsPath(picked);
+    setDiagLogsPath(picked);
+    setToast("Diagnostic logs folder updated");
+  };
+
+  const handleClearDiagLogsPath = async () => {
+    await setDiagnosticLogsPath(null);
+    setDiagLogsPath("");
+    setToast("Diagnostic logs folder reset");
   };
 
   const handleToggleChatDebug = async () => {
@@ -675,6 +697,43 @@ export function Settings() {
           </div>
         )}
       </div>
+
+      {/* Diagnostic logs folder — owner only */}
+      {isOwner && (
+        <div className="glass rounded-xl p-5 border border-zinc-800/50 space-y-3">
+          <div className="flex items-center gap-2">
+            <FolderOpen className="w-4 h-4 text-brand-400" />
+            <h2 className="text-sm font-semibold text-zinc-300">Diagnostic Logs Folder</h2>
+            <span className="ml-2 text-[10px] px-1.5 py-0.5 rounded bg-brand-500/15 text-brand-400 font-medium">OWNER</span>
+          </div>
+          <p className="text-xs text-zinc-500">
+            When downloading a user's log from a MegaBugs ticket, save it here as
+            <span className="font-mono text-zinc-400"> MegaBugs_{`{ticket_id}_{author}`}.log</span>.
+            Empty = MegaLoad AppData/Logs fallback.
+          </p>
+          <div className="flex items-center gap-2">
+            <div className="flex-1 min-w-0 rounded-lg bg-zinc-950 border border-zinc-800/50 px-3 py-2 text-xs font-mono text-zinc-300 truncate">
+              {diagLogsPath || <span className="text-zinc-600">(not set)</span>}
+            </div>
+            <button
+              onClick={handlePickDiagLogsPath}
+              className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-brand-500/10 text-brand-400 hover:bg-brand-500/20 transition-colors"
+            >
+              <FolderOpen className="w-3.5 h-3.5" />
+              Pick Folder
+            </button>
+            {diagLogsPath && (
+              <button
+                onClick={handleClearDiagLogsPath}
+                className="shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-zinc-800/50 text-zinc-400 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                Reset
+              </button>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* MegaChat API Key */}
       <div className="glass rounded-xl p-5 border border-zinc-800/50 space-y-4">

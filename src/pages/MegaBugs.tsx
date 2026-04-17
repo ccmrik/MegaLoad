@@ -3,7 +3,7 @@ import { useLocation } from "react-router-dom";
 import { useProfileStore } from "../stores/profileStore";
 import { useBugStore, hasUnread } from "../stores/bugStore";
 import { useToastStore } from "../stores/toastStore";
-import { fetchAttachment } from "../lib/tauri-api";
+import { fetchAttachment, downloadTicketLog, openFolder } from "../lib/tauri-api";
 import type { ImageData, TicketSummary } from "../lib/tauri-api";
 import { cn } from "../lib/utils";
 import {
@@ -25,6 +25,8 @@ import {
   WifiOff,
   ZoomIn,
   Trash2,
+  Download,
+  FolderOpen,
 } from "lucide-react";
 
 type View = "list" | "new" | "detail";
@@ -462,7 +464,12 @@ export function MegaBugs() {
         </div>
 
         {/* System info collapsible */}
-        <SystemInfoPanel info={activeTicket.system_info} hasLog={activeTicket.has_log} />
+        <SystemInfoPanel
+          info={activeTicket.system_info}
+          hasLog={activeTicket.has_log}
+          ticketId={activeTicket.id}
+          authorName={activeTicket.author_name}
+        />
 
         {/* Offline banner */}
         {offline && <OfflineBanner />}
@@ -968,8 +975,47 @@ function OfflineBanner() {
   );
 }
 
-function SystemInfoPanel({ info, hasLog }: { info: { megaload_version: string; os: string; profile_name: string; installed_mods: string[] }; hasLog: boolean }) {
+function SystemInfoPanel({
+  info,
+  hasLog,
+  ticketId,
+  authorName,
+}: {
+  info: { megaload_version: string; os: string; profile_name: string; installed_mods: string[] };
+  hasLog: boolean;
+  ticketId: string;
+  authorName: string;
+}) {
   const [open, setOpen] = useState(false);
+  const role = useBugStore((s) => s.role);
+  const addToast = useToastStore((s) => s.addToast);
+  const isOwner = role === "owner";
+  const [downloading, setDownloading] = useState(false);
+  const [savedPath, setSavedPath] = useState<string | null>(null);
+
+  const handleDownloadLog = async () => {
+    setDownloading(true);
+    try {
+      const dest = await downloadTicketLog(ticketId, authorName);
+      setSavedPath(dest);
+      addToast({ type: "success", title: "Log downloaded", message: dest });
+    } catch (e) {
+      addToast({ type: "warning", title: "Log download failed", message: String(e) });
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  const handleOpenFolder = async () => {
+    if (!savedPath) return;
+    try {
+      const dir = savedPath.replace(/[\\/][^\\/]+$/, "");
+      await openFolder(dir);
+    } catch (e) {
+      addToast({ type: "warning", title: "Can't open folder", message: String(e) });
+    }
+  };
+
   return (
     <div className="border-b border-zinc-800/30">
       <button
@@ -994,9 +1040,31 @@ function SystemInfoPanel({ info, hasLog }: { info: { megaload_version: string; o
             <span className="text-zinc-500">Profile:</span>{" "}
             <span className="text-zinc-300">{info.profile_name}</span>
           </div>
-          <div>
-            <span className="text-zinc-500">Log attached:</span>{" "}
+          <div className="flex items-center gap-2">
+            <span className="text-zinc-500">Log attached:</span>
             <span className="text-zinc-300">{hasLog ? "Yes" : "No"}</span>
+            {hasLog && isOwner && (
+              <>
+                <button
+                  onClick={handleDownloadLog}
+                  disabled={downloading}
+                  className="ml-1 inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-brand-500/10 text-brand-400 hover:bg-brand-500/20 transition-colors disabled:opacity-50"
+                >
+                  {downloading ? <Loader2 className="w-3 h-3 animate-spin" /> : <Download className="w-3 h-3" />}
+                  Download
+                </button>
+                {savedPath && (
+                  <button
+                    onClick={handleOpenFolder}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium bg-zinc-800/50 text-zinc-400 hover:text-zinc-200 hover:bg-zinc-700/50 transition-colors"
+                    title={savedPath}
+                  >
+                    <FolderOpen className="w-3 h-3" />
+                    Open
+                  </button>
+                )}
+              </>
+            )}
           </div>
           <div className="col-span-2">
             <span className="text-zinc-500">Mods ({info.installed_mods.length}):</span>{" "}

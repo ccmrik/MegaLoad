@@ -8,6 +8,7 @@ import {
   saveLogFile,
   saveTextFile,
   getUpdateLog,
+  getDiagnosticLogsPath,
   type LogLine,
   type UpdateLogEntry,
 } from "../lib/tauri-api";
@@ -106,8 +107,11 @@ export function LogViewer() {
 
   const handleExport = async () => {
     const text = filteredLines.map((l) => l.text).join("\n");
+    const filename = buildLogFilename(identity?.user_id);
+    const dir = await getDiagnosticLogsPath().catch(() => null);
+    const defaultPath = dir ? `${dir}${dir.includes("\\") ? "\\" : "/"}${filename}` : filename;
     const dest = await save({
-      defaultPath: buildLogFilename(identity?.user_id),
+      defaultPath,
       filters: [{ name: "Log Files", extensions: ["log", "txt"] }],
     });
     if (!dest) return;
@@ -121,8 +125,11 @@ export function LogViewer() {
 
   const handleDownload = async () => {
     if (!profile?.bepinex_path) return;
+    const filename = buildLogFilename(identity?.user_id);
+    const dir = await getDiagnosticLogsPath().catch(() => null);
+    const defaultPath = dir ? `${dir}${dir.includes("\\") ? "\\" : "/"}${filename}` : filename;
     const dest = await save({
-      defaultPath: buildLogFilename(identity?.user_id),
+      defaultPath,
       filters: [{ name: "Log Files", extensions: ["log", "txt"] }],
     });
     if (!dest) return;

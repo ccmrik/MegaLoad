@@ -849,6 +849,51 @@ pub fn fetch_attachment(path: String) -> Result<String, String> {
         .map_err(|e| format!("Failed to fetch attachment: {}", e))
 }
 
+/// Download a ticket's attached log to the configured diagnostic logs folder.
+/// Saved as `MegaBugs_{ticket_id}_{author_slug}.log`. Returns the absolute path
+/// written. Owner-only — collaborators diagnose via GitHub directly.
+#[command]
+pub fn download_ticket_log(ticket_id: String, author_name: String) -> Result<String, String> {
+    if !is_local_owner() {
+        return Err("Only the Lord downloads ticket logs, mate".to_string());
+    }
+    // Tight validation on the ticket id segment
+    if !ticket_id.chars().all(|c| c.is_alphanumeric() || c == '-') || ticket_id.is_empty() {
+        return Err("Invalid ticket id".to_string());
+    }
+
+    let repo_path = format!("attachments/{}/log.txt", ticket_id);
+    let b64 = crate::commands::github::github_get_raw_base64(&repo_path)
+        .map_err(|e| format!("Failed to fetch log.txt for ticket {}: {}", ticket_id, e))?;
+    let bytes = B64
+        .decode(b64.as_bytes())
+        .map_err(|e| format!("Invalid base64 from GitHub: {}", e))?;
+
+    // Target dir: configured diagnostic_logs_path, else %APPDATA%/MegaLoad/Logs
+    let dir = match crate::commands::app_log::load_settings().diagnostic_logs_path {
+        Some(p) if !p.is_empty() => std::path::PathBuf::from(p),
+        _ => {
+            let appdata = std::env::var("APPDATA").map_err(|_| "APPDATA not set".to_string())?;
+            std::path::PathBuf::from(appdata).join("MegaLoad").join("Logs")
+        }
+    };
+    fs::create_dir_all(&dir).map_err(|e| format!("Couldn't create logs dir: {}", e))?;
+
+    // Slug author for safe filename
+    let slug: String = author_name
+        .chars()
+        .map(|c| if c.is_alphanumeric() || c == '-' || c == '_' { c } else { '_' })
+        .collect();
+    let slug = if slug.is_empty() { "unknown".to_string() } else { slug };
+
+    let filename = format!("MegaBugs_{}_{}.log", ticket_id, slug);
+    let dest = dir.join(&filename);
+    fs::write(&dest, &bytes).map_err(|e| format!("Couldn't write log file: {}", e))?;
+
+    app_log(&format!("MegaBugs: downloaded log for ticket {} to {}", ticket_id, dest.display()));
+    Ok(dest.to_string_lossy().to_string())
+}
+
 fn get_installed_mod_list(bepinex_path: &str) -> Vec<String> {
     let plugins = Path::new(bepinex_path).join("plugins");
     let mut mods = Vec::new();

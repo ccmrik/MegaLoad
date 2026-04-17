@@ -609,6 +609,17 @@ export const deleteTicket = (ticketId: string) =>
 export const fetchAttachment = (path: string) =>
   invoke<string>("fetch_attachment", { path });
 
+/// Owner-only: pull log.txt for a ticket into the configured diagnostic logs
+/// folder. Resolves to the absolute path written.
+export const downloadTicketLog = (ticketId: string, authorName: string) =>
+  invoke<string>("download_ticket_log", { ticketId, authorName });
+
+export const getDiagnosticLogsPath = () =>
+  invoke<string | null>("get_diagnostic_logs_path");
+
+export const setDiagnosticLogsPath = (path: string | null) =>
+  invoke<void>("set_diagnostic_logs_path", { path });
+
 // ── Collaborator roles ──────────────────────────────────────────────
 
 export type MegaBugsRole = "owner" | "collaborator" | "user";

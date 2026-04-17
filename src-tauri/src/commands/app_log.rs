@@ -14,6 +14,10 @@ pub struct AppSettings {
     pub logging_enabled: bool,
     #[serde(default)]
     pub megachat_debug: bool,
+    /// Folder where downloaded MegaBugs ticket logs are saved. Owner-only
+    /// diagnostic workflow — empty means "prompt via save dialog each time".
+    #[serde(default)]
+    pub diagnostic_logs_path: Option<String>,
 }
 
 impl Default for AppSettings {
@@ -21,6 +25,7 @@ impl Default for AppSettings {
         Self {
             logging_enabled: false,
             megachat_debug: false,
+            diagnostic_logs_path: None,
         }
     }
 }
@@ -174,6 +179,18 @@ pub fn clear_app_log() -> Result<(), String> {
 #[command]
 pub fn get_app_log_path() -> String {
     log_path().to_string_lossy().to_string()
+}
+
+#[command]
+pub fn get_diagnostic_logs_path() -> Option<String> {
+    load_settings().diagnostic_logs_path
+}
+
+#[command]
+pub fn set_diagnostic_logs_path(path: Option<String>) -> Result<(), String> {
+    let mut settings = load_settings();
+    settings.diagnostic_logs_path = path.map(|p| p.trim().to_string()).filter(|p| !p.is_empty());
+    save_settings(&settings)
 }
 
 #[command]
