@@ -225,8 +225,24 @@ export const autoUpdateMods = (bepinexPath: string, force = false) =>
   invoke<UpdateCheckResult>("auto_update_mods", { bepinexPath, force });
 export const setModVersion = (bepinexPath: string, modName: string, version: string) =>
   invoke<void>("set_mod_version", { bepinexPath, modName, version });
+export interface PluginDeployOutcome {
+  folder: string;
+  dll: string;
+  /** "installed" | "upgraded" | "kept" | "resource_missing" | "failed" */
+  action: string;
+  installed_version: string | null;
+  bundled_version: string | null;
+  error: string | null;
+}
+
+export interface DeployBundledResult {
+  outcomes: PluginDeployOutcome[];
+  success_count: number;
+  failure_count: number;
+}
+
 export const deployBundledPlugins = (bepinexPath: string) =>
-  invoke<number>("deploy_bundled_plugins", { bepinexPath });
+  invoke<DeployBundledResult>("deploy_bundled_plugins", { bepinexPath });
 
 // --- Update log ---
 

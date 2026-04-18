@@ -570,14 +570,42 @@ pub fn bundled_plugin_names() -> impl Iterator<Item = &'static str> {
     BUNDLED_PLUGINS.iter().map(|(folder, _, _)| *folder)
 }
 
+/// Outcome of a single bundled-plugin deploy attempt.
+#[derive(Serialize, Deserialize, Clone)]
+pub struct PluginDeployOutcome {
+    pub folder: String,
+    pub dll: String,
+    /// "installed" (fresh drop), "upgraded" (overwrote older), "kept"
+    /// (installed ≥ bundled), "resource_missing" (bundled resource not found,
+    /// dev mode), "failed" (fs::copy errored — most often a file lock while
+    /// Valheim's running).
+    pub action: String,
+    pub installed_version: Option<String>,
+    pub bundled_version: Option<String>,
+    pub error: Option<String>,
+}
+
+/// Aggregated result of `deploy_bundled_plugins`. Gives the UI enough detail
+/// to surface failures instead of silently swallowing them.
+#[derive(Serialize, Deserialize, Clone)]
+pub struct DeployBundledResult {
+    pub outcomes: Vec<PluginDeployOutcome>,
+    pub success_count: u32,
+    pub failure_count: u32,
+}
+
 /// Deploy bundled internal plugins to the active profile's BepInEx/plugins folder.
 /// A user-installed DLL with an equal or higher version than the bundled resource
 /// is left untouched, so drop-in upgrades from outside MegaLoad survive profile
 /// activation. Only older or missing DLLs are overwritten.
+///
+/// Returns per-plugin outcomes so the frontend can toast on failure — previously
+/// errors were swallowed via `.catch(console.warn)` in the sidebar and stale DLLs
+/// could linger invisibly (e.g. when Valheim held a file lock during deploy).
 #[command]
-pub fn deploy_bundled_plugins(app: AppHandle, bepinex_path: String) -> Result<u32, String> {
+pub fn deploy_bundled_plugins(app: AppHandle, bepinex_path: String) -> Result<DeployBundledResult, String> {
     let plugins_dir = PathBuf::from(&bepinex_path).join("plugins");
-    let mut deployed = 0u32;
+    let mut outcomes = Vec::with_capacity(BUNDLED_PLUGINS.len());
 
     for &(folder, dll, guid) in BUNDLED_PLUGINS {
         let dest_dir = plugins_dir.join(folder);
@@ -589,7 +617,15 @@ pub fn deploy_bundled_plugins(app: AppHandle, bepinex_path: String) -> Result<u3
         let source: PathBuf = match resource {
             Ok(p) if p.exists() => p,
             _ => {
-                app_log(&format!("{} bundled resource not found (dev mode?) — skipping", dll));
+                app_log(&format!("[deploy] {} bundled resource not found (dev mode?) — skipping", dll));
+                outcomes.push(PluginDeployOutcome {
+                    folder: folder.into(),
+                    dll: dll.into(),
+                    action: "resource_missing".into(),
+                    installed_version: None,
+                    bundled_version: None,
+                    error: None,
+                });
                 continue;
             }
         };
@@ -604,32 +640,76 @@ pub fn deploy_bundled_plugins(app: AppHandle, bepinex_path: String) -> Result<u3
         if let (Some(inst), Some(bund)) = (&installed_ver, &bundled_ver) {
             if compare_versions(inst, bund) != Ordering::Less {
                 app_log(&format!(
-                    "Keeping user-installed {} v{} (bundled v{})",
+                    "[deploy] keeping user-installed {} v{} (bundled v{})",
                     dll, inst, bund
                 ));
-                deployed += 1;
+                outcomes.push(PluginDeployOutcome {
+                    folder: folder.into(),
+                    dll: dll.into(),
+                    action: "kept".into(),
+                    installed_version: Some(inst.clone()),
+                    bundled_version: Some(bund.clone()),
+                    error: None,
+                });
                 continue;
             }
         }
 
-        let _ = fs::create_dir_all(&dest_dir);
+        if let Err(e) = fs::create_dir_all(&dest_dir) {
+            app_log(&format!("[deploy] failed to create {} dir: {}", dll, e));
+            outcomes.push(PluginDeployOutcome {
+                folder: folder.into(),
+                dll: dll.into(),
+                action: "failed".into(),
+                installed_version: installed_ver.clone(),
+                bundled_version: bundled_ver.clone(),
+                error: Some(format!("create_dir_all: {}", e)),
+            });
+            continue;
+        }
+
         match fs::copy(&source, &dest_dll) {
             Ok(_) => {
                 let bv = bundled_ver.as_deref().unwrap_or("?");
-                let iv = installed_ver.as_deref();
-                match iv {
-                    Some(i) => app_log(&format!("Upgraded {} v{} -> bundled v{}", dll, i, bv)),
-                    None => app_log(&format!("Deployed bundled {} v{}", dll, bv)),
-                }
-                deployed += 1;
+                let (msg, action) = match installed_ver.as_deref() {
+                    Some(i) => (format!("[deploy] upgraded {} v{} -> bundled v{}", dll, i, bv), "upgraded"),
+                    None => (format!("[deploy] installed bundled {} v{}", dll, bv), "installed"),
+                };
+                app_log(&msg);
+                outcomes.push(PluginDeployOutcome {
+                    folder: folder.into(),
+                    dll: dll.into(),
+                    action: action.into(),
+                    installed_version: installed_ver.clone(),
+                    bundled_version: bundled_ver.clone(),
+                    error: None,
+                });
             }
             Err(e) => {
-                app_log(&format!("Failed to deploy {}: {}", dll, e));
+                // Most common failure: Valheim (or its BepInEx) holds the DLL open
+                // while we try to overwrite. Make this loud — ERROR on the installed
+                // DLL staying stale was how we spent an afternoon chasing a v1.2.0
+                // vs v1.4.3 mismatch with no log surface.
+                app_log(&format!("[deploy] FAILED to copy {}: {} (is Valheim running?)", dll, e));
+                outcomes.push(PluginDeployOutcome {
+                    folder: folder.into(),
+                    dll: dll.into(),
+                    action: "failed".into(),
+                    installed_version: installed_ver.clone(),
+                    bundled_version: bundled_ver.clone(),
+                    error: Some(e.to_string()),
+                });
             }
         }
     }
 
-    Ok(deployed)
+    let failure_count = outcomes.iter().filter(|o| o.action == "failed").count() as u32;
+    let success_count = outcomes.len() as u32 - failure_count;
+    Ok(DeployBundledResult {
+        outcomes,
+        success_count,
+        failure_count,
+    })
 }
 
 /// Install ALL mods from the manifest that don't exist locally.

@@ -1,6 +1,8 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useIdentityStore } from "../stores/identityStore";
 import { useBugStore } from "../stores/bugStore";
+import { useProfileStore } from "../stores/profileStore";
+import { useToastStore } from "../stores/toastStore";
 import {
   adminListUsers,
   adminBanUser,
@@ -11,6 +13,7 @@ import {
   listCollaborators,
   addCollaborator,
   removeCollaborator,
+  deployBundledPlugins,
   type AdminUserInfo,
   type TicketSummary,
   type Ticket,
@@ -41,6 +44,7 @@ import {
   Clipboard,
   ExternalLink,
   CircleDot,
+  Package,
 } from "lucide-react";
 
 type View = "dashboard" | "ticket-detail";
@@ -61,6 +65,10 @@ export function AdminPanel() {
   const [confirmAction, setConfirmAction] = useState<{ userId: string; action: "ban" | "unban" } | null>(null);
   const [linkCode, setLinkCode] = useState<string | null>(null);
   const [linkCodeCopied, setLinkCodeCopied] = useState(false);
+  const [deployingBundled, setDeployingBundled] = useState(false);
+  const activeProfileGetter = useProfileStore((s) => s.activeProfile);
+  const activeProfile = activeProfileGetter();
+  const addToast = useToastStore((s) => s.addToast);
   const [activeTab, setActiveTab] = useState<"users" | "tickets">("users");
   const [ticketSearch, setTicketSearch] = useState("");
   const [selectedTicket, setSelectedTicket] = useState<Ticket | null>(null);
@@ -234,6 +242,33 @@ ${messages}
     } catch (e) { setToast(`Failed: ${e}`); }
   };
 
+  /** Force-redeploy bundled plugins (MegaDataExtractor, MegaBugs). For when the
+   *  auto-deploy was blocked by a Valheim file-lock and silently kept a stale
+   *  DLL on disk — the feature Milord chased for an afternoon before this existed. */
+  const handleForceRedeployBundled = async () => {
+    const bep = activeProfile?.bepinex_path;
+    if (!bep) {
+      addToast({ type: "warning", title: "No active profile", message: "Activate a profile first.", duration: 5000 });
+      return;
+    }
+    setDeployingBundled(true);
+    try {
+      const result = await deployBundledPlugins(bep);
+      const summary = result.outcomes
+        .map((o) => `${o.folder}: ${o.action}${o.bundled_version ? ` (v${o.bundled_version})` : ""}${o.error ? ` — ${o.error}` : ""}`)
+        .join(" · ");
+      if (result.failure_count > 0) {
+        addToast({ type: "warning", title: `${result.failure_count} plugin(s) failed`, message: summary, duration: 0 });
+      } else {
+        addToast({ type: "success", title: "Bundled plugins deployed", message: summary, duration: 7000 });
+      }
+    } catch (e) {
+      addToast({ type: "warning", title: "Redeploy errored", message: String(e), duration: 0 });
+    } finally {
+      setDeployingBundled(false);
+    }
+  };
+
   if (!isAdmin) {
     return (
       <div className="flex-1 flex items-center justify-center">
@@ -402,6 +437,15 @@ ${messages}
               </button>
             </div>
           )}
+          <button
+            onClick={handleForceRedeployBundled}
+            disabled={deployingBundled || !activeProfile?.bepinex_path}
+            className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-medium bg-amber-500/10 text-amber-400 hover:bg-amber-500/20 border border-amber-500/20 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            title="Overwrite installed bundled plugins with the versions shipped in this MegaLoad build. Close Valheim first if a DLL is locked."
+          >
+            {deployingBundled ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Package className="w-3.5 h-3.5" />}
+            Redeploy Bundled Plugins
+          </button>
         </div>
       </div>
 

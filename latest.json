@@ -1,11 +1,11 @@
 {
-  "version": "1.7.15",
-  "notes": "MegaBugs — mod tagging, quick-close button, and unread-dot fix. Every ticket can now be tagged with one or more Mega{x} mods from a preset picker in the detail view. Mod chips show on each list row; a new Mod dropdown in the filter bar lets you narrow to a single mod or Untagged. Owner-only quick-close (green tick) sits on every open ticket row so you don't have to open it to close it. Unread dot now clears when you read or close a ticket — closed tickets never show the dot at all, and any status change by the owner/collaborator marks their own view as read.",
-  "pub_date": "2026-04-18T12:58:49Z",
+  "version": "1.7.16",
+  "notes": "Bundled-plugin deploy reliability — the auto-deploy now skips when Valheim is running (so it can't fail on a locked DLL) and retries as soon as the game exits. Failures are surfaced via sticky toast instead of being swallowed. New Admin → Redeploy Bundled Plugins button for manual force-upgrade. Deploy also returns per-plugin outcomes for UI feedback.",
+  "pub_date": "2026-04-19T10:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUVSbHR2VVpCVXhRU3AyeUp4K0p1VHRlc2dSbW84NG13aXRtdzRmTGJDQVVGV3ErNThRT2xWSDlzSFBYK0FXMjNZR2h6NVFROGlxdzVVTkxISjQ5eGdzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTE3MTE5CWZpbGU6TWVnYUxvYWRfMS43LjE1X3g2NC1zZXR1cC5uc2lzLnppcAp5S2grVjJFNE8zdUR3SjZucXNmSDFvVHdpb3RjVFhHV0R3bm81dVo3cGtGWGpKTjJBU2sxTXRua3BZcS9UYnNuR0xxQ2FIYTk3L1M3LytCMldmakpCdz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.7.15/MegaLoad_1.7.15_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFSNHYva2V2d2F2V3MxZVdiaXVOVEordXA3eWRRMHp3TWlhNm1ad3cyNm9KaUY1VEtYWFRUcGkvT0hHaUF6YVFtZG81SFhWbVJGZ1pHa09wSzVIdGdFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTU1MDg1CWZpbGU6TWVnYUxvYWRfMS43LjE2X3g2NC1zZXR1cC5uc2lzLnppcApVaUZ0ZG0yeDRjY0RBcXBqRC8wUEt2S0U3WnhkdU1uNk9WNENndU1XcmFkM0NlRnJiZXBJa2IrQW44ZTZQUkNTQTVrWHlCRE1UK0NlRkZxcHdZc21EQT09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.7.16/MegaLoad_1.7.16_x64-setup.nsis.zip"
     }
   }
 }

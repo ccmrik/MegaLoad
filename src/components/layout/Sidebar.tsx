@@ -95,30 +95,58 @@ export function Sidebar() {
   // Auto-update on startup when profile is available (re-run on profile switch)
   const lastCheckedProfile = useRef<string | null>(null);
   const wasGameRunning = useRef(false);
+  const deployedThisSession = useRef(false);
   useEffect(() => {
     const bep = profile?.bepinex_path;
     if (!bep) return;
 
-    // Profile switch — always auto-update unless game is running
+    const runDeploy = () => {
+      // Idempotent — Rust side compares versions and only overwrites older or
+      // missing DLLs. Surfaces per-plugin outcomes so silent failures (most
+      // often fs::copy blocked by Valheim's file lock) actually get seen.
+      deployBundledPlugins(bep)
+        .then((result) => {
+          deployedThisSession.current = true;
+          useModStore.getState().fetchMods(bep);
+          if (result.failure_count > 0) {
+            const failed = result.outcomes.filter((o) => o.action === "failed");
+            useToastStore.getState().addToast({
+              type: "warning",
+              title: `Bundled plugin deploy failed (${result.failure_count})`,
+              message: failed
+                .map((o) => `${o.dll}: ${o.error ?? "unknown error"}`)
+                .join(" · "),
+              duration: 0,
+            });
+          }
+        })
+        .catch((e) => {
+          useToastStore.getState().addToast({
+            type: "warning",
+            title: "Bundled plugin deploy errored",
+            message: String(e),
+            duration: 0,
+          });
+        });
+    };
+
+    // Profile switch — always auto-update
     if (bep !== lastCheckedProfile.current) {
       lastCheckedProfile.current = bep;
-      // Deploy bundled internal plugins (MegaBugs, MegaDataExtractor). Idempotent:
-      // the Rust side compares versions and only overwrites when bundled > installed.
-      // We refetch mods AFTER deploy so the list reflects the just-upgraded DLL
-      // version instead of showing the pre-deploy installed version until the
-      // next refresh. Fixes the "v1.7.8 ships v1.3.0 but Mods list still shows
-      // v1.2.0" bug Milord hit.
-      deployBundledPlugins(bep)
-        .then(() => useModStore.getState().fetchMods(bep))
-        .catch((e) => console.warn("[MegaLoad]", e));
       if (gameStatus?.valheim_running) {
+        // Valheim is holding DLL locks — deferring to post-game is the difference
+        // between a stale v1.4.1 lingering invisibly and a clean upgrade. We
+        // retry in the "game just stopped" branch below.
+        deployedThisSession.current = false;
         checkUpdates(bep);
       } else {
+        runDeploy();
         autoUpdate(bep);
       }
     }
-    // Game just stopped — trigger auto-update to install any pending updates
+    // Game just stopped — install any pending updates AND retry a deferred deploy
     else if (wasGameRunning.current && !gameStatus?.valheim_running) {
+      if (!deployedThisSession.current) runDeploy();
       autoUpdate(bep);
       // Refresh player data after game exits (character save updated)
       usePlayerDataStore.getState().refreshSelected();
