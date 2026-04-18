@@ -724,16 +724,17 @@ export function ValheimData() {
 
   return (
     <div className="flex flex-col h-full animate-in fade-in slide-in-from-bottom-4 duration-500 w-full">
-      {/* Header: Title + Search + Buttons in one row */}
-      <div className="flex items-center gap-3 mb-3">
-        <div className="shrink-0">
-          <h1 className="font-norse font-bold text-4xl text-zinc-100 tracking-wide leading-tight">Valheim Data</h1>
-          <p className="text-zinc-500 text-xs">
-            {totalMatching.toLocaleString()} item{totalMatching !== 1 ? "s" : ""}
-            {hasActiveFilters ? " matching" : " in database"}
-          </p>
-        </div>
+      {/* Title row */}
+      <div className="mb-3">
+        <h1 className="font-norse font-bold text-4xl text-zinc-100 tracking-wide leading-tight">Valheim Data</h1>
+        <p className="text-zinc-500 text-xs">
+          {totalMatching.toLocaleString()} item{totalMatching !== 1 ? "s" : ""}
+          {hasActiveFilters ? " matching" : " in database"}
+        </p>
+      </div>
 
+      {/* Controls row: search + discovery filter + sort + export + view + cart */}
+      <div className="flex items-center gap-3 mb-3">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
           <input

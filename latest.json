@@ -1,11 +1,11 @@
 {
-  "version": "1.7.7",
-  "notes": "New world object — Bee Nest (Meadows + Black Forest). Drops a Queen Bee and 1-3 Honey when broken; stings the player for 10 poison in a 4m radius every 4 seconds while they're close. MegaDataExtractor 1.3.0 also bundled — adds a new worldPrefabs pass that dumps every ZNetScene prefab with a Destructible / Pickable / Spawner / Container / RuneStone / Vegvisir component. Drop the new DLL in and relaunch Valheim once; the next pass of convert-dump.cjs will ingest a far richer world-object catalog.",
-  "pub_date": "2026-04-18T09:40:00Z",
+  "version": "1.7.8",
+  "notes": "Fix: MegaDataExtractor was still shipping v1.2.0 because the bundled copy in src-tauri/resources/ wasn't updated — only the Latest Release staging copy was. This release bundles the real MegaDataExtractor v1.3.0 with the new worldPrefabs extraction pass. Also moved the search + discovery + sort + export + view + cart controls below the Valheim Data title for breathing room.",
+  "pub_date": "2026-04-18T10:05:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUZnMW9WV1JXeFFHOHdzOUN6dDBFdnl5Z1NvTE90L0FEbHJEckNiMURmdnR6WkhMeGpna1ozVTM5dzJ1K2NEbldjL2ZRKzIyb2ZzK3JOUG13TzY0a2c0PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NDkzODQ4CWZpbGU6TWVnYUxvYWRfMS43LjdfeDY0LXNldHVwLm5zaXMuemlwCnYxZkQ3N3cwbnJ2UVV2Ym10YXBaUVZWMFVRUEd4SWFybXZPaHRTOWE0ZHRHUG5nMTRnUS9BUVZtS1F1TzZENkltb2MyMitITVJMcHhRSGJnVVB2WkRRPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.7.7/MegaLoad_1.7.7_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUJBWkFNR29jVUVlVlZCMGNDT3NwSm1EczNYc0dIUzhVQWp2SjFuSHN1TkU3SElLRHdHQVRaaDNaSVQwNnlJSjlEVklSbmxmaVYrMlZvaThRNDNaRVFjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NDk0Njk5CWZpbGU6TWVnYUxvYWRfMS43LjhfeDY0LXNldHVwLm5zaXMuemlwCmpzTHhubm1rUHFSNW9HQmhzd1JsUWg3Y3pRZmtPYmpVemJQQTZqWTZwYkJEcmZKbkIvRTQzK3RnWmY0OTVGZTdWUjJFaVAvWWFncHZraE1TYS9BVEFRPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.7.8/MegaLoad_1.7.8_x64-setup.nsis.zip"
     }
   }
 }
