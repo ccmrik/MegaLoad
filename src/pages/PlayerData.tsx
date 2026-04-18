@@ -28,7 +28,13 @@ import {
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { usePlayerDataStore } from "../stores/playerDataStore";
-import { useValheimDataStore } from "../stores/valheimDataStore";
+import {
+  useValheimDataStore,
+  BIOME_ORDER,
+  TOTAL_TROPHIES,
+} from "../stores/valheimDataStore";
+import { useToastStore } from "../stores/toastStore";
+import { Copy } from "lucide-react";
 import {
   VALHEIM_ITEMS,
   itemMap,
@@ -49,6 +55,18 @@ const GUARDIAN_NAMES: Record<string, string> = {
   GP_Queen: "The Queen",
   GP_Fader: "Fader",
 };
+
+/** The 7 Valheim boss trophies — used to derive bosses-defeated (save-file boss_kills is unreliable). */
+const BOSS_TROPHY_IDS = new Set([
+  "TrophyEikthyr",
+  "TrophyTheElder",
+  "TrophyBonemass",
+  "TrophyDragonQueen",
+  "TrophyGoblinKing",
+  "TrophySeekerQueen",
+  "TrophyFader",
+]);
+const TOTAL_BOSSES = BOSS_TROPHY_IDS.size;
 
 // ── Equipment slot definitions ─────────────────────────────
 const EQUIP_SLOTS = [
@@ -129,6 +147,9 @@ function ItemIcon({ id, size = 32, className = "" }: { id: string; size?: number
 export function PlayerData() {
   const navigate = useNavigate();
   const setSelectedItem = useValheimDataStore((s) => s.setSelectedItem);
+  const setActiveBiome = useValheimDataStore((s) => s.setActiveBiome);
+  const setReturnPath = useValheimDataStore((s) => s.setReturnPath);
+  const addToast = useToastStore((s) => s.addToast);
   const {
     characters,
     selectedPath,
@@ -143,13 +164,30 @@ export function PlayerData() {
   const goToItem = (prefabId: string) => {
     const item = itemMap.get(prefabId);
     if (item) {
+      setReturnPath("/player-data");
       setSelectedItem(item);
       navigate("/valheim-data");
     }
   };
 
+  const openBiome = (biome: string) => {
+    setReturnPath("/player-data");
+    setSelectedItem(null);
+    setActiveBiome(biome);
+    navigate("/valheim-data");
+  };
+
+  const copyItemName = (item: ValheimItem, e?: React.MouseEvent) => {
+    e?.stopPropagation();
+    e?.preventDefault();
+    navigator.clipboard.writeText(item.name).then(
+      () => addToast({ type: "success", title: "Copied", message: item.name, duration: 1500 }),
+      () => addToast({ type: "warning", title: "Copy failed", duration: 2000 })
+    );
+  };
+
   const [showDropdown, setShowDropdown] = useState(false);
-  const [knowledgeTab, setKnowledgeTab] = useState<"discovered" | "all">("discovered");
+  const [knowledgeTab, setKnowledgeTab] = useState<"discovered" | "undiscovered" | "all">("discovered");
   const [knowledgeSearch, setKnowledgeSearch] = useState("");
   const [knowledgeFilter, setKnowledgeFilter] = useState<string>("all");
   const [knowledgeTypeFilter, setKnowledgeTypeFilter] = useState<string>("all");
@@ -213,7 +251,12 @@ export function PlayerData() {
   }, [character]);
 
   const filteredKnowledge = useMemo(() => {
-    const items = knowledgeTab === "discovered" ? knowledgeData.discovered : knowledgeData.all;
+    const items =
+      knowledgeTab === "discovered"
+        ? knowledgeData.discovered
+        : knowledgeTab === "undiscovered"
+          ? knowledgeData.undiscovered
+          : knowledgeData.all;
     let filtered = items;
 
     if (knowledgeFilter !== "all") {
@@ -250,6 +293,12 @@ export function PlayerData() {
       }
     }
     return set;
+  }, [character]);
+
+  // Trophy-derived boss count (save-file boss_kills is unreliable)
+  const bossesDefeated = useMemo(() => {
+    if (!character) return 0;
+    return character.trophies.filter((t) => BOSS_TROPHY_IDS.has(t)).length;
   }, [character]);
 
   // ── Equipped items ─────────────────────────────────────
@@ -420,17 +469,25 @@ export function PlayerData() {
           <div className="grid grid-cols-7 gap-3 stagger-children">
             <StatCard icon={Skull} label="Deaths" value={character.deaths} color="text-red-400" bg="bg-red-500/10" />
             <StatCard icon={Swords} label="Kills" value={character.kills.toLocaleString()} color="text-orange-400" bg="bg-orange-500/10" />
-            <StatCard icon={Crown} label="Forsaken" value={character.boss_kills} color="text-purple-400" bg="bg-purple-500/10" />
+            <StatCard icon={Crown} label="Forsaken" value={bossesDefeated} outOf={TOTAL_BOSSES} color="text-purple-400" bg="bg-purple-500/10" />
             <StatCard icon={Wrench} label="Crafts" value={character.crafts.toLocaleString()} color="text-brand-400" bg="bg-brand-500/10" />
             <StatCard icon={Hammer} label="Builds" value={character.builds.toLocaleString()} color="text-blue-400" bg="bg-blue-500/10" />
-            <StatCard icon={Trophy} label="Trophies" value={character.trophies.length} color="text-yellow-400" bg="bg-yellow-500/10" />
+            <StatCard icon={Trophy} label="Trophies" value={character.trophies.length} outOf={TOTAL_TROPHIES} color="text-yellow-400" bg="bg-yellow-500/10" />
             <StatCard icon={MapPin} label="Worlds" value={character.world_count} color="text-emerald-400" bg="bg-emerald-500/10" />
           </div>
 
           {/* ── Main 3-Column Layout ──────────────────────── */}
           <div className="grid grid-cols-12 gap-4">
-            {/* LEFT: Equipment Paper Doll */}
+            {/* LEFT: Portrait + Equipment Paper Doll */}
             <div className="col-span-3 space-y-3">
+              <CharacterPortrait
+                model={character.model}
+                beard={character.beard}
+                hair={character.hair}
+                skinColor={character.skin_color}
+                hairColor={character.hair_color}
+                name={character.name}
+              />
               <EquipmentPanel
                 getEquippedForSlot={getEquippedForSlot}
                 character={character}
@@ -467,19 +524,27 @@ export function PlayerData() {
               <div className="glass rounded-xl p-4">
                 <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3 flex items-center gap-2">
                   <MapPin className="w-3.5 h-3.5" /> Biomes Discovered
+                  <span className="ml-auto text-[10px] text-zinc-600 font-normal normal-case">
+                    {character.known_biomes.filter((b) => BIOME_ORDER.includes(b as any)).length} / {BIOME_ORDER.length}
+                  </span>
                 </h3>
                 <div className="flex flex-wrap gap-1.5">
-                  {character.known_biomes.map((biome) => (
-                    <span
-                      key={biome}
-                      className={cn(
-                        "px-2 py-0.5 rounded-md text-xs font-medium",
-                        BIOME_COLORS[biome] ?? "bg-zinc-700/50 text-zinc-400"
-                      )}
-                    >
-                      {biome}
-                    </span>
-                  ))}
+                  {character.known_biomes
+                    .filter((b) => BIOME_ORDER.includes(b as any))
+                    .map((biome) => (
+                      <button
+                        key={biome}
+                        type="button"
+                        onClick={() => openBiome(biome)}
+                        title={`Filter Valheim Data to ${biome}`}
+                        className={cn(
+                          "px-2 py-0.5 rounded-md text-xs font-medium transition-all hover:brightness-125 cursor-pointer",
+                          BIOME_COLORS[biome] ?? "bg-zinc-700/50 text-zinc-400"
+                        )}
+                      >
+                        {biome}
+                      </button>
+                    ))}
                 </div>
               </div>
             </div>
@@ -551,6 +616,17 @@ export function PlayerData() {
                     Discovered ({knowledgeData.discovered.length})
                   </button>
                   <button
+                    onClick={() => setKnowledgeTab("undiscovered")}
+                    className={cn(
+                      "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
+                      knowledgeTab === "undiscovered"
+                        ? "bg-brand-500/20 text-brand-400"
+                        : "text-zinc-400 hover:text-zinc-200"
+                    )}
+                  >
+                    Undiscovered ({knowledgeData.undiscovered.length})
+                  </button>
+                  <button
                     onClick={() => setKnowledgeTab("all")}
                     className={cn(
                       "px-3 py-1.5 rounded-md text-xs font-medium transition-all",
@@ -559,7 +635,7 @@ export function PlayerData() {
                         : "text-zinc-400 hover:text-zinc-200"
                     )}
                   >
-                    All Items ({knowledgeData.all.length})
+                    All ({knowledgeData.all.length})
                   </button>
                 </div>
 
@@ -629,6 +705,7 @@ export function PlayerData() {
                     <th className="py-2 px-2">Biome</th>
                     <th className="py-2 px-2">Source</th>
                     {knowledgeTab === "all" && <th className="py-2 px-2 w-16 text-center">Status</th>}
+                    <th className="py-2 px-2 w-10"></th>
                   </tr>
                 </thead>
                 <tbody>
@@ -682,6 +759,16 @@ export function PlayerData() {
                             )}
                           </td>
                         )}
+                        <td className="py-1.5 px-2">
+                          <button
+                            type="button"
+                            onClick={(e) => copyItemName(item, e)}
+                            title={`Copy "${item.name}"`}
+                            className="p-1 rounded text-zinc-500 hover:text-brand-400 hover:bg-zinc-800/60 transition-colors"
+                          >
+                            <Copy className="w-3.5 h-3.5" />
+                          </button>
+                        </td>
                       </tr>
                     );
                   })}
@@ -700,17 +787,169 @@ export function PlayerData() {
   );
 }
 
+// ── Character Portrait ─────────────────────────────────────
+/**
+ * Stylised Norse viking portrait. Valheim doesn't export character renders,
+ * so we build an SVG bust from the save-file features: `model` (0=male, 1=female),
+ * `skin_color` / `hair_color` (0-1 RGB), `hair` name, `beard` name (males only).
+ *
+ * Hair styles map to silhouette shapes (short / medium / long / braided etc.).
+ * Beard styles map to beard shapes (stubble / full / forked etc.). If the style
+ * name is unknown, a generic silhouette is used.
+ */
+function CharacterPortrait({
+  model,
+  beard,
+  hair,
+  skinColor,
+  hairColor,
+  name,
+}: {
+  model: number;
+  beard: string;
+  hair: string;
+  skinColor: [number, number, number];
+  hairColor: [number, number, number];
+  name: string;
+}) {
+  const rgb = ([r, g, b]: [number, number, number]) =>
+    `rgb(${Math.round(r * 255)}, ${Math.round(g * 255)}, ${Math.round(b * 255)})`;
+  const skin = rgb(skinColor);
+  const hairRgb = rgb(hairColor);
+  const isMale = model === 0;
+  const hasBeard = isMale && beard && beard !== "No beard" && beard !== "BeardNone";
+
+  // Derive a "style index" from the trailing digit of the hair/beard name
+  const hairIdx = parseInt((hair.match(/\d+/)?.[0]) ?? "1", 10) || 1;
+  const beardIdx = parseInt((beard.match(/\d+/)?.[0]) ?? "1", 10) || 1;
+
+  // Pretty labels
+  const prettyHair = hair ? hair.replace(/Hair/, "Hair ") : "—";
+  const prettyBeard = beard && hasBeard ? beard.replace(/Beard/, "Beard ") : "Clean-shaven";
+
+  return (
+    <div className="glass rounded-xl p-4 overflow-hidden relative">
+      <h3 className="text-xs font-semibold text-zinc-500 uppercase tracking-wider mb-3 flex items-center gap-2">
+        <User className="w-3.5 h-3.5" /> Portrait
+      </h3>
+      <div className="flex flex-col items-center">
+        <div className="relative w-32 h-32 rounded-full overflow-hidden ring-2 ring-brand-500/40 shadow-lg shadow-brand-500/10 bg-gradient-to-b from-zinc-800 to-zinc-900">
+          <svg viewBox="0 0 120 120" className="w-full h-full">
+            <defs>
+              <radialGradient id="portrait-bg" cx="50%" cy="30%" r="75%">
+                <stop offset="0%" stopColor="#1e2740" />
+                <stop offset="100%" stopColor="#0a0f1a" />
+              </radialGradient>
+              <filter id="portrait-shadow" x="-20%" y="-20%" width="140%" height="140%">
+                <feGaussianBlur stdDeviation="1" />
+              </filter>
+            </defs>
+            {/* Background */}
+            <rect width="120" height="120" fill="url(#portrait-bg)" />
+            {/* Shoulders / bust */}
+            <path
+              d="M 10 120 C 10 90, 40 80, 60 80 C 80 80, 110 90, 110 120 Z"
+              fill="#38425a"
+            />
+            {/* Neck */}
+            <rect x="50" y="68" width="20" height="16" fill={skin} />
+            {/* Head */}
+            <ellipse cx="60" cy="55" rx="22" ry="26" fill={skin} />
+            {/* Eyes */}
+            <ellipse cx="52" cy="55" rx="1.8" ry="2.2" fill="#0a0f1a" />
+            <ellipse cx="68" cy="55" rx="1.8" ry="2.2" fill="#0a0f1a" />
+            {/* Brow */}
+            <path d="M 48 50 L 56 49" stroke={hairRgb} strokeWidth="1.2" strokeLinecap="round" />
+            <path d="M 64 49 L 72 50" stroke={hairRgb} strokeWidth="1.2" strokeLinecap="round" />
+            {/* Hair — shape depends on style index */}
+            {(() => {
+              // 1-3: short/medium cap, 4-6: longer flowing, 7+: braided/long
+              if (hairIdx >= 7) {
+                // Long flowing hair — covers most of the head and drapes past shoulders
+                return (
+                  <>
+                    <path
+                      d="M 38 45 C 36 30, 48 24, 60 24 C 72 24, 84 30, 82 45 C 84 60, 88 90, 86 105 L 92 105 L 90 70 Q 92 55, 82 45 Z"
+                      fill={hairRgb}
+                    />
+                    <path
+                      d="M 30 70 L 32 105 L 38 105 L 38 60 Q 38 50, 42 44 Z"
+                      fill={hairRgb}
+                    />
+                  </>
+                );
+              } else if (hairIdx >= 4) {
+                // Medium length — flows to shoulders
+                return (
+                  <path
+                    d="M 38 45 C 36 28, 48 22, 60 22 C 72 22, 84 28, 82 45 L 84 70 L 78 70 L 78 50 C 78 40, 72 35, 60 35 C 48 35, 42 40, 42 50 L 42 70 L 36 70 Z"
+                    fill={hairRgb}
+                  />
+                );
+              } else {
+                // Short cap
+                return (
+                  <path
+                    d="M 38 46 C 37 30, 50 24, 60 24 C 70 24, 83 30, 82 46 C 80 42, 70 38, 60 38 C 50 38, 40 42, 38 46 Z"
+                    fill={hairRgb}
+                  />
+                );
+              }
+            })()}
+            {/* Beard — only for males with a beard, shape depends on style */}
+            {hasBeard && (() => {
+              if (beardIdx >= 4) {
+                // Long / forked beard
+                return (
+                  <path
+                    d="M 44 68 Q 48 82, 54 92 L 60 95 L 66 92 Q 72 82, 76 68 Q 70 76, 60 76 Q 50 76, 44 68 Z"
+                    fill={hairRgb}
+                  />
+                );
+              } else {
+                // Short / full beard
+                return (
+                  <path
+                    d="M 44 66 Q 46 78, 52 84 Q 56 88, 60 88 Q 64 88, 68 84 Q 74 78, 76 66 Q 70 72, 60 72 Q 50 72, 44 66 Z"
+                    fill={hairRgb}
+                  />
+                );
+              }
+            })()}
+            {/* Mouth */}
+            {!hasBeard && (
+              <path d="M 55 68 Q 60 71, 65 68" stroke="#0a0f1a" strokeWidth="1" fill="none" strokeLinecap="round" />
+            )}
+            {/* Nose shadow */}
+            <path d="M 60 58 L 58 64 L 62 64 Z" fill="rgba(0,0,0,0.15)" />
+          </svg>
+        </div>
+        <div className="mt-3 text-center">
+          <div className="font-norse font-bold text-xl text-zinc-100 tracking-wide leading-none">
+            {name}
+          </div>
+          <div className="text-[10px] text-zinc-500 mt-1">
+            {isMale ? "Male" : "Female"} · {prettyHair} · {prettyBeard}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 // ── Stat Card Component ────────────────────────────────────
 function StatCard({
   icon: Icon,
   label,
   value,
+  outOf,
   color,
   bg,
 }: {
   icon: typeof Skull;
   label: string;
   value: string | number;
+  outOf?: number;
   color: string;
   bg: string;
 }) {
@@ -722,7 +961,10 @@ function StatCard({
         </div>
         <span className="text-[11px] font-medium text-zinc-500 uppercase tracking-wider">{label}</span>
       </div>
-      <p className={cn("text-xl font-bold", color)}>{value}</p>
+      <p className={cn("text-xl font-bold", color)}>
+        {value}
+        {outOf != null && <span className="text-sm text-zinc-600 ml-1">/ {outOf}</span>}
+      </p>
     </div>
   );
 }

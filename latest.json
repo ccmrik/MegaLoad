@@ -1,11 +1,11 @@
 {
-  "version": "1.7.2",
-  "notes": "Achievements row expanded from 4 to 6 cards — Trophies Earned and Crafts Forged moved out of the side column into their own dedicated achievement tiles. Order: Bosses, Trophies, Crafts, Recipes, Runestones, Worlds.",
-  "pub_date": "2026-04-18T06:30:00Z",
+  "version": "1.7.3",
+  "notes": "Player Data upgrades — stylised Norse character portrait (uses the save file's skin/hair colours + beard/hair style), Biomes Discovered chips link to the filtered Valheim Data, stats row shows 'out of' totals (Trophies x/58, Forsaken x/7), new Undiscovered tab on the Knowledge table, and a Copy-to-clipboard icon on every knowledge row. Dashboard achievements show out-of numbers for Trophies (x/58) and Recipes (x/737). Back button on item/station/vendor detail pages now returns to the page you came from (browser-style) instead of always dropping to the Valheim Data list.",
+  "pub_date": "2026-04-18T07:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUl1THJVT2dBbWpxcGYzckZWd1dpRzNhSlczN3NqdkNpbjdzaDFiY3k3RysxZVo4WS9RTkM5bWxFWHFkSW01ZDJnSFFUVE55YlAzbkNmUkZsOHJnOGc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NDg4MzU3CWZpbGU6TWVnYUxvYWRfMS43LjJfeDY0LXNldHVwLm5zaXMuemlwCmZmWjNobjNpL1FsUHVLUFd2OCtacGZqbXhzZWhaRE00ME1YQ0JGVVJZU0VHM3BPd1JUaEoxTVpnWXNqbnBLU0F4ditKa0JQemNjZkdMUXZFNzhXa0NBPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.7.2/MegaLoad_1.7.2_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU1sN1NnNWtNVDZGMnd3UGZkWDhFczFJMDhTbzZYVGZxUzZSUitDY0R4ZmttT0gwMWlFRVorRGU5QmpXVHZQNWU2YkxGTlhuVWJzNm1OdVk1R0ZYU2dvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NDg5NDg3CWZpbGU6TWVnYUxvYWRfMS43LjNfeDY0LXNldHVwLm5zaXMuemlwCk92Y2hpUmZnSXVvdzZmOTgveTR6MW5yODN0YW5yZXBCbmpFTS9yN2JZekFwaXdrSWVyK0s5THlUWVJ6cXNWeXZ6bHpmR2NERjBqUmJnYmRwUFVBOUFBPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.7.3/MegaLoad_1.7.3_x64-setup.nsis.zip"
     }
   }
 }

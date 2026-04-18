@@ -3,7 +3,12 @@ import { useProfileStore } from "../stores/profileStore";
 import { useModStore } from "../stores/modStore";
 import { usePlayerDataStore } from "../stores/playerDataStore";
 import { useUpdateStore } from "../stores/updateStore";
-import { BIOME_ORDER, useValheimDataStore } from "../stores/valheimDataStore";
+import {
+  BIOME_ORDER,
+  useValheimDataStore,
+  TOTAL_TROPHIES,
+  TOTAL_RECIPES,
+} from "../stores/valheimDataStore";
 import { BIOME_COLORS, BIOME_BG_COLORS } from "./ValheimData";
 import { cn } from "../lib/utils";
 import {
@@ -69,10 +74,12 @@ export function Dashboard() {
   const { sessionUpdatedMods, updateResult } = useUpdateStore();
   const setActiveBiome = useValheimDataStore((s) => s.setActiveBiome);
   const setSelectedItem = useValheimDataStore((s) => s.setSelectedItem);
+  const setReturnPath = useValheimDataStore((s) => s.setReturnPath);
   const navigate = useNavigate();
   const profile = activeProfile();
 
   const openBiome = (biome: string) => {
+    setReturnPath("/");
     setSelectedItem(null);
     setActiveBiome(biome);
     navigate("/valheim-data");
@@ -361,7 +368,8 @@ export function Dashboard() {
               icon={Award}
               label="Trophies Earned"
               value={character.trophies.length}
-              hint="Heads hang in the hall"
+              max={TOTAL_TROPHIES}
+              hint={character.trophies.length >= TOTAL_TROPHIES ? "Every head hung in the hall" : `${TOTAL_TROPHIES - character.trophies.length} to claim`}
               color="text-yellow-300"
               ringColor="ring-yellow-500/30"
             />
@@ -377,6 +385,7 @@ export function Dashboard() {
               icon={BookOpen}
               label="Recipes Mastered"
               value={character.known_recipes.length}
+              max={TOTAL_RECIPES}
               hint={`${character.known_materials.length} materials known`}
               color="text-cyan-300"
               ringColor="ring-cyan-500/30"

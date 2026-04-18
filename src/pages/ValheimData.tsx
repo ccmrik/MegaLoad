@@ -581,24 +581,40 @@ export function ValheimData() {
 
   const activeFilterCount = activeTypes.length + activeSubcategories.length + activeBiomes.length + activeStations.length + activeFactories.length + activeVendors.length + (onlyTameable ? 1 : 0);
 
+  // Browser-style back — if user landed here from another page (e.g. PlayerData
+  // clicking an inventory item), honour the stored returnPath. Otherwise just
+  // clear the selected detail to drop back to the list.
+  const returnPath = useValheimDataStore((s) => s.returnPath);
+  const setReturnPath = useValheimDataStore((s) => s.setReturnPath);
+  const backFromDetail = (clearer: () => void) => () => {
+    if (returnPath) {
+      const path = returnPath;
+      setReturnPath(null);
+      clearer();
+      navigate(path);
+    } else {
+      clearer();
+    }
+  };
+
   // Station detail view
   if (selectedStation) {
-    return <StationDetailView station={selectedStation} onBack={() => setSelectedStation(null)} />;
+    return <StationDetailView station={selectedStation} onBack={backFromDetail(() => setSelectedStation(null))} />;
   }
 
   // Factory (processing station) detail view
   if (selectedFactory) {
-    return <ProcessingStationDetailView stationName={selectedFactory} onBack={() => setSelectedFactory(null)} />;
+    return <ProcessingStationDetailView stationName={selectedFactory} onBack={backFromDetail(() => setSelectedFactory(null))} />;
   }
 
   // Vendor detail view
   if (selectedVendor) {
-    return <VendorDetailView vendorName={selectedVendor} onBack={() => setSelectedVendor(null)} />;
+    return <VendorDetailView vendorName={selectedVendor} onBack={backFromDetail(() => setSelectedVendor(null))} />;
   }
 
   // Item detail view
   if (selectedItem) {
-    return <DetailView item={selectedItem} onBack={() => setSelectedItem(null)} />;
+    return <DetailView item={selectedItem} onBack={backFromDetail(() => setSelectedItem(null))} />;
   }
 
   return (

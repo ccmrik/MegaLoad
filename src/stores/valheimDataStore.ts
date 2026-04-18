@@ -485,6 +485,14 @@ export function getCreatureIconId(creature: ValheimItem): string {
 // ── Vendor filter list ───────────────────────────────────────
 export const VENDOR_LIST = ["Haldor", "Hildir", "Bog Witch"] as const;
 
+// ── Pre-computed totals (for Dashboard / PlayerData "out of" stats) ──
+/** All obtainable trophies in the game database. */
+export const TOTAL_TROPHIES = VALHEIM_ITEMS.filter((i) => i.subcategory === "Trophy").length;
+/** All craftable things (items with a recipe). */
+export const TOTAL_RECIPES = VALHEIM_ITEMS.filter((i) => i.recipe && i.recipe.length > 0).length;
+/** Everything the player can realistically "discover" — all items that aren't creatures. */
+export const TOTAL_DISCOVERABLE = VALHEIM_ITEMS.filter((i) => i.type !== "Creature").length;
+
 /** Get all item IDs a vendor SELLS (excludes items they buy) */
 export function getVendorItemIds(vendorName: string): Set<string> {
   const vendor = VENDORS[vendorName];
@@ -611,6 +619,11 @@ interface ValheimDataState {
   // Station materials mode: false = show items, "craft" = craft materials, "build" = build materials
   stationMaterialsMode: false | "craft" | "build";
   setStationMaterialsMode: (mode: false | "craft" | "build") => void;
+  // Return path — when set, the Back button on item/station/vendor detail
+  // navigates to this route instead of clearing selection in place.
+  // Set by cross-page links (e.g. PlayerData inventory click → item detail).
+  returnPath: string | null;
+  setReturnPath: (path: string | null) => void;
   // Cart
   cartItems: CartEntry[];
   cartOpen: boolean;
@@ -647,6 +660,8 @@ export const useValheimDataStore = create<ValheimDataState>((set) => ({
   tableSortDir: "asc",
   stationMaterialsMode: false,
   setStationMaterialsMode: (on) => set({ stationMaterialsMode: on }),
+  returnPath: null,
+  setReturnPath: (returnPath) => set({ returnPath }),
   cartItems: [],
   cartOpen: false,
   setQuery: (query) => set({ query }),
