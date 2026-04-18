@@ -50,6 +50,8 @@ function setLastRead(ticketId: string) {
 }
 
 export function hasUnread(ticket: TicketSummary): boolean {
+  // Closed tickets are resolved — never surface an unread dot regardless of activity.
+  if (ticket.status === "closed") return false;
   const map = getLastReadMap();
   const lastRead = map[ticket.id];
   if (!lastRead) return ticket.message_count > 1; // never opened = unread if replies exist
@@ -308,7 +310,19 @@ export const useBugStore = create<BugState>((set, get) => ({
     try {
       await updateTicketStatus(ticketId, status, labels, identity.user_id);
       const ticket = await fetchTicketDetail(ticketId);
-      set({ activeTicket: ticket, offline: false });
+      // Mirror the server's fresh updated_at into last-read so the unread dot
+      // clears for the mutator — they're obviously aware of the change they just made.
+      setLastRead(ticketId);
+      const { tickets } = get();
+      const syncedTickets = tickets.map((t) =>
+        t.id === ticketId ? { ...t, status: ticket.status, labels: ticket.labels, updated_at: ticket.updated_at } : t
+      );
+      set({
+        activeTicket: ticket,
+        tickets: syncedTickets,
+        notificationCount: computeNotificationCount(syncedTickets),
+        offline: false,
+      });
     } catch (e) {
       // Revert optimistic override on failure
       _statusOverrides.delete(ticketId);

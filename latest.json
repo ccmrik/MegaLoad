@@ -1,11 +1,11 @@
 {
-  "version": "1.7.14",
-  "notes": "MegaDataExtractor 1.4.3 — output paths moved to %APPDATA%\\MegaLoad\\ (universal, no more 'Valheim Mods' folder dropped onto users' desktops). Character portraits now live at %APPDATA%\\MegaLoad\\character-portraits\\. Added a subtle hint beneath the stylised fallback portrait pointing users at Valheim's character-select screen to capture the real render.",
-  "pub_date": "2026-04-18T22:00:00Z",
+  "version": "1.7.15",
+  "notes": "MegaBugs — mod tagging, quick-close button, and unread-dot fix. Every ticket can now be tagged with one or more Mega{x} mods from a preset picker in the detail view. Mod chips show on each list row; a new Mod dropdown in the filter bar lets you narrow to a single mod or Untagged. Owner-only quick-close (green tick) sits on every open ticket row so you don't have to open it to close it. Unread dot now clears when you read or close a ticket — closed tickets never show the dot at all, and any status change by the owner/collaborator marks their own view as read.",
+  "pub_date": "2026-04-18T12:58:49Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOVBmaHJIcVZ4SVVOZUdSYnlkbzNmc3AzaTFsMjRodG9KSktLYXo1anRCcmRTbWZzOEJ5LzBDdDdjTSsxK3gyeVJZNEw0MUQ1Zm5BczBwUUx4K2kzZEEwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTEzMTQ0CWZpbGU6TWVnYUxvYWRfMS43LjE0X3g2NC1zZXR1cC5uc2lzLnppcAphOVpJc1JySlppRXdBOTlGVGJaNUdmcUl3L2FLMWpGcnRETG9ldUdPZHVxWGw1eTlmMVFDcG5iUFN0QnRzYTdYTG9UWU55N05vM2RIejYyNzhlQU9DZz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.7.14/MegaLoad_1.7.14_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUVSbHR2VVpCVXhRU3AyeUp4K0p1VHRlc2dSbW84NG13aXRtdzRmTGJDQVVGV3ErNThRT2xWSDlzSFBYK0FXMjNZR2h6NVFROGlxdzVVTkxISjQ5eGdzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTE3MTE5CWZpbGU6TWVnYUxvYWRfMS43LjE1X3g2NC1zZXR1cC5uc2lzLnppcAp5S2grVjJFNE8zdUR3SjZucXNmSDFvVHdpb3RjVFhHV0R3bm81dVo3cGtGWGpKTjJBU2sxTXRua3BZcS9UYnNuR0xxQ2FIYTk3L1M3LytCMldmakpCdz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.7.15/MegaLoad_1.7.15_x64-setup.nsis.zip"
     }
   }
 }

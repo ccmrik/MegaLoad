@@ -33,6 +33,52 @@ type View = "list" | "new" | "detail";
 type TicketType = "bug" | "feature";
 type FilterStatus = "all" | "open" | "in-progress" | "closed";
 
+// Canonical lowercase mod/category tags. Stored inside the ticket's `labels` array
+// alongside the existing auto-added `[ticket_type]`. Kept in display order for the picker.
+const MOD_TAGS = [
+  "megaload",
+  "megaapp",
+  "megahoe",
+  "megamegingjord",
+  "megafood",
+  "megashot",
+  "megaqol",
+  "megastuff",
+  "megafishing",
+  "megafactory",
+  "megatrainer",
+  "megabuilder",
+  "megaskeletons",
+  "megadataextractor",
+  "megabugs",
+  "workflow",
+] as const;
+type ModTag = (typeof MOD_TAGS)[number];
+const MOD_TAG_SET = new Set<string>(MOD_TAGS);
+
+const MOD_TAG_LABELS: Record<ModTag, string> = {
+  megaload: "MegaLoad",
+  megaapp: "MegaApp",
+  megahoe: "MegaHoe",
+  megamegingjord: "MegaMegingjord",
+  megafood: "MegaFood",
+  megashot: "MegaShot",
+  megaqol: "MegaQoL",
+  megastuff: "MegaStuff",
+  megafishing: "MegaFishing",
+  megafactory: "MegaFactory",
+  megatrainer: "MegaTrainer",
+  megabuilder: "MegaBuilder",
+  megaskeletons: "MegaSkeletons",
+  megadataextractor: "MegaDataExtractor",
+  megabugs: "MegaBugs",
+  workflow: "Workflow",
+};
+
+function getModTags(labels: string[]): ModTag[] {
+  return labels.filter((l): l is ModTag => MOD_TAG_SET.has(l));
+}
+
 const statusColors: Record<string, string> = {
   open: "text-emerald-400 bg-emerald-500/10 border-emerald-500/20",
   "in-progress": "text-amber-400 bg-amber-500/10 border-amber-500/20",
@@ -121,6 +167,7 @@ export function MegaBugs() {
   const location = useLocation();
   const [view, setView] = useState<View>("list");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
+  const [filterMod, setFilterMod] = useState<"all" | "untagged" | ModTag>("all");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Reset to list view when navigating to this page
@@ -335,9 +382,14 @@ export function MegaBugs() {
     loadTickets();
   }
 
-  // Filter tickets
-  const filteredTickets =
-    filterStatus === "all" ? tickets : tickets.filter((t) => t.status === filterStatus);
+  // Filter tickets by status, then by mod tag.
+  const filteredTickets = tickets.filter((t) => {
+    if (filterStatus !== "all" && t.status !== filterStatus) return false;
+    if (filterMod === "all") return true;
+    const tags = getModTags(t.labels);
+    if (filterMod === "untagged") return tags.length === 0;
+    return tags.includes(filterMod);
+  });
 
   // Still checking access
   if (!access) {
@@ -419,6 +471,10 @@ export function MegaBugs() {
           {/* Manage controls — owner + collaborator can change status; only owner can delete or close */}
           {canManage && (
             <div className="flex items-center gap-2">
+              <ModTagPicker
+                labels={activeTicket.labels}
+                onUpdate={(labels) => setStatus(activeTicket.id, activeTicket.status, labels)}
+              />
               <AdminStatusDropdown
                 currentStatus={activeTicket.status}
                 labels={activeTicket.labels}
@@ -807,6 +863,7 @@ export function MegaBugs() {
             {status === "all" ? "All" : status.charAt(0).toUpperCase() + status.slice(1)}
           </button>
         ))}
+        <ModFilterDropdown value={filterMod} onChange={setFilterMod} />
         <span className="ml-auto text-xs text-zinc-500">
           {filteredTickets.length} ticket{filteredTickets.length !== 1 ? "s" : ""}
         </span>
@@ -830,7 +887,13 @@ export function MegaBugs() {
         ) : (
           <div className="divide-y divide-zinc-800/30">
             {filteredTickets.map((ticket) => (
-              <TicketRow key={ticket.id} ticket={ticket} onClick={() => openTicket(ticket.id)} />
+              <TicketRow
+                key={ticket.id}
+                ticket={ticket}
+                onClick={() => openTicket(ticket.id)}
+                isOwner={isOwner}
+                onQuickClose={(t) => setStatus(t.id, "closed", t.labels)}
+              />
             ))}
           </div>
         )}
@@ -841,13 +904,35 @@ export function MegaBugs() {
 
 // ─── Sub-components ──────────────────────────────────────────────────
 
-function TicketRow({ ticket, onClick }: { ticket: TicketSummary; onClick: () => void }) {
+function TicketRow({
+  ticket,
+  onClick,
+  isOwner,
+  onQuickClose,
+}: {
+  ticket: TicketSummary;
+  onClick: () => void;
+  isOwner: boolean;
+  onQuickClose: (ticket: TicketSummary) => void;
+}) {
   const StatusIcon = statusIcons[ticket.status] || AlertCircle;
   const unread = hasUnread(ticket);
+  const modTags = getModTags(ticket.labels);
+  const visibleTags = modTags.slice(0, 3);
+  const extraTags = modTags.length - visibleTags.length;
+  const canQuickClose = isOwner && ticket.status !== "closed";
   return (
-    <button
-      className="w-full text-left px-6 py-4 hover:bg-zinc-800/30 transition-colors flex items-start gap-4"
+    <div
+      role="button"
+      tabIndex={0}
+      className="w-full text-left px-6 py-4 hover:bg-zinc-800/30 transition-colors flex items-start gap-4 cursor-pointer focus:outline-none focus:bg-zinc-800/30"
       onClick={onClick}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick();
+        }
+      }}
     >
       <div className="mt-0.5 relative">
         {ticket.type === "bug" ? (
@@ -860,7 +945,7 @@ function TicketRow({ ticket, onClick }: { ticket: TicketSummary; onClick: () => 
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className={cn("text-sm font-medium truncate", unread ? "text-zinc-100" : "text-zinc-200")}>
             {ticket.title}
           </span>
@@ -873,13 +958,40 @@ function TicketRow({ ticket, onClick }: { ticket: TicketSummary; onClick: () => 
             <StatusIcon className="w-2.5 h-2.5" />
             {ticket.status}
           </span>
+          {visibleTags.map((tag) => (
+            <span
+              key={tag}
+              className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-brand-500/10 text-brand-400 border border-brand-500/20 shrink-0"
+            >
+              {MOD_TAG_LABELS[tag]}
+            </span>
+          ))}
+          {extraTags > 0 && (
+            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-zinc-800/50 text-zinc-400 border border-zinc-700/40 shrink-0">
+              +{extraTags}
+            </span>
+          )}
         </div>
         <p className="text-xs text-zinc-500 mt-1">
           {ticket.author_name} · {formatDate(ticket.created_at)} · {ticket.message_count} message
           {ticket.message_count !== 1 ? "s" : ""}
         </p>
       </div>
-    </button>
+      {canQuickClose && (
+        <button
+          type="button"
+          className="shrink-0 mt-0.5 p-1.5 rounded-md text-zinc-500 hover:text-emerald-400 hover:bg-emerald-500/10 transition-colors"
+          onClick={(e) => {
+            e.stopPropagation();
+            onQuickClose(ticket);
+          }}
+          title="Close ticket"
+          aria-label="Close ticket"
+        >
+          <CheckCircle2 className="w-4 h-4" />
+        </button>
+      )}
+    </div>
   );
 }
 
@@ -1118,6 +1230,124 @@ function AdminStatusDropdown({
             </button>
           ))}
         </div>
+      )}
+    </div>
+  );
+}
+
+function ModTagPicker({
+  labels,
+  onUpdate,
+}: {
+  labels: string[];
+  onUpdate: (labels: string[]) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = new Set(getModTags(labels));
+
+  function toggle(tag: ModTag) {
+    // Preserve non-mod labels (bug, feature, data, etc.) — only swap mod tags.
+    const preserved = labels.filter((l) => !MOD_TAG_SET.has(l));
+    const nextMods = new Set(selected);
+    if (nextMods.has(tag)) nextMods.delete(tag);
+    else nextMods.add(tag);
+    onUpdate([...preserved, ...Array.from(nextMods)]);
+  }
+
+  return (
+    <div className="relative">
+      <button
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-zinc-800/50 hover:bg-zinc-700/50 text-xs text-zinc-400 hover:text-zinc-200 transition-colors border border-zinc-700/30"
+        onClick={() => setOpen(!open)}
+      >
+        <Tag className="w-3.5 h-3.5" />
+        Mods
+        {selected.size > 0 && (
+          <span className="ml-0.5 px-1.5 py-0.5 rounded-full text-[10px] font-semibold bg-brand-500/20 text-brand-400">
+            {selected.size}
+          </span>
+        )}
+        <ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute right-0 top-full mt-1 w-56 max-h-80 overflow-y-auto bg-zinc-900 border border-zinc-700/50 rounded-lg shadow-xl z-20 py-1">
+            {MOD_TAGS.map((tag) => {
+              const on = selected.has(tag);
+              return (
+                <button
+                  key={tag}
+                  className={cn(
+                    "w-full text-left px-3 py-2 text-xs hover:bg-zinc-800/50 transition-colors flex items-center justify-between",
+                    on ? "text-brand-400" : "text-zinc-400",
+                  )}
+                  onClick={() => toggle(tag)}
+                >
+                  <span>{MOD_TAG_LABELS[tag]}</span>
+                  {on && <CheckCircle2 className="w-3.5 h-3.5" />}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function ModFilterDropdown({
+  value,
+  onChange,
+}: {
+  value: "all" | "untagged" | ModTag;
+  onChange: (next: "all" | "untagged" | ModTag) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const label =
+    value === "all" ? "All mods" : value === "untagged" ? "Untagged" : MOD_TAG_LABELS[value];
+  return (
+    <div className="relative">
+      <button
+        className={cn(
+          "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border",
+          value === "all"
+            ? "bg-zinc-800/30 text-zinc-400 border-zinc-700/30 hover:text-zinc-300"
+            : "bg-brand-500/15 text-brand-400 border-brand-500/30",
+        )}
+        onClick={() => setOpen(!open)}
+      >
+        <Tag className="w-3 h-3" />
+        {label}
+        <ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute left-0 top-full mt-1 w-48 max-h-80 overflow-y-auto bg-zinc-900 border border-zinc-700/50 rounded-lg shadow-xl z-20 py-1">
+            {(["all", "untagged", ...MOD_TAGS] as const).map((opt) => {
+              const selected = opt === value;
+              const optLabel =
+                opt === "all" ? "All mods" : opt === "untagged" ? "Untagged" : MOD_TAG_LABELS[opt];
+              return (
+                <button
+                  key={opt}
+                  className={cn(
+                    "w-full text-left px-3 py-2 text-xs hover:bg-zinc-800/50 transition-colors",
+                    selected ? "text-brand-400" : "text-zinc-400",
+                  )}
+                  onClick={() => {
+                    onChange(opt);
+                    setOpen(false);
+                  }}
+                >
+                  {optLabel}
+                  {selected && " ✓"}
+                </button>
+              );
+            })}
+          </div>
+        </>
       )}
     </div>
   );
