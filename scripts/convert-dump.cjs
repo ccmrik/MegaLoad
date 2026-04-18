@@ -2173,6 +2173,10 @@ const ITEM_REMOVE = new Set([
 // Items to add (missing from extraction)
 const ITEM_ADDITIONS = [
   {id:"Pot_Shard_Red",token:"$item_pot_shard_red",name:"Red Pot Shard",type:"Material",subcategory:"Material",description:"A fragment of something brittle.",biomes:["Ashlands"],source:["Destructible"],station:"",stationLevel:0,maxQuality:1,stack:50,weight:2,value:0,recipe:[],upgradeCosts:[],drops:[],worldSources:[],stats:[],wikiUrl:"https://valheim.fandom.com/wiki/Pot_shard",wikiGroup:""},
+  // Bee Nest — world destructible that hangs off abandoned houses and Black Forest
+  // contested towers. Drops a Queen Bee + Honey when broken; stings the player for
+  // 10 poison in a 4m radius every 4 seconds while they're close.
+  {id:"BeeNest",token:"",name:"Bee Nest",type:"WorldObject",subcategory:"Destructible",description:"A wild hive clinging to rafters and ruins. Break it for Queen Bee and Honey — mind the sting.",biomes:["Meadows","Black Forest"],source:["World"],station:"",stationLevel:0,maxQuality:1,stack:1,weight:0,value:0,recipe:[],upgradeCosts:[],drops:[{id:"QueenBee",name:"Queen Bee",chance:1,min:1,max:1},{id:"Honey",name:"Honey",chance:1,min:1,max:3}],worldSources:[],stats:[{label:"Health",value:"30"},{label:"Poison attack",value:"10"},{label:"Attack radius",value:"4m"},{label:"Attack rate",value:"every 4s"}],wikiUrl:"https://valheim.fandom.com/wiki/Bee_Nest",wikiGroup:""},
 ];
 
 // Remove blacklisted items
