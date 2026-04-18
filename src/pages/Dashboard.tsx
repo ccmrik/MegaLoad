@@ -25,6 +25,8 @@ import {
   BookOpen,
   Scroll,
   Compass,
+  Award,
+  Wrench,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -316,22 +318,6 @@ export function Dashboard() {
             )}
           </div>
 
-          {/* Trophies */}
-          <div className="glass rounded-2xl p-5 border-zinc-800/50">
-            <div className="flex items-center gap-2 mb-3">
-              <Crown className="w-4 h-4 text-amber-400" />
-              <span className="text-[11px] font-semibold text-zinc-400 uppercase tracking-wider">
-                Trophies Claimed
-              </span>
-            </div>
-            <div className="text-4xl font-norse font-bold text-amber-300 leading-none">
-              {character?.trophies.length ?? 0}
-            </div>
-            <div className="text-[10px] text-zinc-500 mt-1">
-              {character?.crafts ?? 0} crafts forged
-            </div>
-          </div>
-
           {/* Mod updates */}
           {availableUpdates > 0 && (
             <button
@@ -361,7 +347,7 @@ export function Dashboard() {
           <h2 className="font-norse font-bold text-xl text-zinc-200 tracking-wide mb-3">
             Achievements
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
             <AchievementCard
               icon={Crown}
               label="Bosses Defeated"
@@ -372,12 +358,20 @@ export function Dashboard() {
               ringColor="ring-amber-500/30"
             />
             <AchievementCard
-              icon={Scroll}
-              label="Runestones Read"
-              value={character.known_texts.length}
-              hint="Whispers of the old gods"
-              color="text-purple-300"
-              ringColor="ring-purple-500/30"
+              icon={Award}
+              label="Trophies Earned"
+              value={character.trophies.length}
+              hint="Heads hang in the hall"
+              color="text-yellow-300"
+              ringColor="ring-yellow-500/30"
+            />
+            <AchievementCard
+              icon={Wrench}
+              label="Crafts Forged"
+              value={character.crafts}
+              hint="Hands of the smith"
+              color="text-orange-300"
+              ringColor="ring-orange-500/30"
             />
             <AchievementCard
               icon={BookOpen}
@@ -386,6 +380,14 @@ export function Dashboard() {
               hint={`${character.known_materials.length} materials known`}
               color="text-cyan-300"
               ringColor="ring-cyan-500/30"
+            />
+            <AchievementCard
+              icon={Scroll}
+              label="Runestones Read"
+              value={character.known_texts.length}
+              hint="Whispers of the old gods"
+              color="text-purple-300"
+              ringColor="ring-purple-500/30"
             />
             <AchievementCard
               icon={Compass}
