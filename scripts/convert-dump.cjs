@@ -1777,32 +1777,31 @@ for (const cd of creatureDrops) {
     }
   }
 
-  // ── Damage resistances / weaknesses ──
+  // ── Damage resistances / weaknesses (structured on creatureInfo, not stats) ──
+  const resist = [];
+  const weak = [];
+  const immune = [];
+  const neutral = [];
   if (cd.damageModifiers) {
     const dm = cd.damageModifiers;
-    const resistLabels = { VeryResistant: "Very Resistant", VeryWeak: "Very Weak" };
-    const resist = [];
-    const weak = [];
-    const immune = [];
-    const combatTypes = ["blunt", "slash", "pierce", "fire", "frost", "lightning", "poison", "spirit"];
+    // All damage types including tool damage (chop / pickaxe)
+    const combatTypes = ["blunt", "slash", "pierce", "chop", "pickaxe", "fire", "frost", "lightning", "poison", "spirit"];
 
     for (const t of combatTypes) {
       const mod = dm[t];
-      if (!mod || mod === "Normal" || mod === "Ignore") continue;
       const label = t.charAt(0).toUpperCase() + t.slice(1);
-      if (mod === "Immune") immune.push(label);
+      if (!mod || mod === "Normal") { neutral.push(label); continue; }
+      // "Ignore" = creature takes no damage from this type = effectively Immune
+      if (mod === "Immune" || mod === "Ignore") immune.push(label);
       else if (mod === "Resistant" || mod === "VeryResistant") resist.push(label);
       else if (mod === "Weak" || mod === "VeryWeak") weak.push(label);
     }
-    if (immune.length > 0) stats.push({ label: "Immune", value: immune.join(", ") });
-    if (resist.length > 0) stats.push({ label: "Resistant", value: resist.join(", ") });
-    if (weak.length > 0) stats.push({ label: "Weak", value: weak.join(", ") });
   }
 
-  // ── Faction ──
-  if (cd.faction && cd.faction !== "ForestMonsters" && cd.faction !== "") {
-    stats.push({ label: "Faction", value: cd.faction });
-  }
+  // ── Faction (pretty-print: strip trailing "Monsters") ──
+  const factionPretty = cd.faction
+    ? cd.faction.replace(/Monsters$/, "")
+    : "";
 
   const entry = {
     id: cd.creature,
@@ -1826,6 +1825,14 @@ for (const cd of creatureDrops) {
     stats: stats,
     ...(TAMEABLE_CREATURES.has(cd.creature) ? { tameable: true } : {}),
     ...(TAMEABLE_CREATURE_FOODS[cd.creature] ? { tameFoods: TAMEABLE_CREATURE_FOODS[cd.creature] } : {}),
+    ...(factionPretty ? { faction: factionPretty } : {}),
+    ...(typeof cd.staggerDamageFactor === "number"
+      ? { staggerLimit: `${Math.round(cd.staggerDamageFactor * 100)}%` }
+      : {}),
+    ...(immune.length > 0 ? { immuneTo: immune } : {}),
+    ...(resist.length > 0 ? { resistantTo: resist } : {}),
+    ...(weak.length > 0 ? { weakTo: weak } : {}),
+    ...(neutral.length > 0 ? { neutralTo: neutral } : {}),
     wikiUrl: WIKI_MAP[cd.creature] ? WIKI_MAP[cd.creature][0] : "",
     wikiGroup: WIKI_MAP[cd.creature] && WIKI_MAP[cd.creature][1] ? WIKI_MAP[cd.creature][1] : "",
   };
@@ -2293,6 +2300,12 @@ export interface ValheimItem {
   stats: ItemStat[];    // Flexible stats (damage, armor, duration, etc.)
   tameable?: boolean;   // Creatures only — true for Boar, Wolf, Lox, Asksvin
   tameFoods?: string[]; // Creatures only — prefab IDs of foods this creature will eat to tame
+  faction?: string;     // Creatures only — pretty-printed (e.g. "Forest")
+  staggerLimit?: string; // Creatures only — e.g. "50%"
+  immuneTo?: string[];   // Creatures only — damage types ignored/immune
+  resistantTo?: string[]; // Creatures only — resistant damage types
+  weakTo?: string[];     // Creatures only — weak-to damage types
+  neutralTo?: string[];  // Creatures only — normal-damage types
   wikiUrl: string;      // Verified wiki URL (empty if no page exists)
   wikiGroup: string;    // Wiki group page name (empty if item has its own page)
 }

@@ -380,7 +380,7 @@ export function ValheimData() {
   const {
     query, activeTypes, activeBiomes, activeStations, activeFactories, activeVendors, sortBy,
     selectedItem, selectedStation, selectedFactory, selectedVendor,
-    cartItems, activeSubcategories,
+    cartItems, activeSubcategories, onlyTameable,
     viewMode, tableSortKey, tableSortDir,
     stationMaterialsMode, setStationMaterialsMode,
     setQuery, setActiveType, setActiveSubcategory, setActiveBiome,
@@ -388,6 +388,7 @@ export function ValheimData() {
     setSelectedStation, setSelectedFactory, setSelectedVendor,
     setViewMode, setTableSort,
     toggleType, toggleSubcategory, toggleBiome, toggleStation, toggleFactory, toggleVendor,
+    setOnlyTameable, toggleOnlyTameable,
   } = useValheimDataStore();
 
   const [searchInput, setSearchInput] = useState(query);
@@ -434,7 +435,7 @@ export function ValheimData() {
     }
   }, [selectedItem, selectedStation, selectedFactory, selectedVendor]);
 
-  const items = getFilteredItems(query, activeTypes, activeBiomes, activeStations, activeVendors, sortBy, activeSubcategories, activeFactories);
+  const items = getFilteredItems(query, activeTypes, activeBiomes, activeStations, activeVendors, sortBy, activeSubcategories, activeFactories, onlyTameable);
   const typeCounts = getTypeCounts(query, activeBiomes, activeStations);
   const biomeCounts = getBiomeCounts(query, activeTypes, activeStations);
   const stationCounts = getStationCounts(query, activeTypes, activeBiomes);
@@ -448,7 +449,7 @@ export function ValheimData() {
     return getStationMaterials(activeStations, stationMaterialsMode);
   }, [stationMaterialsMode, activeStations]);
   const subcategoryEntries = Object.entries(subcategoryCounts).sort((a, b) => b[1] - a[1]);
-  const hasActiveFilters = query || activeTypes.length > 0 || activeSubcategories.length > 0 || activeBiomes.length > 0 || activeStations.length > 0 || activeFactories.length > 0 || activeVendors.length > 0 || sortBy !== "name-asc";
+  const hasActiveFilters = query || activeTypes.length > 0 || activeSubcategories.length > 0 || activeBiomes.length > 0 || activeStations.length > 0 || activeFactories.length > 0 || activeVendors.length > 0 || onlyTameable || sortBy !== "name-asc";
 
   // Group items by type (default) or by biome (when biome-grouped)
   const groupedItems = useMemo(() => {
@@ -525,7 +526,7 @@ export function ValheimData() {
     await saveTextFile(path, content);
   };
 
-  const activeFilterCount = activeTypes.length + activeSubcategories.length + activeBiomes.length + activeStations.length + activeFactories.length + activeVendors.length;
+  const activeFilterCount = activeTypes.length + activeSubcategories.length + activeBiomes.length + activeStations.length + activeFactories.length + activeVendors.length + (onlyTameable ? 1 : 0);
 
   // Station detail view
   if (selectedStation) {
@@ -713,6 +714,7 @@ export function ValheimData() {
                   setActiveStation("");
                   setActiveFactory("");
                   setActiveVendor("");
+                  setOnlyTameable(false);
                   setStationMaterialsMode(false);
                   setSortBy("name-asc");
                 }}
@@ -743,6 +745,18 @@ export function ValheimData() {
                   </FilterCheckbox>
                 );
               })}
+            </FilterAccordion>
+
+            {/* Special */}
+            <FilterAccordion title="Special" defaultOpen>
+              <FilterCheckbox
+                checked={onlyTameable}
+                onChange={toggleOnlyTameable}
+                count={VALHEIM_ITEMS.filter((i) => i.tameable).length}
+                labelClassName="text-emerald-400"
+              >
+                Tameable
+              </FilterCheckbox>
             </FilterAccordion>
 
             {/* Subcategory — only shown when types are selected and subcategories exist */}
@@ -941,6 +955,14 @@ export function ValheimData() {
                   </button>
                 </span>
               ))}
+              {onlyTameable && (
+                <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-[11px] text-emerald-400 border border-emerald-500/20">
+                  Tameable
+                  <button title="Clear Tameable filter" onClick={() => setOnlyTameable(false)}>
+                    <X className="w-3 h-3 text-emerald-400/50 hover:text-emerald-400" />
+                  </button>
+                </span>
+              )}
               {activeStations.map((s) => (
                 <span key={s} className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-[11px] text-amber-400">
                   {s}
@@ -1194,7 +1216,7 @@ function ItemTable({
 // ── Detail View ────────────────────────────────────────────
 
 function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void }) {
-  const { setSelectedItem, setActiveType, setActiveSubcategory, setActiveBiome, setSelectedStation, setSelectedFactory, setSelectedVendor, cartItems, addToCart, removeFromCart } = useValheimDataStore();
+  const { setSelectedItem, setActiveType, setActiveSubcategory, setActiveBiome, setSelectedStation, setSelectedFactory, setSelectedVendor, cartItems, addToCart, removeFromCart, setOnlyTameable } = useValheimDataStore();
   const character = usePlayerDataStore((s) => s.character);
   const [statsLevel, setStatsLevel] = useState(1);
   const [cartLevel, setCartLevel] = useState(item.maxQuality || 1);
@@ -1283,12 +1305,18 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                 </span>
               )}
               {item.tameable && (
-                <span
-                  title="This creature can be tamed by feeding its preferred food"
-                  className="px-2.5 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                <button
+                  type="button"
+                  title="Filter to all tameable creatures"
+                  onClick={() => {
+                    setSelectedItem(null);
+                    setOnlyTameable(true);
+                    setActiveType("Creature");
+                  }}
+                  className="px-2.5 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 hover:bg-emerald-500/20 transition-colors"
                 >
                   Tameable
-                </span>
+                </button>
               )}
             </div>
             <p className="text-xs text-zinc-500 font-mono mt-0.5">{item.id}</p>
@@ -1300,11 +1328,14 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                 {item.biomes.map((b) => (
                   <BiomeBadge key={b} biome={b} onClick={() => navigateToBiome(b)} />
                 ))}
-                {item.source.length > 0 && (
-                  <span className="text-[10px] text-zinc-500">
-                    {item.source.join(" · ")}
-                  </span>
-                )}
+                {(() => {
+                  const extraSources = item.source.filter((s) => !item.biomes.includes(s));
+                  return extraSources.length > 0 && (
+                    <span className="text-[10px] text-zinc-500">
+                      {extraSources.join(" · ")}
+                    </span>
+                  );
+                })()}
               </div>
             </div>
           </div>
@@ -1449,6 +1480,51 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
               </div>
             )}
 
+            {/* Creature Info (wiki-style Details table) */}
+            {item.type === "Creature" && (item.faction || item.biomes.length > 0 || item.tameable !== undefined) && (
+              <div className="glass rounded-xl p-5 border border-zinc-800/50">
+                <h2 className="text-sm font-semibold text-zinc-200 mb-3">Details</h2>
+                <div className="space-y-0">
+                  <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/30">
+                    <span className="text-xs text-zinc-500">Internal ID</span>
+                    <span className="text-xs text-zinc-200 font-mono">{item.id}</span>
+                  </div>
+                  {item.faction && (
+                    <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/30">
+                      <span className="text-xs text-zinc-500">Faction</span>
+                      <span className="text-xs text-zinc-200 font-medium">{item.faction}</span>
+                    </div>
+                  )}
+                  {item.biomes.length > 0 && (
+                    <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/30">
+                      <span className="text-xs text-zinc-500">Main biome</span>
+                      <BiomeBadge biome={item.biomes[0]} onClick={() => navigateToBiome(item.biomes[0])} />
+                    </div>
+                  )}
+                  <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/30">
+                    <span className="text-xs text-zinc-500">Tameable</span>
+                    {item.tameable ? (
+                      <button
+                        type="button"
+                        onClick={() => { setSelectedItem(null); setOnlyTameable(true); setActiveType("Creature"); }}
+                        className="text-xs text-emerald-400 font-semibold hover:underline"
+                      >
+                        Yes
+                      </button>
+                    ) : (
+                      <span className="text-xs text-zinc-500">No</span>
+                    )}
+                  </div>
+                  {item.subcategory === "Boss" && (
+                    <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/30">
+                      <span className="text-xs text-zinc-500">Boss</span>
+                      <span className="text-xs text-amber-400 font-semibold">Yes</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
             {/* Stats with level tabs */}
             {displayStats.length > 0 && (
               <div className="glass rounded-xl p-5 border border-zinc-800/50">
@@ -1488,6 +1564,45 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                       </span>
                     </div>
                   ))}
+                </div>
+              </div>
+            )}
+
+            {/* Resistances (creatures) */}
+            {item.type === "Creature" && (item.immuneTo?.length || item.resistantTo?.length || item.weakTo?.length || item.neutralTo?.length || item.staggerLimit) && (
+              <div className="glass rounded-xl p-5 border border-zinc-800/50">
+                <h2 className="text-sm font-semibold text-zinc-200 mb-3">Resistances</h2>
+                <div className="space-y-0">
+                  {item.immuneTo && item.immuneTo.length > 0 && (
+                    <div className="flex items-start justify-between gap-4 py-1.5 border-b border-zinc-800/30">
+                      <span className="text-xs text-zinc-500 shrink-0">Immune to</span>
+                      <span className="text-xs text-red-400 font-medium text-right">{item.immuneTo.join(", ")}</span>
+                    </div>
+                  )}
+                  {item.resistantTo && item.resistantTo.length > 0 && (
+                    <div className="flex items-start justify-between gap-4 py-1.5 border-b border-zinc-800/30">
+                      <span className="text-xs text-zinc-500 shrink-0">Resistant to</span>
+                      <span className="text-xs text-orange-400 font-medium text-right">{item.resistantTo.join(", ")}</span>
+                    </div>
+                  )}
+                  {item.weakTo && item.weakTo.length > 0 && (
+                    <div className="flex items-start justify-between gap-4 py-1.5 border-b border-zinc-800/30">
+                      <span className="text-xs text-zinc-500 shrink-0">Weak to</span>
+                      <span className="text-xs text-emerald-400 font-medium text-right">{item.weakTo.join(", ")}</span>
+                    </div>
+                  )}
+                  {item.neutralTo && item.neutralTo.length > 0 && (
+                    <div className="flex items-start justify-between gap-4 py-1.5 border-b border-zinc-800/30">
+                      <span className="text-xs text-zinc-500 shrink-0">Neutral to</span>
+                      <span className="text-xs text-zinc-400 text-right">{item.neutralTo.join(", ")}</span>
+                    </div>
+                  )}
+                  {item.staggerLimit && (
+                    <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/30 last:border-0">
+                      <span className="text-xs text-zinc-500">Stagger limit</span>
+                      <span className="text-xs text-zinc-200 font-medium">{item.staggerLimit}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}

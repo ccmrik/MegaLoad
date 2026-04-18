@@ -574,6 +574,7 @@ interface ValheimDataState {
   activeStations: string[];
   activeFactories: string[];
   activeVendors: string[];
+  onlyTameable: boolean;
   sortBy: SortOption;
   selectedItem: ValheimItem | null;
   selectedStation: string | null;
@@ -598,6 +599,8 @@ interface ValheimDataState {
   toggleStation: (s: string) => void;
   toggleFactory: (f: string) => void;
   toggleVendor: (v: string) => void;
+  setOnlyTameable: (v: boolean) => void;
+  toggleOnlyTameable: () => void;
   setSortBy: (s: SortOption) => void;
   setSelectedItem: (item: ValheimItem | null) => void;
   setSelectedStation: (station: string | null) => void;
@@ -633,6 +636,7 @@ export const useValheimDataStore = create<ValheimDataState>((set) => ({
   activeStations: [],
   activeFactories: [],
   activeVendors: [],
+  onlyTameable: false,
   sortBy: "name-asc",
   selectedItem: null,
   selectedStation: null,
@@ -674,6 +678,8 @@ export const useValheimDataStore = create<ValheimDataState>((set) => ({
   toggleVendor: (v) => set((s) => ({
     activeVendors: s.activeVendors.includes(v) ? s.activeVendors.filter(x => x !== v) : [...s.activeVendors, v],
   })),
+  setOnlyTameable: (v) => set({ onlyTameable: v }),
+  toggleOnlyTameable: () => set((s) => ({ onlyTameable: !s.onlyTameable })),
   setSortBy: (sortBy) => set({ sortBy }),
   setSelectedItem: (selectedItem) => set({ selectedItem }),
   setSelectedStation: (selectedStation) => set({ selectedStation }),
@@ -739,9 +745,13 @@ export function getFilteredItems(
   activeVendors: string[] = [],
   sortBy: SortOption = "name-asc",
   activeSubcategories: string[] = [],
-  activeFactories: string[] = []
+  activeFactories: string[] = [],
+  onlyTameable: boolean = false
 ): ValheimItem[] {
   let items = VALHEIM_ITEMS;
+  if (onlyTameable) {
+    items = items.filter((i) => i.tameable === true);
+  }
   if (activeTypes.length > 0) {
     items = items.filter((i) => activeTypes.includes(i.type));
   }
