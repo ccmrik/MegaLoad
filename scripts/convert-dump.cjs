@@ -1777,6 +1777,21 @@ for (const cd of creatureDrops) {
     }
   }
 
+  // ── Attack damage types the creature deals ──
+  const dealsDamage = new Set();
+  if (cd.attacks) {
+    for (const atk of cd.attacks) {
+      if (atk.blunt > 0) dealsDamage.add("Blunt");
+      if (atk.slash > 0) dealsDamage.add("Slash");
+      if (atk.pierce > 0) dealsDamage.add("Pierce");
+      if (atk.fire > 0) dealsDamage.add("Fire");
+      if (atk.frost > 0) dealsDamage.add("Frost");
+      if (atk.lightning > 0) dealsDamage.add("Lightning");
+      if (atk.poison > 0) dealsDamage.add("Poison");
+      if (atk.spirit > 0) dealsDamage.add("Spirit");
+    }
+  }
+
   // ── Damage resistances / weaknesses (structured on creatureInfo, not stats) ──
   const resist = [];
   const weak = [];
@@ -1829,6 +1844,7 @@ for (const cd of creatureDrops) {
     ...(typeof cd.staggerDamageFactor === "number"
       ? { staggerLimit: `${Math.round(cd.staggerDamageFactor * 100)}%` }
       : {}),
+    ...(dealsDamage.size > 0 ? { dealsDamage: Array.from(dealsDamage) } : {}),
     ...(immune.length > 0 ? { immuneTo: immune } : {}),
     ...(resist.length > 0 ? { resistantTo: resist } : {}),
     ...(weak.length > 0 ? { weakTo: weak } : {}),
@@ -2302,6 +2318,7 @@ export interface ValheimItem {
   tameFoods?: string[]; // Creatures only — prefab IDs of foods this creature will eat to tame
   faction?: string;     // Creatures only — pretty-printed (e.g. "Forest")
   staggerLimit?: string; // Creatures only — e.g. "50%"
+  dealsDamage?: string[]; // Creatures only — damage types this creature's attacks deal
   immuneTo?: string[];   // Creatures only — damage types ignored/immune
   resistantTo?: string[]; // Creatures only — resistant damage types
   weakTo?: string[];     // Creatures only — weak-to damage types

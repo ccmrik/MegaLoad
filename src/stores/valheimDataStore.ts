@@ -485,6 +485,26 @@ export function getCreatureIconId(creature: ValheimItem): string {
 // ── Vendor filter list ───────────────────────────────────────
 export const VENDOR_LIST = ["Haldor", "Hildir", "Bog Witch"] as const;
 
+// ── Creature filter sources ─────────────────────────────────
+/** Combat damage types the game exposes — used for creature filters. */
+export const DAMAGE_TYPES = [
+  "Blunt",
+  "Slash",
+  "Pierce",
+  "Fire",
+  "Frost",
+  "Lightning",
+  "Poison",
+  "Spirit",
+] as const;
+
+/** All distinct factions present on current creature data, alphabetical. */
+export const FACTION_LIST: string[] = (() => {
+  const set = new Set<string>();
+  for (const i of VALHEIM_ITEMS) if (i.type === "Creature" && i.faction) set.add(i.faction);
+  return Array.from(set).sort();
+})();
+
 // ── Pre-computed totals (for Dashboard / PlayerData "out of" stats) ──
 /** All obtainable trophies in the game database. */
 export const TOTAL_TROPHIES = VALHEIM_ITEMS.filter((i) => i.subcategory === "Trophy").length;
@@ -583,6 +603,9 @@ interface ValheimDataState {
   activeFactories: string[];
   activeVendors: string[];
   onlyTameable: boolean;
+  activeFactions: string[];
+  activeDealsDamage: string[];
+  activeWeakTo: string[];
   sortBy: SortOption;
   selectedItem: ValheimItem | null;
   selectedStation: string | null;
@@ -609,6 +632,9 @@ interface ValheimDataState {
   toggleVendor: (v: string) => void;
   setOnlyTameable: (v: boolean) => void;
   toggleOnlyTameable: () => void;
+  toggleFaction: (f: string) => void;
+  toggleDealsDamage: (d: string) => void;
+  toggleWeakTo: (d: string) => void;
   setSortBy: (s: SortOption) => void;
   setSelectedItem: (item: ValheimItem | null) => void;
   setSelectedStation: (station: string | null) => void;
@@ -650,6 +676,9 @@ export const useValheimDataStore = create<ValheimDataState>((set) => ({
   activeFactories: [],
   activeVendors: [],
   onlyTameable: false,
+  activeFactions: [],
+  activeDealsDamage: [],
+  activeWeakTo: [],
   sortBy: "name-asc",
   selectedItem: null,
   selectedStation: null,
@@ -695,6 +724,15 @@ export const useValheimDataStore = create<ValheimDataState>((set) => ({
   })),
   setOnlyTameable: (v) => set({ onlyTameable: v }),
   toggleOnlyTameable: () => set((s) => ({ onlyTameable: !s.onlyTameable })),
+  toggleFaction: (f) => set((s) => ({
+    activeFactions: s.activeFactions.includes(f) ? s.activeFactions.filter((x) => x !== f) : [...s.activeFactions, f],
+  })),
+  toggleDealsDamage: (d) => set((s) => ({
+    activeDealsDamage: s.activeDealsDamage.includes(d) ? s.activeDealsDamage.filter((x) => x !== d) : [...s.activeDealsDamage, d],
+  })),
+  toggleWeakTo: (d) => set((s) => ({
+    activeWeakTo: s.activeWeakTo.includes(d) ? s.activeWeakTo.filter((x) => x !== d) : [...s.activeWeakTo, d],
+  })),
   setSortBy: (sortBy) => set({ sortBy }),
   setSelectedItem: (selectedItem) => set({ selectedItem }),
   setSelectedStation: (selectedStation) => set({ selectedStation }),
@@ -761,11 +799,23 @@ export function getFilteredItems(
   sortBy: SortOption = "name-asc",
   activeSubcategories: string[] = [],
   activeFactories: string[] = [],
-  onlyTameable: boolean = false
+  onlyTameable: boolean = false,
+  activeFactions: string[] = [],
+  activeDealsDamage: string[] = [],
+  activeWeakTo: string[] = []
 ): ValheimItem[] {
   let items = VALHEIM_ITEMS;
   if (onlyTameable) {
     items = items.filter((i) => i.tameable === true);
+  }
+  if (activeFactions.length > 0) {
+    items = items.filter((i) => i.faction && activeFactions.includes(i.faction));
+  }
+  if (activeDealsDamage.length > 0) {
+    items = items.filter((i) => i.dealsDamage && activeDealsDamage.every((d) => i.dealsDamage!.includes(d)));
+  }
+  if (activeWeakTo.length > 0) {
+    items = items.filter((i) => i.weakTo && activeWeakTo.every((d) => i.weakTo!.includes(d)));
   }
   if (activeTypes.length > 0) {
     items = items.filter((i) => activeTypes.includes(i.type));

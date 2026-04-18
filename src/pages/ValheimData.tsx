@@ -80,6 +80,8 @@ import {
   PROCESSING_STATION_ICONS,
   getStationUpgrades,
   getSubcategoryCounts,
+  DAMAGE_TYPES,
+  FACTION_LIST,
   type SortOption,
   type TableSortKey,
 } from "../stores/valheimDataStore";
@@ -434,6 +436,7 @@ export function ValheimData() {
     query, activeTypes, activeBiomes, activeStations, activeFactories, activeVendors, sortBy,
     selectedItem, selectedStation, selectedFactory, selectedVendor,
     cartItems, activeSubcategories, onlyTameable,
+    activeFactions, activeDealsDamage, activeWeakTo,
     viewMode, tableSortKey, tableSortDir,
     stationMaterialsMode, setStationMaterialsMode,
     setQuery, setActiveType, setActiveSubcategory, setActiveBiome,
@@ -442,6 +445,7 @@ export function ValheimData() {
     setViewMode, setTableSort,
     toggleType, toggleSubcategory, toggleBiome, toggleStation, toggleFactory, toggleVendor,
     setOnlyTameable, toggleOnlyTameable,
+    toggleFaction, toggleDealsDamage, toggleWeakTo,
   } = useValheimDataStore();
 
   const [searchInput, setSearchInput] = useState(query);
@@ -488,7 +492,7 @@ export function ValheimData() {
     }
   }, [selectedItem, selectedStation, selectedFactory, selectedVendor]);
 
-  const items = getFilteredItems(query, activeTypes, activeBiomes, activeStations, activeVendors, sortBy, activeSubcategories, activeFactories, onlyTameable);
+  const items = getFilteredItems(query, activeTypes, activeBiomes, activeStations, activeVendors, sortBy, activeSubcategories, activeFactories, onlyTameable, activeFactions, activeDealsDamage, activeWeakTo);
   const typeCounts = getTypeCounts(query, activeBiomes, activeStations);
   const biomeCounts = getBiomeCounts(query, activeTypes, activeStations);
   const stationCounts = getStationCounts(query, activeTypes, activeBiomes);
@@ -502,7 +506,7 @@ export function ValheimData() {
     return getStationMaterials(activeStations, stationMaterialsMode);
   }, [stationMaterialsMode, activeStations]);
   const subcategoryEntries = Object.entries(subcategoryCounts).sort((a, b) => b[1] - a[1]);
-  const hasActiveFilters = query || activeTypes.length > 0 || activeSubcategories.length > 0 || activeBiomes.length > 0 || activeStations.length > 0 || activeFactories.length > 0 || activeVendors.length > 0 || onlyTameable || sortBy !== "name-asc";
+  const hasActiveFilters = query || activeTypes.length > 0 || activeSubcategories.length > 0 || activeBiomes.length > 0 || activeStations.length > 0 || activeFactories.length > 0 || activeVendors.length > 0 || onlyTameable || activeFactions.length > 0 || activeDealsDamage.length > 0 || activeWeakTo.length > 0 || sortBy !== "name-asc";
 
   // Group items by type (default) or by biome (when biome-grouped)
   const groupedItems = useMemo(() => {
@@ -579,7 +583,7 @@ export function ValheimData() {
     await saveTextFile(path, content);
   };
 
-  const activeFilterCount = activeTypes.length + activeSubcategories.length + activeBiomes.length + activeStations.length + activeFactories.length + activeVendors.length + (onlyTameable ? 1 : 0);
+  const activeFilterCount = activeTypes.length + activeSubcategories.length + activeBiomes.length + activeStations.length + activeFactories.length + activeVendors.length + (onlyTameable ? 1 : 0) + activeFactions.length + activeDealsDamage.length + activeWeakTo.length;
 
   // Browser-style back — if user landed here from another page (e.g. PlayerData
   // clicking an inventory item), honour the stored returnPath. Otherwise just
@@ -784,6 +788,7 @@ export function ValheimData() {
                   setActiveFactory("");
                   setActiveVendor("");
                   setOnlyTameable(false);
+                  useValheimDataStore.setState({ activeFactions: [], activeDealsDamage: [], activeWeakTo: [] });
                   setStationMaterialsMode(false);
                   setSortBy("name-asc");
                 }}
@@ -862,6 +867,62 @@ export function ValheimData() {
                 );
               })}
             </FilterAccordion>
+
+            {/* ── Creature-only filters — shown when Creature type is active, or no type is filtered ── */}
+            {(activeTypes.length === 0 || activeTypes.includes("Creature")) && (
+              <>
+                <FilterAccordion title="Faction" defaultOpen={activeTypes.includes("Creature")}>
+                  {FACTION_LIST.map((f) => {
+                    const count = VALHEIM_ITEMS.filter((i) => i.type === "Creature" && i.faction === f).length;
+                    return (
+                      <FilterCheckbox
+                        key={f}
+                        checked={activeFactions.includes(f)}
+                        onChange={() => toggleFaction(f)}
+                        count={count}
+                      >
+                        {f}
+                      </FilterCheckbox>
+                    );
+                  })}
+                </FilterAccordion>
+
+                <FilterAccordion title="Deals Damage" defaultOpen={false}>
+                  {DAMAGE_TYPES.map((d) => {
+                    const count = VALHEIM_ITEMS.filter((i) => i.dealsDamage?.includes(d)).length;
+                    if (count === 0) return null;
+                    return (
+                      <FilterCheckbox
+                        key={d}
+                        checked={activeDealsDamage.includes(d)}
+                        onChange={() => toggleDealsDamage(d)}
+                        count={count}
+                      >
+                        {d}
+                      </FilterCheckbox>
+                    );
+                  })}
+                </FilterAccordion>
+
+                <FilterAccordion title="Weak To" defaultOpen={false}>
+                  {DAMAGE_TYPES.map((d) => {
+                    const count = VALHEIM_ITEMS.filter((i) => i.weakTo?.includes(d)).length;
+                    if (count === 0) return null;
+                    return (
+                      <FilterCheckbox
+                        key={d}
+                        checked={activeWeakTo.includes(d)}
+                        onChange={() => toggleWeakTo(d)}
+                        count={count}
+                        labelClassName="text-emerald-400"
+                      >
+                        {d}
+                      </FilterCheckbox>
+                    );
+                  })}
+                </FilterAccordion>
+              </>
+            )}
 
             {/* Station */}
             <FilterAccordion title="Station" defaultOpen>
@@ -1032,6 +1093,30 @@ export function ValheimData() {
                   </button>
                 </span>
               )}
+              {activeFactions.map((f) => (
+                <span key={f} className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-purple-500/10 text-[11px] text-purple-300 border border-purple-500/20">
+                  Faction: {f}
+                  <button title="Clear faction" onClick={() => toggleFaction(f)}>
+                    <X className="w-3 h-3 text-purple-300/50 hover:text-purple-300" />
+                  </button>
+                </span>
+              ))}
+              {activeDealsDamage.map((d) => (
+                <span key={d} className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-red-500/10 text-[11px] text-red-300 border border-red-500/20">
+                  Deals: {d}
+                  <button title="Clear damage filter" onClick={() => toggleDealsDamage(d)}>
+                    <X className="w-3 h-3 text-red-300/50 hover:text-red-300" />
+                  </button>
+                </span>
+              ))}
+              {activeWeakTo.map((d) => (
+                <span key={d} className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-[11px] text-emerald-300 border border-emerald-500/20">
+                  Weak to: {d}
+                  <button title="Clear weak-to filter" onClick={() => toggleWeakTo(d)}>
+                    <X className="w-3 h-3 text-emerald-300/50 hover:text-emerald-300" />
+                  </button>
+                </span>
+              ))}
               {activeStations.map((s) => (
                 <span key={s} className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/10 text-[11px] text-amber-400">
                   {s}
@@ -1574,7 +1659,17 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                   {item.faction && (
                     <div className="flex items-center justify-between py-1.5 border-b border-zinc-800/30">
                       <span className="text-xs text-zinc-500">Faction</span>
-                      <span className="text-xs text-zinc-200 font-medium">{item.faction}</span>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedItem(null);
+                          useValheimDataStore.setState({ activeFactions: [item.faction!], activeTypes: ["Creature"] });
+                        }}
+                        title={`Filter to all ${item.faction} creatures`}
+                        className="text-xs text-purple-300 font-medium hover:underline"
+                      >
+                        {item.faction}
+                      </button>
                     </div>
                   )}
                   {item.biomes.length > 0 && (
