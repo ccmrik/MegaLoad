@@ -54,7 +54,7 @@ fn load_manifest_info(bepinex_path: &str) -> std::collections::HashMap<String, (
 }
 
 #[command]
-pub fn get_mods(bepinex_path: String) -> Result<Vec<ModInfo>, String> {
+pub fn get_mods(app: tauri::AppHandle, bepinex_path: String) -> Result<Vec<ModInfo>, String> {
     let plugins_dir = Path::new(&bepinex_path).join("plugins");
     let disabled_dir = Path::new(&bepinex_path).join("disabled_plugins");
     let mut mods = Vec::new();
@@ -109,17 +109,21 @@ pub fn get_mods(bepinex_path: String) -> Result<Vec<ModInfo>, String> {
         }
     }
 
-    // Bundled plugins (e.g. MegaDataExtractor) aren't in the manifest and update
-    // only with MegaLoad itself — stamp their version here so they aren't the
-    // odd-one-out on the Mods page.
+    // Bundled plugins (e.g. MegaDataExtractor) aren't in the manifest. Read their
+    // version live off the BepInPlugin attribute of whichever DLL is currently
+    // in the profile (installed override beats bundled floor), so drop-in upgrades
+    // show up immediately without a MegaLoad rebuild.
+    let bep_path = Path::new(&bepinex_path);
+    let bundled_names: Vec<&'static str> = crate::commands::updater::bundled_plugin_names().collect();
     for m in &mut mods {
-        if m.version.is_none() {
-            if let Some(v) = crate::commands::updater::bundled_plugin_version(&m.name) {
-                m.version = Some(v.to_string());
-                if m.description.is_none() {
-                    m.description = Some("Bundled with MegaLoad — updates with the app itself".to_string());
-                }
-            }
+        if !bundled_names.iter().any(|n| *n == m.name.as_str()) { continue; }
+        if let Some(v) = crate::commands::updater::bundled_plugin_version_for_profile(
+            &app, Some(bep_path), &m.name,
+        ) {
+            m.version = Some(v);
+        }
+        if m.description.is_none() {
+            m.description = Some("Bundled with MegaLoad — drop a newer build into plugins to override".to_string());
         }
     }
 

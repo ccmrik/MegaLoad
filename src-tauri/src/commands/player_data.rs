@@ -549,6 +549,29 @@ pub fn read_character(path: String) -> Result<CharacterData, String> {
     parse_character_file(&file_data)
 }
 
+/// Read the real-game character portrait PNG captured by MegaDataExtractor
+/// 1.4.0+ off FejdStartup's live character-select preview. Returns base64 so
+/// the frontend can slap it straight into an <img src="data:image/png;base64,...">.
+/// Returns None if no portrait has been captured yet.
+#[command]
+pub fn get_character_portrait_png(name: String) -> Option<String> {
+    use base64::Engine;
+    let sanitised = sanitise_portrait_name(&name);
+    if sanitised.is_empty() { return None; }
+    let path = PathBuf::from(r"C:\Users\Rik\OneDrive\Valheim Mods\valheim_icons\characters")
+        .join(format!("{}.png", sanitised));
+    let bytes = fs::read(&path).ok()?;
+    Some(base64::engine::general_purpose::STANDARD.encode(bytes))
+}
+
+fn sanitise_portrait_name(s: &str) -> String {
+    let mut out = String::with_capacity(s.len());
+    for c in s.chars() {
+        if c.is_ascii_alphanumeric() { out.push(c); } else { out.push('_'); }
+    }
+    if out.is_empty() { "unknown".to_string() } else { out }
+}
+
 fn parse_character_file(file_data: &[u8]) -> Result<CharacterData, String> {
     let mut outer = BinReader::new(file_data);
 

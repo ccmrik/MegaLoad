@@ -2355,3 +2355,22 @@ for (const item of VALHEIM_ITEMS) {
 fs.writeFileSync(OUTPUT_PATH, ts, "utf-8");
 console.log(`\nWritten to: ${OUTPUT_PATH}`);
 console.log(`File size: ${(fs.statSync(OUTPUT_PATH).size / 1024).toFixed(1)} KB`);
+
+// ── Character portrait PNGs ─────────────────────────────────────
+// MegaDataExtractor v1.4.0+ drops per-character portraits captured off
+// FejdStartup's live preview into valheim_icons/characters/. Mirror them
+// into public/character-previews/ so MegaLoad can load them by name.
+const PORTRAIT_SRC = path.join(__dirname, "..", "..", "valheim_icons", "characters");
+const PORTRAIT_DST = path.join(__dirname, "..", "public", "character-previews");
+if (fs.existsSync(PORTRAIT_SRC)) {
+  fs.mkdirSync(PORTRAIT_DST, { recursive: true });
+  let copied = 0;
+  for (const f of fs.readdirSync(PORTRAIT_SRC)) {
+    if (!f.toLowerCase().endsWith(".png")) continue;
+    fs.copyFileSync(path.join(PORTRAIT_SRC, f), path.join(PORTRAIT_DST, f));
+    copied++;
+  }
+  console.log(`Copied ${copied} character portrait(s) to ${PORTRAIT_DST}`);
+} else {
+  console.log(`No character portraits found at ${PORTRAIT_SRC} (run Valheim once with MegaDataExtractor 1.4.0+ to generate)`);
+}

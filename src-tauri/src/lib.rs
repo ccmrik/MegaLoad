@@ -124,6 +124,7 @@ pub fn run() {
             // Player data
             list_characters,
             read_character,
+            get_character_portrait_png,
             start_player_data_watcher,
             stop_player_data_watcher,
             // MegaBugs

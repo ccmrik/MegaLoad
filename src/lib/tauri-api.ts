@@ -507,6 +507,9 @@ export const listCharacters = () =>
 export const readCharacter = (path: string) =>
   invoke<CharacterData>("read_character", { path });
 
+export const getCharacterPortraitPng = (name: string) =>
+  invoke<string | null>("get_character_portrait_png", { name });
+
 export const startPlayerDataWatcher = () =>
   invoke<void>("start_player_data_watcher");
 

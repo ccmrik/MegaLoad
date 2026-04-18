@@ -1,13 +1,14 @@
 import { User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { getCharacterPortraitPng } from "../lib/tauri-api";
 
 /**
- * Stylised Norse viking portrait. Valheim doesn't export character renders,
- * so we build an SVG bust from save-file features: model (0=male, 1=female),
- * skin_color / hair_color (0-1 RGB), hair/beard style names.
- *
- * Aims for a weathered Norse warrior look — leather armour shoulders, fur
- * trim, war paint stripes, strong brow + cheekbones. Not pretty, not cute.
+ * Character portrait. Prefers the real in-game render that MegaDataExtractor
+ * 1.4.0+ captures off FejdStartup's live preview (loaded via Tauri from
+ * `valheim_icons/characters/<sanitised-name>.png`). Falls back to a stylised
+ * SVG bust built from save-file features when no PNG exists yet.
  */
+
 export function CharacterPortrait({
   model,
   beard,
@@ -26,6 +27,19 @@ export function CharacterPortrait({
   /** If true, use a smaller ring + no labels under it (for dashboard side column). */
   compact?: boolean;
 }) {
+  const [realSrc, setRealSrc] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!name) { setRealSrc(null); return; }
+    getCharacterPortraitPng(name)
+      .then((b64) => {
+        if (cancelled) return;
+        setRealSrc(b64 ? `data:image/png;base64,${b64}` : null);
+      })
+      .catch(() => { if (!cancelled) setRealSrc(null); });
+    return () => { cancelled = true; };
+  }, [name]);
   const clamp = (n: number) => Math.max(0, Math.min(1, n));
   const toRgb = ([r, g, b]: [number, number, number], mul = 1) =>
     `rgb(${Math.round(clamp(r * mul) * 255)}, ${Math.round(clamp(g * mul) * 255)}, ${Math.round(clamp(b * mul) * 255)})`;
@@ -204,11 +218,22 @@ export function CharacterPortrait({
     </svg>
   );
 
+  const portraitVisual = realSrc ? (
+    <img
+      src={realSrc}
+      alt=""
+      className="absolute inset-0 w-full h-full object-cover"
+      draggable={false}
+    />
+  ) : (
+    svg
+  );
+
   if (compact) {
     return (
       <div className="flex flex-col items-center">
         <div className={`relative ${sizeClass} rounded-full overflow-hidden ring-2 ring-brand-500/50 shadow-lg shadow-brand-500/20 bg-gradient-to-b from-zinc-900 to-black`}>
-          {svg}
+          {portraitVisual}
         </div>
         <div className="mt-2 text-center">
           <div className="font-norse font-bold text-base text-zinc-100 tracking-wide leading-none">
@@ -226,7 +251,7 @@ export function CharacterPortrait({
       </h3>
       <div className="flex flex-col items-center">
         <div className={`relative ${sizeClass} rounded-full overflow-hidden ring-2 ring-brand-500/50 shadow-lg shadow-brand-500/20 bg-gradient-to-b from-zinc-900 to-black`}>
-          {svg}
+          {portraitVisual}
         </div>
         <div className="mt-3 text-center">
           <div className="font-norse font-bold text-xl text-zinc-100 tracking-wide leading-none">

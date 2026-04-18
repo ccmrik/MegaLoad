@@ -1,9 +1,10 @@
 use crate::commands::app_log::app_log;
 use crate::commands::security::{sanitize_path_component, validate_download_url};
 use serde::{Deserialize, Serialize};
+use std::cmp::Ordering;
 use std::fs;
 use std::io::{Read, Write};
-use std::path::PathBuf;
+use std::path::{Path, PathBuf};
 use std::time::{SystemTime, UNIX_EPOCH};
 use tauri::command;
 use tauri::{AppHandle, Manager};
@@ -491,32 +492,94 @@ pub fn set_mod_version(bepinex_path: String, mod_name: String, version: String) 
 
 // ── Bundled internal plugins ───────────────────────────────
 
-/// Internal plugins bundled as Tauri resources. These are deployed to BepInEx/plugins
-/// on every profile activation, always overwriting with the bundled version since
-/// MegaLoad is their sole distribution channel. Tuple is (folder, dll_name, version).
-/// Version is shown in the Mods page and must be bumped alongside the bundled DLL.
+/// Internal BepInEx plugins bundled as Tauri resources. The bundled DLL is the
+/// floor: if the user drops a newer build into their profile's `plugins/<folder>/`
+/// we keep their copy, so side-channel updates don't require a full MegaLoad
+/// release. Versions are read live from the DLL's BepInPlugin attribute via
+/// `read_bepinplugin_version`. Tuple: (folder, dll_name, bepin_guid).
 const BUNDLED_PLUGINS: &[(&str, &str, &str)] = &[
-    ("MegaDataExtractor", "MegaDataExtractor.dll", "1.2.0"),
+    ("MegaDataExtractor", "MegaDataExtractor.dll", "com.mega.dataextractor"),
 ];
 
-/// Version lookup for bundled plugins — used by the Mods page so bundled mods
-/// display a version like user-installed ones. Bundled mods don't appear in
-/// `mod-manifest.json`, so this is the only source of truth for their version.
-pub fn bundled_plugin_version(mod_name: &str) -> Option<&'static str> {
-    BUNDLED_PLUGINS
-        .iter()
-        .find(|(folder, _, _)| *folder == mod_name)
-        .map(|(_, _, version)| *version)
+/// Scan a BepInEx plugin DLL for its [BepInPlugin(guid, name, version)] attribute
+/// and return the version string. Works by locating the GUID (a unique and stable
+/// key) in the .NET custom-attribute blob and walking past the length-prefixed
+/// name to the length-prefixed version string. Returns None if the file can't be
+/// read, the GUID isn't found, or the version isn't a plausible semver.
+pub fn read_bepinplugin_version(dll_path: &Path, guid: &str) -> Option<String> {
+    let bytes = fs::read(dll_path).ok()?;
+    let guid_bytes = guid.as_bytes();
+    // Find the GUID anywhere in the DLL (appears once as part of the attribute blob).
+    let idx = bytes
+        .windows(guid_bytes.len())
+        .position(|w| w == guid_bytes)?;
+    let mut p = idx + guid_bytes.len();
+    if p >= bytes.len() { return None; }
+    // SerString layout: compressed-int length prefix (one byte for len < 128) + UTF-8 bytes.
+    let name_len = bytes[p] as usize;
+    if name_len >= 128 { return None; } // guard against multi-byte compressed ints
+    p += 1 + name_len;
+    if p >= bytes.len() { return None; }
+    let ver_len = bytes[p] as usize;
+    if ver_len == 0 || ver_len >= 128 { return None; }
+    p += 1;
+    if p + ver_len > bytes.len() { return None; }
+    let ver = std::str::from_utf8(&bytes[p..p + ver_len]).ok()?;
+    if !ver.chars().all(|c| c.is_ascii_digit() || c == '.') { return None; }
+    Some(ver.to_string())
 }
 
-/// Deploy all bundled internal plugins to the active profile's BepInEx/plugins folder.
-/// Always overwrites existing DLLs since these only update through MegaLoad builds.
+/// Compare two dotted-numeric versions (e.g. "1.4.0" vs "1.10.2").
+/// Missing segments are treated as 0, so "1.4" < "1.4.1".
+fn compare_versions(a: &str, b: &str) -> Ordering {
+    let parse = |v: &str| -> Vec<u32> {
+        v.split('.').map(|s| s.parse::<u32>().unwrap_or(0)).collect()
+    };
+    let av = parse(a);
+    let bv = parse(b);
+    av.cmp(&bv)
+}
+
+/// Resolve the version for a bundled plugin. Prefers the user-installed DLL in
+/// the active profile's plugins folder (if given) — that's what's actually
+/// loaded at runtime. Falls back to the bundled resource DLL shipped with this
+/// MegaLoad build. Returns None only if neither DLL is readable.
+pub fn bundled_plugin_version_for_profile(
+    app: &AppHandle,
+    bepinex_path: Option<&Path>,
+    mod_name: &str,
+) -> Option<String> {
+    let (folder, dll, guid) = BUNDLED_PLUGINS
+        .iter()
+        .find(|(folder, _, _)| *folder == mod_name)
+        .copied()?;
+
+    if let Some(bep) = bepinex_path {
+        let installed = bep.join("plugins").join(folder).join(dll);
+        if let Some(v) = read_bepinplugin_version(&installed, guid) {
+            return Some(v);
+        }
+    }
+    let resource = app.path().resolve(dll, tauri::path::BaseDirectory::Resource).ok()?;
+    read_bepinplugin_version(&resource, guid)
+}
+
+/// List of bundled plugin folder names — used by the Mods scanner to know which
+/// DLLs should be badged as "Bundled with MegaLoad".
+pub fn bundled_plugin_names() -> impl Iterator<Item = &'static str> {
+    BUNDLED_PLUGINS.iter().map(|(folder, _, _)| *folder)
+}
+
+/// Deploy bundled internal plugins to the active profile's BepInEx/plugins folder.
+/// A user-installed DLL with an equal or higher version than the bundled resource
+/// is left untouched, so drop-in upgrades from outside MegaLoad survive profile
+/// activation. Only older or missing DLLs are overwritten.
 #[command]
 pub fn deploy_bundled_plugins(app: AppHandle, bepinex_path: String) -> Result<u32, String> {
     let plugins_dir = PathBuf::from(&bepinex_path).join("plugins");
     let mut deployed = 0u32;
 
-    for &(folder, dll, _version) in BUNDLED_PLUGINS {
+    for &(folder, dll, guid) in BUNDLED_PLUGINS {
         let dest_dir = plugins_dir.join(folder);
         let dest_dll = dest_dir.join(dll);
 
@@ -531,10 +594,33 @@ pub fn deploy_bundled_plugins(app: AppHandle, bepinex_path: String) -> Result<u3
             }
         };
 
+        let bundled_ver = read_bepinplugin_version(&source, guid);
+        let installed_ver = if dest_dll.exists() {
+            read_bepinplugin_version(&dest_dll, guid)
+        } else {
+            None
+        };
+
+        if let (Some(inst), Some(bund)) = (&installed_ver, &bundled_ver) {
+            if compare_versions(inst, bund) != Ordering::Less {
+                app_log(&format!(
+                    "Keeping user-installed {} v{} (bundled v{})",
+                    dll, inst, bund
+                ));
+                deployed += 1;
+                continue;
+            }
+        }
+
         let _ = fs::create_dir_all(&dest_dir);
         match fs::copy(&source, &dest_dll) {
             Ok(_) => {
-                app_log(&format!("Deployed bundled {} to {}", dll, dest_dll.display()));
+                let bv = bundled_ver.as_deref().unwrap_or("?");
+                let iv = installed_ver.as_deref();
+                match iv {
+                    Some(i) => app_log(&format!("Upgraded {} v{} -> bundled v{}", dll, i, bv)),
+                    None => app_log(&format!("Deployed bundled {} v{}", dll, bv)),
+                }
                 deployed += 1;
             }
             Err(e) => {
