@@ -144,11 +144,15 @@ function StationIcon({ station, size = 36, className = "" }: { station: string; 
   );
 }
 
-/** Parse "28 (+2/lvl)" → { base: 28, perLevel: 2 } */
+/** Parse "28 (+2/lvl)" (items) or "40/40lvl" (creatures) → { base, perLevel } */
 function parseStatValue(value: string): { base: number; perLevel: number } | null {
-  const m = value.match(/^(-?\d+(?:\.\d+)?)\s*(?:\(\+(\d+(?:\.\d+)?)\/lvl\))?$/);
-  if (!m) return null;
-  return { base: parseFloat(m[1]), perLevel: m[2] ? parseFloat(m[2]) : 0 };
+  // Creature format: "40/40lvl"
+  const cm = value.match(/^(-?\d+(?:\.\d+)?)\/(\d+(?:\.\d+)?)lvl$/);
+  if (cm) return { base: parseFloat(cm[1]), perLevel: parseFloat(cm[2]) };
+  // Item format: "105 (+6/lvl)"
+  const im = value.match(/^(-?\d+(?:\.\d+)?)\s*(?:\(\+(\d+(?:\.\d+)?)\/lvl\))?$/);
+  if (!im) return null;
+  return { base: parseFloat(im[1]), perLevel: im[2] ? parseFloat(im[2]) : 0 };
 }
 
 /** Compute stat at a given quality level */
@@ -156,12 +160,13 @@ function statAtLevel(value: string, level: number): string {
   const p = parseStatValue(value);
   if (!p) return value;
   if (p.perLevel === 0) return value;
-  return `${p.base + p.perLevel * (level - 1)}`;
+  const computed = p.base + p.perLevel * (level - 1);
+  return Number.isInteger(computed) ? `${computed}` : computed.toFixed(1);
 }
 
-/** Check if an item has per-level stats */
+/** Check if an item has per-level stats (items: "/lvl", creatures: "Nlvl") */
 function hasPerLevelStats(item: ValheimItem): boolean {
-  return item.maxQuality > 1 && item.stats.some((s) => s.value.includes("/lvl"));
+  return item.maxQuality > 1 && item.stats.some((s) => s.value.includes("lvl"));
 }
 
 const TYPE_ICONS: Record<ItemType, typeof Package> = {
@@ -1277,6 +1282,14 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                   {item.type === "Creature" ? "★ 0–2 Star" : `★ Max Lv ${item.maxQuality}`}
                 </span>
               )}
+              {item.tameable && (
+                <span
+                  title="This creature can be tamed by feeding its preferred food"
+                  className="px-2.5 py-0.5 rounded-md text-[10px] font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                >
+                  Tameable
+                </span>
+              )}
             </div>
             <p className="text-xs text-zinc-500 font-mono mt-0.5">{item.id}</p>
             {item.description && (
@@ -1446,7 +1459,7 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                       {Array.from({ length: item.maxQuality }, (_, i) => i + 1).map((lv) => {
                         const isCreature = item.type === "Creature";
                         const label = isCreature
-                          ? lv === 1 ? "Base" : lv === 2 ? "1★" : "2★"
+                          ? lv === 1 ? "0★ Base" : lv === 2 ? "1★" : "2★"
                           : `Lv ${lv}`;
                         return (
                           <button

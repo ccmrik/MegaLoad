@@ -1,11 +1,11 @@
 {
-  "version": "1.6.6",
-  "notes": "Settings → Mega Mods Debug: one-click toggle flips DebugMode under [99. Debug] across every Mega* BepInEx config in the active profile. Shows a live badge list of each mod's current DebugMode state. Saves the 12-click dance before asking a user for a log.",
-  "pub_date": "2026-04-18T00:35:00Z",
+  "version": "1.6.7",
+  "notes": "Valheim Data → Creatures: Base / 1★ / 2★ tabs now actually scale Health and attack damage per star, and Boar, Wolf, Lox and Asksvin show a green Tameable badge next to their biome chips. Stat parser was only reading the item format (\"N (+N/lvl)\") and skipped the creature format (\"N/Nlvl\"), so the star tabs were showing the same numbers — fixed.",
+  "pub_date": "2026-04-18T03:30:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU5Rd3oxWkpPTnlWMUQ3N2taRHJDYzhQMGx4WFdTT21MSGxNY3NGYVFzNjRhUGN1RHlJdkhEZlhlSjJ4alF2U29oaVZxeERQMUFVZzlCMXNPZzhYY3dJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NDM0Njg2CWZpbGU6TWVnYUxvYWRfMS42LjZfeDY0LXNldHVwLm5zaXMuemlwCnRQTjlDRnByVldNSFlEdHA3T0U1UHFGUjY0NndEWjVJY3ZDbEhCWTNTZHdocWdsVzRXZWF2NmtENlYyTXhDNDNmU3NqZVRPSEZqNXJ6SzBSOHBWekNRPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.6.6/MegaLoad_1.6.6_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFhS1cwSU9DTTVwYzIzNTcxOTIzNUtJVnNZMFhBcjFhY01jeExkS0l4d292ajZObDBaenRmZnhsb0RmZVJxUFhEVFd2OHVSMkh2YnEyem90ZFNzRWdjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NDgzNDYxCWZpbGU6TWVnYUxvYWRfMS42LjdfeDY0LXNldHVwLm5zaXMuemlwCm05MHRuQ2JJaU1yN0s1MnkzQWprZEl0UHJSb1ZwNTB6NjVDZTNuanlLYmo2bzgwOEJWVmdqYVZ0OTJ0c3JMNGhEUWF3cVY5Z1NXb2ZFc3dPM2NMVkJBPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.6.7/MegaLoad_1.6.7_x64-setup.nsis.zip"
     }
   }
 }

@@ -1680,6 +1680,14 @@ const CREATURE_SUBCATEGORY_OVERRIDE = {
   "Cultist_Hildir": "Miniboss",
 };
 
+// Creatures that can be tamed (fed their preferred food until friendly)
+const TAMEABLE_CREATURES = new Set([
+  "Boar",
+  "Wolf",
+  "Lox",
+  "Asksvin",
+]);
+
 for (const cd of creatureDrops) {
   if (seenIds.has(cd.creature)) continue;
   if (CREATURE_BLACKLIST.has(cd.creature)) continue;
@@ -1807,6 +1815,7 @@ for (const cd of creatureDrops) {
     drops: drops,
     worldSources: [],
     stats: stats,
+    ...(TAMEABLE_CREATURES.has(cd.creature) ? { tameable: true } : {}),
     wikiUrl: WIKI_MAP[cd.creature] ? WIKI_MAP[cd.creature][0] : "",
     wikiGroup: WIKI_MAP[cd.creature] && WIKI_MAP[cd.creature][1] ? WIKI_MAP[cd.creature][1] : "",
   };
@@ -2272,6 +2281,7 @@ export interface ValheimItem {
   drops: ItemDrop[];    // What this creature/source drops (for Creature type)
   worldSources: WorldSource[];  // Trees, rocks, destructibles that drop this item
   stats: ItemStat[];    // Flexible stats (damage, armor, duration, etc.)
+  tameable?: boolean;   // Creatures only — true for Boar, Wolf, Lox, Asksvin
   wikiUrl: string;      // Verified wiki URL (empty if no page exists)
   wikiGroup: string;    // Wiki group page name (empty if item has its own page)
 }
