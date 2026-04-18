@@ -9,7 +9,13 @@
 const fs = require("fs");
 const path = require("path");
 
-const DUMP_PATH = path.join(__dirname, "..", "..", "valheim_data_dump.json");
+// MegaDataExtractor 1.4.3+ writes to %APPDATA%\MegaLoad\. Fall back to the
+// legacy workspace-root location for old dumps captured before the migration.
+const APPDATA_DUMP = process.env.APPDATA
+  ? path.join(process.env.APPDATA, "MegaLoad", "valheim_data_dump.json")
+  : null;
+const LEGACY_DUMP = path.join(__dirname, "..", "..", "valheim_data_dump.json");
+const DUMP_PATH = APPDATA_DUMP && fs.existsSync(APPDATA_DUMP) ? APPDATA_DUMP : LEGACY_DUMP;
 const OUTPUT_PATH = path.join(__dirname, "..", "src", "data", "valheim-items.ts");
 const WIKI_MAP_PATH = path.join(__dirname, "wiki-map.json");
 
@@ -2356,21 +2362,6 @@ fs.writeFileSync(OUTPUT_PATH, ts, "utf-8");
 console.log(`\nWritten to: ${OUTPUT_PATH}`);
 console.log(`File size: ${(fs.statSync(OUTPUT_PATH).size / 1024).toFixed(1)} KB`);
 
-// ── Character portrait PNGs ─────────────────────────────────────
-// MegaDataExtractor v1.4.0+ drops per-character portraits captured off
-// FejdStartup's live preview into valheim_icons/characters/. Mirror them
-// into public/character-previews/ so MegaLoad can load them by name.
-const PORTRAIT_SRC = path.join(__dirname, "..", "..", "valheim_icons", "characters");
-const PORTRAIT_DST = path.join(__dirname, "..", "public", "character-previews");
-if (fs.existsSync(PORTRAIT_SRC)) {
-  fs.mkdirSync(PORTRAIT_DST, { recursive: true });
-  let copied = 0;
-  for (const f of fs.readdirSync(PORTRAIT_SRC)) {
-    if (!f.toLowerCase().endsWith(".png")) continue;
-    fs.copyFileSync(path.join(PORTRAIT_SRC, f), path.join(PORTRAIT_DST, f));
-    copied++;
-  }
-  console.log(`Copied ${copied} character portrait(s) to ${PORTRAIT_DST}`);
-} else {
-  console.log(`No character portraits found at ${PORTRAIT_SRC} (run Valheim once with MegaDataExtractor 1.4.0+ to generate)`);
-}
+// Character portraits are read at runtime by the get_character_portrait_png
+// Tauri command from %APPDATA%\MegaLoad\character-portraits\, so no build-time
+// copy is needed anymore. (MegaDataExtractor 1.4.3+ writes straight there.)

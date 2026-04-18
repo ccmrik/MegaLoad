@@ -229,6 +229,8 @@ export function CharacterPortrait({
     svg
   );
 
+  const showCaptureHint = !realSrc;
+
   if (compact) {
     return (
       <div className="flex flex-col items-center">
@@ -239,6 +241,11 @@ export function CharacterPortrait({
           <div className="font-norse font-bold text-base text-zinc-100 tracking-wide leading-none">
             {name}
           </div>
+          {showCaptureHint && (
+            <div className="mt-1 text-[9px] text-zinc-500 italic leading-tight max-w-[10rem] mx-auto">
+              Visit Valheim's character select to capture a real portrait
+            </div>
+          )}
         </div>
       </div>
     );
@@ -260,6 +267,11 @@ export function CharacterPortrait({
           <div className="text-[10px] text-zinc-500 mt-1">
             {isMale ? "Male" : "Female"} · {prettyHair} · {prettyBeard}
           </div>
+          {showCaptureHint && (
+            <div className="mt-2 text-[10px] text-zinc-500 italic leading-tight max-w-[13rem] mx-auto">
+              Visit Valheim's character select to capture a real portrait
+            </div>
+          )}
         </div>
       </div>
     </div>

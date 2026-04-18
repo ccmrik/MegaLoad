@@ -550,7 +550,7 @@ pub fn read_character(path: String) -> Result<CharacterData, String> {
 }
 
 /// Read the real-game character portrait PNG captured by MegaDataExtractor
-/// 1.4.0+ off FejdStartup's live character-select preview. Returns base64 so
+/// 1.4.3+ off FejdStartup's live character-select preview. Returns base64 so
 /// the frontend can slap it straight into an <img src="data:image/png;base64,...">.
 /// Returns None if no portrait has been captured yet.
 #[command]
@@ -558,14 +558,13 @@ pub fn get_character_portrait_png(name: String) -> Option<String> {
     use base64::Engine;
     let sanitised = sanitise_portrait_name(&name);
     if sanitised.is_empty() { return None; }
-    let file = format!("{}.png", sanitised);
-    for base in valheim_mods_candidates() {
-        let path = base.join("valheim_icons").join("characters").join(&file);
-        if let Ok(bytes) = fs::read(&path) {
-            return Some(base64::engine::general_purpose::STANDARD.encode(bytes));
-        }
-    }
-    None
+    let appdata = std::env::var("APPDATA").ok()?;
+    let path = PathBuf::from(appdata)
+        .join("MegaLoad")
+        .join("character-portraits")
+        .join(format!("{}.png", sanitised));
+    let bytes = fs::read(&path).ok()?;
+    Some(base64::engine::general_purpose::STANDARD.encode(bytes))
 }
 
 fn sanitise_portrait_name(s: &str) -> String {
@@ -578,31 +577,6 @@ fn sanitise_portrait_name(s: &str) -> String {
         if c.is_alphanumeric() { out.push(c); } else { out.push('_'); }
     }
     if out.is_empty() { "unknown".to_string() } else { out }
-}
-
-/// Candidate "Valheim Mods" roots — desktop and laptop may have OneDrive
-/// mounted differently, so we probe in order: $OneDrive/Valheim Mods,
-/// $USERPROFILE/OneDrive*/Valheim Mods, $USERPROFILE/Desktop/Valheim Mods.
-fn valheim_mods_candidates() -> Vec<PathBuf> {
-    let mut out = Vec::new();
-    if let Ok(od) = std::env::var("OneDrive") {
-        if !od.is_empty() {
-            out.push(PathBuf::from(&od).join("Valheim Mods"));
-        }
-    }
-    if let Ok(up) = std::env::var("USERPROFILE") {
-        let up_path = PathBuf::from(&up);
-        if let Ok(entries) = fs::read_dir(&up_path) {
-            for entry in entries.flatten() {
-                let name = entry.file_name();
-                if name.to_string_lossy().starts_with("OneDrive") {
-                    out.push(entry.path().join("Valheim Mods"));
-                }
-            }
-        }
-        out.push(up_path.join("Desktop").join("Valheim Mods"));
-    }
-    out
 }
 
 fn parse_character_file(file_data: &[u8]) -> Result<CharacterData, String> {
