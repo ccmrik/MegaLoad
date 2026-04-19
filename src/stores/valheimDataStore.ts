@@ -465,9 +465,19 @@ export function getVendorItemIds(vendorName: string): Set<string> {
   return ids;
 }
 
+/** Iron Cooking Station is a superset of Cooking Station — anything grilled
+ *  on the basic rack can also be grilled on the iron one, so item lists and
+ *  craft-mat rollups for Iron Cooking Station include Cooking Station too. */
+function expandStationSupersets(stationNames: string[]): string[] {
+  if (!stationNames.includes("Iron Cooking Station")) return stationNames;
+  if (stationNames.includes("Cooking Station")) return stationNames;
+  return [...stationNames, "Cooking Station"];
+}
+
 /** Get items for a station detail view */
 export function getStationItems(stationName: string): ValheimItem[] {
-  return VALHEIM_ITEMS.filter((i) => i.station === stationName);
+  const names = expandStationSupersets([stationName]);
+  return VALHEIM_ITEMS.filter((i) => names.includes(i.station));
 }
 
 // Types that are "items in their own right" — exclude from materials lists when used as ingredients
@@ -475,9 +485,10 @@ const ITEM_INGREDIENT_TYPES = new Set(["Weapon", "Armor", "Tool", "Ammo"]);
 
 /** Get all unique raw ingredients needed to craft/build at the given stations */
 export function getStationMaterials(stationNames: string[], mode: "craft" | "build"): CartMaterial[] {
+  const expanded = expandStationSupersets(stationNames);
   const totals = new Map<string, CartMaterial>();
-  for (const name of stationNames) {
-    for (const item of getStationItems(name)) {
+  for (const name of expanded) {
+    for (const item of VALHEIM_ITEMS.filter((i) => i.station === name)) {
       // Split: "craft" = non-BuildPiece items, "build" = BuildPiece items
       if (mode === "craft" && item.type === "BuildPiece") continue;
       if (mode === "build" && item.type !== "BuildPiece") continue;

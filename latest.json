@@ -1,11 +1,11 @@
 {
-  "version": "1.9.3",
-  "notes": "Valheim Data factory cleanup. Cooking Station and Iron Cooking Station removed from the Factory list (they're real Stations now after the 1.9.2 fix). Stone Oven promoted to Stations too — filter to it, flip Craft Mats on, and you'll see Bread Dough plus the nine Uncooked pies and platters that feed the oven. Shield Generator fuel line now shows both Bone Fragments and Charred Bones (wiki confirmed).",
-  "pub_date": "2026-04-19T02:15:00Z",
+  "version": "1.9.4",
+  "notes": "Iron Cooking Station is now a proper superset. Filter to Iron with Craft Mats on and you'll see all 14 raw meats — Boar, Neck, Deer, Raw Fish, Chicken, Wolf, Bear, Lox, Serpent, Seeker, Hare, Bonemaw, Asksvin, Volture — because anything grilled on the basic rack also cooks on the iron one. Item list at the Iron station detail view expands the same way.",
+  "pub_date": "2026-04-19T02:30:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUJTSVR2UDZJRGZnQXVoQnJJT09DdDFUT0ZEdVZpTjFFRit0a3RuUFUwRkYxcG1sLzd1YjFkTDRWektLaE5sZ1pmcnJnZVRpQ3RVdkppOTB3cWMwUXdnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTY0NDA1CWZpbGU6TWVnYUxvYWRfMS45LjNfeDY0LXNldHVwLm5zaXMuemlwCjdaczA2TGVxc2xtS1FYT0Q5QnAyYUpUK0IvVys0RmVsOUpVWGxTY0NxdFQ5N3NuaHl2bWY0OHlETGR5dFVKRkwyOTJ0d2hRZlNrZFhlZy9KUWZLdUJnPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.9.3/MegaLoad_1.9.3_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFkR1FBUEZOVGtWc0Jna3dNUTFBRG0xWm5nQi96Q1hVYUtmRU1XRVVlaEs5eTlQYkRHOW9STyt0ZHdPVXJxb3lmdzlDTG1TRmZvMXNKejBaYStiUUFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTY1NDU5CWZpbGU6TWVnYUxvYWRfMS45LjRfeDY0LXNldHVwLm5zaXMuemlwCmMzSjkrWVhwc21ieDdRd3ZaaVZWdVVlcU5LNGRCZnVhSjVuRU1sQ1JzcWI1MWpielNHSGc5bkh3ZS9kWnpLclY2Y0pTREltSU1oOEJnT3VXdkhPSkN3PT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.9.4/MegaLoad_1.9.4_x64-setup.nsis.zip"
     }
   }
 }

@@ -2441,14 +2441,17 @@ function StationMaterialsView({ materials, stations, mode, onItemClick }: {
   onItemClick: (item: ValheimItem) => void;
 }) {
   const totalCraftable = useMemo(() => {
-    let count = 0;
+    // getStationItems now expands Iron Cooking Station → also includes Cooking
+    // Station items. Dedupe by item id so mixed selections don't double count.
+    const seen = new Set<string>();
     for (const s of stations) {
       for (const item of getStationItems(s)) {
-        if (mode === "craft" && item.type !== "BuildPiece") count++;
-        if (mode === "build" && item.type === "BuildPiece") count++;
+        if (seen.has(item.id)) continue;
+        if (mode === "craft" && item.type !== "BuildPiece") seen.add(item.id);
+        if (mode === "build" && item.type === "BuildPiece") seen.add(item.id);
       }
     }
-    return count;
+    return seen.size;
   }, [stations, mode]);
   const modeLabel = mode === "craft" ? "Crafting Materials" : "Building Materials";
   const modeDesc = mode === "craft" ? "craft" : "build";
