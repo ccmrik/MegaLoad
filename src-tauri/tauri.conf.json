@@ -1,6 +1,6 @@
 {
   "productName": "MegaLoad",
-  "version": "1.8.1",
+  "version": "1.9.0",
   "identifier": "com.rik.megaload",
   "build": {
     "beforeDevCommand": "npm run dev",
@@ -14,9 +14,9 @@
       {
         "title": "MegaLoad",
         "width": 1200,
-        "height": 900,
+        "height": 1000,
         "minWidth": 900,
-        "minHeight": 700,
+        "minHeight": 780,
         "decorations": false,
         "transparent": false,
         "center": true

@@ -1,11 +1,11 @@
 {
-  "version": "1.8.1",
-  "notes": "MegaList patch: Export → Add to list now respects Craft/Build Materials mode, so filtering to a set of stations with Craft Mats active seeds the list with the aggregated station materials instead of the unfiltered item list. Page title and list names also now use the Norse font to match the rest of MegaLoad's typography.",
-  "pub_date": "2026-04-19T01:15:00Z",
+  "version": "1.9.0",
+  "notes": "MegaList polish + Valheim Data Found column. Lists gain their own biome column, tappable item names that deep-link into Valheim Data, row hover highlight, and a search filter so typing 'Trophy' narrows the list instantly. Valheim Data's table view drops Weight/Stack and shows a Found column — eye / crossed-out eye for every discovered vs undiscovered item on the active character. Sidebar now uses the Norse font. Default window height bumped to 1000px so the Launch button no longer hides behind the bottom edge.",
+  "pub_date": "2026-04-19T01:30:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUpxbzBwSUF4REk4UzVCYmxTb09pNS9kdklYemgyaTgwV3dtSzRSNkJUdjlJaUpaRTIySmMvcDZtLzBTOVdZZnpabTRqcGZjWDdTaVF3d0xmWUpWVndzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTYwMzQ1CWZpbGU6TWVnYUxvYWRfMS44LjFfeDY0LXNldHVwLm5zaXMuemlwCmNQUHJtdHA5Y2JpcnRjbjVacTdkVEJOK0xlRVlqWkI5bkZ6ZVRjQWZoVGw4ZElOdU1uQ0REY01rcFR2UFJmbHBwb3NNdHl0SUlmVmZlaUF1N25OVUFRPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.8.1/MegaLoad_1.8.1_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUlVZDY0VTBYQTAvWCt3bU8yY1dSZk9vQ0QxS2ZqTGo0Sy9DWFRkTHJVa09WS3NscFQvMlBLS0dsRHVoa255bjZFaDg2a2FwaVllQ1NjVUd2d2VON3dFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTYxNzc5CWZpbGU6TWVnYUxvYWRfMS45LjBfeDY0LXNldHVwLm5zaXMuemlwCjdIRDFVUFRQV3RQYWVnUUJtU2xzc0pUODQ4RkVtSUphSlpTZloyUHFwdmRoYzM1VkFmeHZHRU5OVUVoNGc5YmFzL2R5MkdJWFQ0SnpZV0g4aUFucUFnPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.9.0/MegaLoad_1.9.0_x64-setup.nsis.zip"
     }
   }
 }

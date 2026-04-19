@@ -9,10 +9,12 @@ import {
   CheckSquare,
   Square,
   AlertTriangle,
+  Search,
+  X,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { useMegaListStore } from "../stores/megaListStore";
-import { getItemById } from "../stores/valheimDataStore";
+import { getItemById, useValheimDataStore } from "../stores/valheimDataStore";
 import { ItemIcon } from "../components/ui/ItemIcon";
 import { copyText } from "../lib/clipboard";
 import { AddItemModal } from "../components/megalist/AddItemModal";
@@ -53,11 +55,14 @@ export function MegaListDetail() {
   const toggleItem = useMegaListStore((s) => s.toggleItem);
   const removeItem = useMegaListStore((s) => s.removeItem);
   const setChecked = useMegaListStore((s) => s.setChecked);
+  const setSelectedItem = useValheimDataStore((s) => s.setSelectedItem);
+  const setReturnPath = useValheimDataStore((s) => s.setReturnPath);
 
   const [editing, setEditing] = useState(false);
   const [editValue, setEditValue] = useState("");
   const [sort, setSort] = useState<SortMode>("name-asc");
   const [biomeFilter, setBiomeFilter] = useState<string[]>([]);
+  const [itemSearch, setItemSearch] = useState("");
   const [showAdd, setShowAdd] = useState(false);
   const [showDelete, setShowDelete] = useState(false);
 
@@ -97,6 +102,14 @@ export function MegaListDetail() {
     if (biomeFilter.length > 0) {
       out = out.filter((r) => r.item && r.item.biomes.some((b) => biomeFilter.includes(b)));
     }
+    const q = itemSearch.trim().toLowerCase();
+    if (q) {
+      out = out.filter((r) => {
+        const name = (r.item?.name ?? r.itemId).toLowerCase();
+        const sub = (r.item?.subcategory ?? "").toLowerCase();
+        return name.includes(q) || sub.includes(q) || r.itemId.toLowerCase().includes(q);
+      });
+    }
     if (sort === "name-asc") out.sort((a, b) => (a.item?.name ?? a.itemId).localeCompare(b.item?.name ?? b.itemId));
     else if (sort === "name-desc") out.sort((a, b) => (b.item?.name ?? b.itemId).localeCompare(a.item?.name ?? a.itemId));
     else if (sort === "biome-grouped") {
@@ -108,7 +121,15 @@ export function MegaListDetail() {
       });
     }
     return out;
-  }, [resolved, sort, biomeFilter]);
+  }, [resolved, sort, biomeFilter, itemSearch]);
+
+  const openItem = (itemId: string) => {
+    const target = getItemById(itemId);
+    if (!target || !list) return;
+    setReturnPath(`/megalist/${list.id}`);
+    setSelectedItem(target);
+    navigate("/valheim-data");
+  };
 
   const toggleBiome = (b: string) =>
     setBiomeFilter((prev) => (prev.includes(b) ? prev.filter((x) => x !== b) : [...prev, b]));
@@ -257,10 +278,32 @@ export function MegaListDetail() {
         )}
       </div>
 
+      <div className="relative mb-3">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+        <input
+          value={itemSearch}
+          onChange={(e) => setItemSearch(e.target.value)}
+          placeholder="Filter items in this list (e.g. Trophy)…"
+          className="w-full bg-zinc-900/60 border border-zinc-800 rounded-lg pl-9 pr-8 py-2 text-sm text-zinc-100 focus:outline-none focus:border-brand-500/40"
+        />
+        {itemSearch && (
+          <button
+            onClick={() => setItemSearch("")}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded text-zinc-500 hover:text-zinc-200"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+
       <div className="glass rounded-xl border border-zinc-800 overflow-hidden">
         {visible.length === 0 ? (
           <p className="px-4 py-10 text-center text-sm text-zinc-500">
-            {total === 0 ? "No items yet — use Add item above." : "No items match the current biome filter."}
+            {total === 0
+              ? "No items yet — use Add item above."
+              : itemSearch
+                ? `No items match "${itemSearch}".`
+                : "No items match the current biome filter."}
           </p>
         ) : (
           <ul className="divide-y divide-zinc-800/70">
@@ -271,8 +314,8 @@ export function MegaListDetail() {
                 <li
                   key={r.itemId}
                   className={cn(
-                    "flex items-center gap-3 px-3 py-2",
-                    r.checked && "bg-zinc-900/40",
+                    "flex items-center gap-3 px-3 py-2 transition-colors group",
+                    r.checked ? "bg-zinc-900/40 hover:bg-zinc-800/50" : "hover:bg-zinc-800/40",
                   )}
                 >
                   <button
@@ -289,25 +332,33 @@ export function MegaListDetail() {
                   {missing ? (
                     <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0" />
                   ) : (
-                    <ItemIcon id={r.itemId} type={r.item?.type} size={28} />
+                    <button
+                      type="button"
+                      onClick={() => openItem(r.itemId)}
+                      title={`Open ${name}`}
+                      className="shrink-0"
+                    >
+                      <ItemIcon id={r.itemId} type={r.item?.type} size={28} />
+                    </button>
                   )}
-                  <div className="flex-1 min-w-0">
-                    <div className={cn(
-                      "text-sm truncate",
-                      r.checked ? "text-zinc-500 line-through" : missing ? "text-amber-300" : "text-zinc-200",
-                    )}>
-                      {name}
-                      {r.source === "manual" && (
-                        <span className="ml-2 text-[9px] text-zinc-600 uppercase tracking-wide">+ manual</span>
-                      )}
-                    </div>
-                    {r.item && r.item.biomes.length > 0 && (
-                      <div className="flex gap-1 mt-0.5 flex-wrap">
-                        {r.item.biomes.map((b) => (
-                          <BiomeChip key={b} biome={b} />
-                        ))}
-                      </div>
+                  <button
+                    type="button"
+                    disabled={missing}
+                    onClick={() => openItem(r.itemId)}
+                    className={cn(
+                      "flex-1 min-w-0 text-left text-sm truncate transition-colors",
+                      r.checked ? "text-zinc-500 line-through" : missing ? "text-amber-300 cursor-default" : "text-zinc-200 group-hover:text-brand-400",
                     )}
+                  >
+                    {name}
+                    {r.source === "manual" && (
+                      <span className="ml-2 text-[9px] text-zinc-600 uppercase tracking-wide">+ manual</span>
+                    )}
+                  </button>
+                  <div className="w-[180px] shrink-0 flex flex-wrap gap-1">
+                    {r.item?.biomes.map((b) => (
+                      <BiomeChip key={b} biome={b} />
+                    ))}
                   </div>
                   <button
                     onClick={() => copyText(name)}

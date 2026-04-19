@@ -1257,7 +1257,7 @@ export function ValheimData() {
               <p className="text-zinc-500">No items found</p>
             </div>
           ) : viewMode === "table" ? (
-            <ItemTable items={items} tableSortKey={tableSortKey} tableSortDir={tableSortDir} onSort={setTableSort} onSelect={selectItem} />
+            <ItemTable items={items} tableSortKey={tableSortKey} tableSortDir={tableSortDir} onSort={setTableSort} onSelect={selectItem} knownPrefabs={pageKnownPrefabs} hasCharacter={!!pageCharacter} />
           ) : (
             <div className="space-y-6">
               {groupedItems.map(({ key, label, icon: GIcon, colorClass, items: groupItems }) => (
@@ -1364,11 +1364,10 @@ const TABLE_COLUMNS: { key: TableSortKey; label: string; className: string }[] =
   { key: "subcategory", label: "Sub", className: "w-[100px]" },
   { key: "biome", label: "Biome", className: "flex-1 min-w-[120px]" },
   { key: "from", label: "From", className: "w-[130px]" },
-  { key: "weight", label: "Wt", className: "w-[50px] text-right" },
-  { key: "stack", label: "Stack", className: "w-[50px] text-right" },
+  { key: "found", label: "Found", className: "w-[60px] text-center" },
 ];
 
-function tableSortValue(item: ValheimItem, key: TableSortKey): string | number {
+function tableSortValue(item: ValheimItem, key: TableSortKey, knownPrefabs: Set<string>): string | number {
   switch (key) {
     case "name": return item.name.toLowerCase();
     case "type": return item.type;
@@ -1379,8 +1378,10 @@ function tableSortValue(item: ValheimItem, key: TableSortKey): string | number {
       return idx >= 0 ? idx : BIOME_ORDER.length;
     }
     case "from": return getItemSource(item);
-    case "weight": return item.weight;
-    case "stack": return item.stack;
+    case "found": {
+      if (item.type === "Creature") return 2; // N/A — keep at bottom
+      return knownPrefabs.has(item.id) ? 0 : 1;
+    }
   }
 }
 
@@ -1390,25 +1391,29 @@ function ItemTable({
   tableSortDir,
   onSort,
   onSelect,
+  knownPrefabs,
+  hasCharacter,
 }: {
   items: ValheimItem[];
   tableSortKey: TableSortKey;
   tableSortDir: "asc" | "desc";
   onSort: (key: TableSortKey) => void;
   onSelect: (item: ValheimItem) => void;
+  knownPrefabs: Set<string>;
+  hasCharacter: boolean;
 }) {
   const sorted = useMemo(() => {
     const arr = [...items];
     arr.sort((a, b) => {
-      const va = tableSortValue(a, tableSortKey);
-      const vb = tableSortValue(b, tableSortKey);
+      const va = tableSortValue(a, tableSortKey, knownPrefabs);
+      const vb = tableSortValue(b, tableSortKey, knownPrefabs);
       let cmp = 0;
       if (typeof va === "number" && typeof vb === "number") cmp = va - vb;
       else cmp = String(va).localeCompare(String(vb));
       return tableSortDir === "desc" ? -cmp : cmp;
     });
     return arr;
-  }, [items, tableSortKey, tableSortDir]);
+  }, [items, tableSortKey, tableSortDir, knownPrefabs]);
 
   return (
     <div className="rounded-xl border border-zinc-800/50">
@@ -1477,13 +1482,15 @@ function ItemTable({
             <div className={cn("px-2 text-[11px] text-zinc-500 truncate", TABLE_COLUMNS[4].className)} title={getItemSource(item)}>
               {getItemSource(item) || "—"}
             </div>
-            {/* Weight */}
-            <div className={cn("px-2 text-[11px] text-zinc-500 tabular-nums", TABLE_COLUMNS[5].className)}>
-              {item.weight > 0 ? item.weight : "—"}
-            </div>
-            {/* Stack */}
-            <div className={cn("px-2 text-[11px] text-zinc-500 tabular-nums", TABLE_COLUMNS[6].className)}>
-              {item.stack > 1 ? item.stack : "—"}
+            {/* Found */}
+            <div className={cn("px-2 flex items-center justify-center", TABLE_COLUMNS[5].className)}>
+              {!hasCharacter || item.type === "Creature" ? (
+                <span className="text-zinc-700 text-[11px]">—</span>
+              ) : knownPrefabs.has(item.id) ? (
+                <Eye className="w-3.5 h-3.5 text-emerald-400" aria-label="Discovered" />
+              ) : (
+                <EyeOff className="w-3.5 h-3.5 text-zinc-600" aria-label="Not discovered" />
+              )}
             </div>
           </div>
         ))}

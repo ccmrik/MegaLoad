@@ -3,7 +3,7 @@ import { VALHEIM_ITEMS, type ValheimItem } from "../data/valheim-items";
 
 export type SortOption = "name-asc" | "name-desc" | "tier-asc" | "tier-desc" | "biome-grouped";
 export type ViewMode = "grid" | "table";
-export type TableSortKey = "name" | "type" | "subcategory" | "biome" | "from" | "weight" | "stack";
+export type TableSortKey = "name" | "type" | "subcategory" | "biome" | "from" | "found";
 export type TableSortDir = "asc" | "desc";
 
 // ── Vendor Data ──────────────────────────────────────────────
