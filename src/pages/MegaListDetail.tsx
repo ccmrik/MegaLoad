@@ -355,9 +355,14 @@ export function MegaListDetail() {
                       <span className="ml-2 text-[9px] text-zinc-600 uppercase tracking-wide">+ manual</span>
                     )}
                   </button>
-                  <div className="w-[180px] shrink-0 flex flex-wrap gap-1">
+                  <div
+                    className="w-[400px] shrink-0 flex flex-nowrap gap-1 overflow-hidden justify-end"
+                    title={r.item?.biomes.join(", ")}
+                  >
                     {r.item?.biomes.map((b) => (
-                      <BiomeChip key={b} biome={b} />
+                      <div key={b} className="shrink-0">
+                        <BiomeChip biome={b} />
+                      </div>
                     ))}
                   </div>
                   <button

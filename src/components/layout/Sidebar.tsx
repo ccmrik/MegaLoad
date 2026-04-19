@@ -269,7 +269,7 @@ export function Sidebar() {
             to={item.to}
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg font-norse text-lg tracking-wide transition-all duration-200",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg font-norse font-bold text-lg tracking-wide transition-all duration-200",
                 isActive
                   ? "bg-brand-500/15 text-brand-400 shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
@@ -286,7 +286,7 @@ export function Sidebar() {
             to="/chat"
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg font-norse text-lg tracking-wide transition-all duration-200",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg font-norse font-bold text-lg tracking-wide transition-all duration-200",
                 isActive
                   ? "bg-brand-500/15 text-brand-400 shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
@@ -302,7 +302,7 @@ export function Sidebar() {
             to="/bugs"
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg font-norse text-lg tracking-wide transition-all duration-200",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg font-norse font-bold text-lg tracking-wide transition-all duration-200",
                 isActive
                   ? "bg-brand-500/15 text-brand-400 shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
@@ -322,7 +322,7 @@ export function Sidebar() {
           to="/settings"
           className={({ isActive }) =>
             cn(
-              "flex items-center gap-3 px-3 py-2.5 rounded-lg font-norse text-lg tracking-wide transition-all duration-200",
+              "flex items-center gap-3 px-3 py-2.5 rounded-lg font-norse font-bold text-lg tracking-wide transition-all duration-200",
               isActive
                 ? "bg-brand-500/15 text-brand-400 shadow-sm"
                 : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
@@ -337,7 +337,7 @@ export function Sidebar() {
             to="/admin"
             className={({ isActive }) =>
               cn(
-                "flex items-center gap-3 px-3 py-2.5 rounded-lg font-norse text-lg tracking-wide transition-all duration-200",
+                "flex items-center gap-3 px-3 py-2.5 rounded-lg font-norse font-bold text-lg tracking-wide transition-all duration-200",
                 isActive
                   ? "bg-brand-500/15 text-brand-400 shadow-sm"
                   : "text-zinc-400 hover:text-zinc-200 hover:bg-zinc-800/50"
