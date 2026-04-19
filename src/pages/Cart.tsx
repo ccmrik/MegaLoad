@@ -7,6 +7,7 @@ import {
   Plus,
   X,
   Trash2,
+  Copy,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import {
@@ -15,7 +16,46 @@ import {
   getCartMaterials,
   BIOME_ORDER,
 } from "../stores/valheimDataStore";
+import { useToastStore } from "../stores/toastStore";
 import type { ValheimItem } from "../data/valheim-items";
+
+function copyText(text: string, e?: React.MouseEvent) {
+  e?.stopPropagation();
+  e?.preventDefault();
+  navigator.clipboard.writeText(text).then(
+    () =>
+      useToastStore.getState().addToast({
+        type: "success",
+        title: "Copied",
+        message: text,
+        duration: 1500,
+      }),
+    () =>
+      useToastStore.getState().addToast({
+        type: "warning",
+        title: "Copy failed",
+        message: "Clipboard not available",
+        duration: 2500,
+      })
+  );
+}
+
+function CopyTextButton({ text, size = 12, className = "" }: { text: string; size?: number; className?: string }) {
+  return (
+    <button
+      type="button"
+      onClick={(e) => copyText(text, e)}
+      title={`Copy "${text}"`}
+      aria-label="Copy"
+      className={cn(
+        "p-1 rounded text-zinc-500 hover:text-brand-400 hover:bg-zinc-800/60 transition-colors shrink-0",
+        className
+      )}
+    >
+      <Copy style={{ width: size, height: size }} />
+    </button>
+  );
+}
 
 // ── Biome styling (mirrors ValheimData) ──
 
@@ -193,12 +233,15 @@ export function Cart() {
                         <ItemIcon id={entry.id} size={32} />
                       </button>
                       <div className="flex-1 min-w-0">
-                        <button
-                          onClick={() => navigateToItem(entry.id)}
-                          className="text-sm text-brand-400 hover:underline truncate block text-left"
-                        >
-                          {item.name}
-                        </button>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => navigateToItem(entry.id)}
+                            className="text-sm text-brand-400 hover:underline truncate block text-left"
+                          >
+                            {item.name}
+                          </button>
+                          <CopyTextButton text={item.name} className="opacity-0 group-hover:opacity-100 transition-opacity" />
+                        </div>
                         <div className="flex items-center gap-2 mt-0.5">
                           <span className="text-[10px] text-zinc-600">{item.type}{item.subcategory ? ` · ${item.subcategory}` : ""}</span>
                           {biome && (
@@ -257,7 +300,7 @@ export function Cart() {
                   const matItem = getItemById(mat.id);
                   const biome = matItem ? getMinBiome(matItem) : null;
                   return (
-                    <div key={mat.id} className="flex items-center gap-3 px-5 py-2.5 hover:bg-zinc-800/20 transition-colors">
+                    <div key={mat.id} className="flex items-center gap-3 px-5 py-2.5 hover:bg-zinc-800/20 transition-colors group">
                       <button
                         onClick={() => navigateToItem(mat.id)}
                         className="w-6 h-6 shrink-0 flex items-center justify-center"
@@ -270,6 +313,7 @@ export function Cart() {
                       >
                         {mat.name}
                       </button>
+                      <CopyTextButton text={mat.name} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                       {biome && (
                         <span className={cn(
                           "text-[10px] font-medium px-1.5 py-0 rounded border shrink-0",

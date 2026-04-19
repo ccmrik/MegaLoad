@@ -2201,7 +2201,13 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                     </div>
                   </button>
                   <div className="flex items-center gap-2 mt-2 px-3 pt-2 border-t border-zinc-800/30">
-                    <button onClick={() => handleNavigate(ps.conversion.inputId)} className="flex items-center gap-1.5">
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => handleNavigate(ps.conversion.inputId)}
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(ps.conversion.inputId)}
+                      className="flex items-center gap-1.5 cursor-pointer"
+                    >
                       <div className="w-5 h-5 shrink-0 flex items-center justify-center">
                         <ItemIcon id={ps.conversion.inputId} size={20} />
                       </div>
@@ -2209,9 +2215,11 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                       {(ps.conversion.inputAmount ?? 1) > 1 && (
                         <span className="text-[10px] text-zinc-500 font-mono">x{ps.conversion.inputAmount}</span>
                       )}
-                    </button>
+                    </div>
+                    <CopyTextButton text={ps.conversion.inputName} size={12} title={`Copy "${ps.conversion.inputName}"`} />
                     <ArrowRight className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
                     <span className="text-xs text-zinc-200 font-medium">{item.name}</span>
+                    <CopyButton item={item} size={12} title={`Copy "${item.name}"`} />
                   </div>
                 </div>
               );
@@ -2233,22 +2241,31 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                 </h2>
                 <div className="space-y-1">
                   {item.recipe.map((ing) => (
-                    <button
+                    <div
                       key={ing.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleNavigate(ing.id)}
-                      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left"
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(ing.id)}
+                      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                     >
                       <div className="w-6 h-6 shrink-0 flex items-center justify-center">
                         <ItemIcon id={ing.id} size={24} />
                       </div>
                       <span className="text-xs text-brand-400 hover:underline flex-1">{ing.name}</span>
+                      <CopyTextButton
+                        text={ing.name}
+                        size={12}
+                        title={`Copy "${ing.name}"`}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                      />
                       {knownPrefabs.size > 0 && (
                         knownPrefabs.has(ing.id)
                           ? <Eye className="w-3.5 h-3.5 text-brand-400 shrink-0" />
                           : <EyeOff className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
                       )}
                       <span className="text-xs text-zinc-400 font-mono">x{ing.amount}</span>
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -2271,22 +2288,31 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                       </div>
                       <div className="space-y-0.5 pl-3 border-l-2 border-zinc-800">
                         {uc.resources.map((r) => (
-                          <button
+                          <div
                             key={r.id}
+                            role="button"
+                            tabIndex={0}
                             onClick={() => handleNavigate(r.id)}
-                            className="flex items-center gap-2 w-full px-2 py-1.5 rounded hover:bg-zinc-800/50 transition-colors text-left"
+                            onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(r.id)}
+                            className="flex items-center gap-2 w-full px-2 py-1.5 rounded hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                           >
                             <div className="w-5 h-5 shrink-0 flex items-center justify-center">
                               <ItemIcon id={r.id} size={20} />
                             </div>
                             <span className="text-[11px] text-brand-400 hover:underline flex-1">{r.name}</span>
+                            <CopyTextButton
+                              text={r.name}
+                              size={11}
+                              title={`Copy "${r.name}"`}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                            />
                             {knownPrefabs.size > 0 && (
                               knownPrefabs.has(r.id)
                                 ? <Eye className="w-3 h-3 text-brand-400 shrink-0" />
                                 : <EyeOff className="w-3 h-3 text-zinc-600 shrink-0" />
                             )}
                             <span className="text-[11px] text-zinc-500 font-mono">x{r.amount}</span>
-                          </button>
+                          </div>
                         ))}
                       </div>
                     </div>
@@ -2317,22 +2343,31 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                   </h2>
                   <div className="space-y-1">
                     {entries.map((mat) => (
-                      <button
+                      <div
                         key={mat.id}
+                        role="button"
+                        tabIndex={0}
                         onClick={() => handleNavigate(mat.id)}
-                        className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left"
+                        onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(mat.id)}
+                        className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                       >
                         <div className="w-6 h-6 shrink-0 flex items-center justify-center">
                           <ItemIcon id={mat.id} size={24} />
                         </div>
                         <span className="text-xs text-brand-400 hover:underline flex-1">{mat.name}</span>
+                        <CopyTextButton
+                          text={mat.name}
+                          size={12}
+                          title={`Copy "${mat.name}"`}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                        />
                         {knownPrefabs.size > 0 && (
                           knownPrefabs.has(mat.id)
                             ? <Eye className="w-3.5 h-3.5 text-brand-400 shrink-0" />
                             : <EyeOff className="w-3.5 h-3.5 text-zinc-600 shrink-0" />
                         )}
                         <span className="text-xs text-zinc-400 font-mono">x{mat.amount}</span>
-                      </button>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -2352,10 +2387,13 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                 </div>
                 <div className="grid grid-cols-1 gap-1">
                   {relatedItems.map((related) => (
-                    <button
+                    <div
                       key={related.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleNavigate(related.id)}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left"
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(related.id)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                     >
                       <div className="w-6 h-6 shrink-0 flex items-center justify-center">
                         <ItemIcon id={related.id} type={related.type} size={24} />
@@ -2363,8 +2401,14 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                       <span className="text-xs text-brand-400 hover:underline truncate flex-1">
                         {related.name}
                       </span>
+                      <CopyButton
+                        item={related}
+                        size={12}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                        title={`Copy "${related.name}"`}
+                      />
                       <span className="text-[10px] text-zinc-600 shrink-0">{related.subcategory}</span>
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -2378,10 +2422,13 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                 </h2>
                 <div className="grid grid-cols-1 gap-1">
                   {usedIn.map((recipe) => (
-                    <button
+                    <div
                       key={recipe.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleNavigate(recipe.id)}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left"
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(recipe.id)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                     >
                       <div className="w-6 h-6 shrink-0 flex items-center justify-center">
                         <ItemIcon id={recipe.id} type={recipe.type} size={24} />
@@ -2389,8 +2436,14 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
                       <span className="text-xs text-brand-400 hover:underline truncate flex-1">
                         {recipe.name}
                       </span>
+                      <CopyButton
+                        item={recipe}
+                        size={12}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                        title={`Copy "${recipe.name}"`}
+                      />
                       <span className="text-[10px] text-zinc-600 shrink-0">{recipe.type}</span>
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -2428,12 +2481,18 @@ function StationMaterialsView({ materials, stations, mode, onItemClick }: {
       <div className="glass rounded-xl p-4 border border-amber-500/20">
         <div className="flex items-center gap-3">
           <Package className="w-5 h-5 text-amber-400 shrink-0" />
-          <div>
-            <h2 className="text-sm font-semibold text-zinc-200">
+          <div className="flex-1">
+            <h2 className="text-sm font-semibold text-zinc-200 flex items-center gap-1">
               {modeLabel}
               <span className="text-zinc-500 font-normal ml-2">
                 ({materials.length} unique)
               </span>
+              <CopyTextButton
+                text={materials.map((m) => `${m.name} x${m.amount}`).join("\n")}
+                size={14}
+                title="Copy all materials to clipboard"
+                className="ml-1"
+              />
             </h2>
             <p className="text-[11px] text-zinc-500 mt-0.5">
               All ingredients needed to {modeDesc} {totalCraftable} items at{" "}
@@ -2453,7 +2512,7 @@ function StationMaterialsView({ materials, stations, mode, onItemClick }: {
               <div
                 key={mat.id}
                 onClick={() => matItem && onItemClick(matItem)}
-                className="flex items-center gap-3 px-4 py-2 hover:bg-zinc-800/20 transition-colors cursor-pointer"
+                className="flex items-center gap-3 px-4 py-2 hover:bg-zinc-800/20 transition-colors cursor-pointer group"
               >
                 <div className="w-6 h-6 shrink-0">
                   <ItemIcon id={mat.id} size={24} />
@@ -2461,6 +2520,12 @@ function StationMaterialsView({ materials, stations, mode, onItemClick }: {
                 <span className="text-sm text-brand-400 hover:underline flex-1 truncate">
                   {mat.name}
                 </span>
+                <CopyTextButton
+                  text={mat.name}
+                  size={14}
+                  title={`Copy "${mat.name}"`}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                />
                 {biome && (
                   <span className={cn("text-[10px] font-medium shrink-0", BIOME_COLORS[biome] || "text-zinc-400")}>
                     {biome}
@@ -2541,17 +2606,26 @@ function StationDetailView({ station, onBack }: { station: string; onBack: () =>
                 <h2 className="text-sm font-semibold text-zinc-200 mb-3">Build Recipe</h2>
                 <div className="space-y-1">
                   {stationBuildPiece.recipe.map((ing) => (
-                    <button
+                    <div
                       key={ing.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleNavigate(ing.id)}
-                      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left"
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(ing.id)}
+                      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                     >
                       <div className="w-6 h-6 shrink-0 flex items-center justify-center">
                         <ItemIcon id={ing.id} size={24} />
                       </div>
                       <span className="text-xs text-brand-400 hover:underline flex-1">{ing.name}</span>
+                      <CopyTextButton
+                        text={ing.name}
+                        size={12}
+                        title={`Copy "${ing.name}"`}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                      />
                       <span className="text-xs text-zinc-400 font-mono">x{ing.amount}</span>
-                    </button>
+                    </div>
                   ))}
                 </div>
               </div>
@@ -2567,10 +2641,13 @@ function StationDetailView({ station, onBack }: { station: string; onBack: () =>
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                   {upgrades.map((item, i) => (
-                    <button
+                    <div
                       key={item.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleNavigate(item.id)}
-                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left"
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(item.id)}
+                      className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                     >
                       <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 text-[10px] font-bold border border-amber-500/20 shrink-0">
                         Lv {i + 2}
@@ -2581,7 +2658,13 @@ function StationDetailView({ station, onBack }: { station: string; onBack: () =>
                       <span className="text-xs text-brand-400 hover:underline truncate flex-1">
                         {item.name}
                       </span>
-                    </button>
+                      <CopyButton
+                        item={item}
+                        size={12}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                        title={`Copy "${item.name}"`}
+                      />
+                    </div>
                   ))}
                 </div>
               </div>
@@ -2615,10 +2698,13 @@ function StationDetailView({ station, onBack }: { station: string; onBack: () =>
                     <p className="text-[10px] text-zinc-600 uppercase tracking-wider mb-1">{type}</p>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-1">
                       {grouped[type].sort((a, b) => a.name.localeCompare(b.name)).map((item) => (
-                        <button
+                        <div
                           key={item.id}
+                          role="button"
+                          tabIndex={0}
                           onClick={() => handleNavigate(item.id)}
-                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left"
+                          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(item.id)}
+                          className="flex items-center gap-2.5 px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                         >
                           <div className="w-6 h-6 shrink-0 flex items-center justify-center">
                             <ItemIcon id={item.id} type={item.type} size={24} />
@@ -2626,6 +2712,12 @@ function StationDetailView({ station, onBack }: { station: string; onBack: () =>
                           <span className="text-xs text-brand-400 hover:underline truncate flex-1">
                             {item.name}
                           </span>
+                          <CopyButton
+                            item={item}
+                            size={12}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                            title={`Copy "${item.name}"`}
+                          />
                           <div className="flex gap-1">
                             {item.biomes.slice(0, 2).map((b) => (
                               <span key={b} className={cn("text-[9px]", BIOME_COLORS[b] || "text-zinc-500")}>
@@ -2633,7 +2725,7 @@ function StationDetailView({ station, onBack }: { station: string; onBack: () =>
                               </span>
                             ))}
                           </div>
-                        </button>
+                        </div>
                       ))}
                     </div>
                   </div>
@@ -2730,17 +2822,26 @@ function ProcessingStationDetailView({ stationName, onBack }: { stationName: str
             </h2>
             <div className="space-y-1">
               {buildPiece.recipe.map((ing) => (
-                <button
+                <div
                   key={ing.id}
+                  role="button"
+                  tabIndex={0}
                   onClick={() => handleNavigate(ing.id)}
-                  className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left"
+                  onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(ing.id)}
+                  className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                 >
                   <div className="w-6 h-6 shrink-0 flex items-center justify-center">
                     <ItemIcon id={ing.id} size={24} />
                   </div>
                   <span className="text-xs text-brand-400 hover:underline flex-1">{ing.name}</span>
+                  <CopyTextButton
+                    text={ing.name}
+                    size={12}
+                    title={`Copy "${ing.name}"`}
+                    className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                  />
                   <span className="text-xs text-zinc-400 font-mono">x{ing.amount}</span>
-                </button>
+                </div>
               ))}
             </div>
           </div>
@@ -2759,11 +2860,14 @@ function ProcessingStationDetailView({ stationName, onBack }: { stationName: str
               </h2>
               <div className="space-y-1">
                 {station.conversions.map((conv) => (
-                  <div key={`${conv.inputId}-${conv.outputId}`} className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-zinc-800/30 transition-colors">
+                  <div key={`${conv.inputId}-${conv.outputId}`} className="flex items-center gap-2 px-3 py-2.5 rounded-lg hover:bg-zinc-800/30 transition-colors group">
                     {/* Input */}
-                    <button
+                    <div
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleNavigate(conv.inputId)}
-                      className="flex items-center gap-2 flex-1 min-w-0 text-left"
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(conv.inputId)}
+                      className="flex items-center gap-2 flex-1 min-w-0 text-left cursor-pointer"
                     >
                       <div className="w-7 h-7 rounded bg-zinc-800/60 flex items-center justify-center shrink-0 overflow-hidden">
                         <ItemIcon id={conv.inputId} size={28} />
@@ -2774,15 +2878,24 @@ function ProcessingStationDetailView({ stationName, onBack }: { stationName: str
                           <span className="text-[10px] text-zinc-500 font-mono">x{conv.inputAmount}</span>
                         )}
                       </div>
-                    </button>
+                    </div>
+                    <CopyTextButton
+                      text={conv.inputName}
+                      size={12}
+                      title={`Copy "${conv.inputName}"`}
+                      className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                    />
 
                     {/* Arrow + Output (only for real conversions) */}
                     {conv.inputId !== conv.outputId && (
                       <>
                         <ArrowRight className="w-4 h-4 text-zinc-600 shrink-0" />
-                        <button
+                        <div
+                          role="button"
+                          tabIndex={0}
                           onClick={() => handleNavigate(conv.outputId)}
-                          className="flex items-center gap-2 flex-1 min-w-0 text-left"
+                          onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(conv.outputId)}
+                          className="flex items-center gap-2 flex-1 min-w-0 text-left cursor-pointer"
                         >
                           <div className="w-7 h-7 rounded bg-zinc-800/60 flex items-center justify-center shrink-0 overflow-hidden">
                             <ItemIcon id={conv.outputId} size={28} />
@@ -2793,7 +2906,13 @@ function ProcessingStationDetailView({ stationName, onBack }: { stationName: str
                               <span className="text-[10px] text-zinc-500 font-mono">x{conv.outputAmount}</span>
                             )}
                           </div>
-                        </button>
+                        </div>
+                        <CopyTextButton
+                          text={conv.outputName}
+                          size={12}
+                          title={`Copy "${conv.outputName}"`}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                        />
                       </>
                     )}
                   </div>
@@ -2863,18 +2982,22 @@ function VendorDetailView({ vendorName, onBack }: { vendorName: string; onBack: 
               <div className="space-y-1">
                 {vendor.sells.map((entry) => {
                   const item = getItemById(entry.id);
+                  const name = item?.name || entry.id;
                   return (
-                    <button
+                    <div
                       key={entry.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleNavigate(entry.id)}
-                      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left"
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(entry.id)}
+                      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                     >
                       <div className="w-6 h-6 shrink-0 flex items-center justify-center">
                         <ItemIcon id={entry.id} type={item?.type} size={24} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <span className="text-xs text-brand-400 hover:underline truncate block">
-                          {item?.name || entry.id}
+                          {name}
                         </span>
                         {entry.requirement && (
                           <span className="flex items-center gap-1 mt-0.5">
@@ -2883,10 +3006,16 @@ function VendorDetailView({ vendorName, onBack }: { vendorName: string; onBack: 
                           </span>
                         )}
                       </div>
+                      <CopyTextButton
+                        text={name}
+                        size={12}
+                        title={`Copy "${name}"`}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                      />
                       <span className="text-[10px] text-amber-400 font-medium shrink-0">
                         {entry.price > 0 ? `${entry.price} coins` : entry.currency}
                       </span>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
@@ -2903,22 +3032,32 @@ function VendorDetailView({ vendorName, onBack }: { vendorName: string; onBack: 
               <div className="space-y-1">
                 {vendor.buys.map((entry) => {
                   const item = getItemById(entry.id);
+                  const name = item?.name || entry.id;
                   return (
-                    <button
+                    <div
                       key={entry.id}
+                      role="button"
+                      tabIndex={0}
                       onClick={() => handleNavigate(entry.id)}
-                      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left"
+                      onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && handleNavigate(entry.id)}
+                      className="flex items-center gap-2.5 w-full px-3 py-2 rounded-lg hover:bg-zinc-800/50 transition-colors text-left cursor-pointer group"
                     >
                       <div className="w-6 h-6 shrink-0 flex items-center justify-center">
                         <ItemIcon id={entry.id} type={item?.type} size={24} />
                       </div>
                       <span className="text-xs text-brand-400 hover:underline flex-1">
-                        {item?.name || entry.id}
+                        {name}
                       </span>
+                      <CopyTextButton
+                        text={name}
+                        size={12}
+                        title={`Copy "${name}"`}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                      />
                       <span className="text-[10px] text-amber-400 font-medium">
                         {entry.sellPrice} coins
                       </span>
-                    </button>
+                    </div>
                   );
                 })}
               </div>
