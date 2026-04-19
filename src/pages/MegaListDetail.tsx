@@ -150,7 +150,7 @@ export function MegaListDetail() {
                 if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                 if (e.key === "Escape") setEditing(false);
               }}
-              className="flex-1 bg-zinc-900/60 border border-brand-500/40 rounded-md px-3 py-2 text-xl font-bold text-zinc-100 focus:outline-none"
+              className="flex-1 bg-zinc-900/60 border border-brand-500/40 rounded-md px-3 py-2 font-norse font-bold text-3xl text-zinc-100 tracking-wide focus:outline-none"
             />
           ) : (
             <button
@@ -158,10 +158,10 @@ export function MegaListDetail() {
                 setEditing(true);
                 setEditValue(list.name);
               }}
-              className="flex-1 text-left text-xl font-bold text-zinc-100 hover:text-brand-400 transition-colors flex items-center gap-2"
+              className="flex-1 text-left font-norse font-bold text-3xl text-zinc-100 tracking-wide hover:text-brand-400 transition-colors flex items-center gap-2"
             >
               {list.name}
-              <Edit3 className="w-3.5 h-3.5 text-zinc-600" />
+              <Edit3 className="w-4 h-4 text-zinc-600" />
             </button>
           )}
           <button

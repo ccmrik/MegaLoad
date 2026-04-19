@@ -1331,11 +1331,20 @@ export function ValheimData() {
       <ExportToListModal
         open={megaListModalOpen}
         onClose={() => setMegaListModalOpen(false)}
-        itemIds={items.map((i) => i.id)}
+        itemIds={
+          stationMaterialsMode && activeStations.length > 0
+            ? stationMaterials.map((m) => m.id)
+            : items.map((i) => i.id)
+        }
         filterSnapshot={{
           query: query || undefined,
           types: activeTypes.length ? activeTypes : undefined,
-          subcategories: activeSubcategories.length ? activeSubcategories : undefined,
+          subcategories:
+            stationMaterialsMode && activeStations.length > 0
+              ? [stationMaterialsMode === "craft" ? "Craft Materials" : "Build Materials"]
+              : activeSubcategories.length
+                ? activeSubcategories
+                : undefined,
           biomes: activeBiomes.length ? activeBiomes : undefined,
           stations: activeStations.length ? activeStations : undefined,
           factories: activeFactories.length ? activeFactories : undefined,

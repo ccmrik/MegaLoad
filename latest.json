@@ -1,11 +1,11 @@
 {
-  "version": "1.8.0",
-  "notes": "MegaList — new top-level section for building named checklists of Valheim items. Filter in Valheim Data then use Export → Add to list… to stamp the current results into a new or existing list. Each list has sort (A–Z / Z–A / biome), biome filter chips, per-item checkboxes that persist, check-all on visible rows, copy-unchecked-to-clipboard, add/remove items, rename/duplicate/delete lists. Everything syncs across devices via cloud sync so you can seed a list on desktop and tick items off on your phone while labelling chests.",
-  "pub_date": "2026-04-19T01:00:00Z",
+  "version": "1.8.1",
+  "notes": "MegaList patch: Export → Add to list now respects Craft/Build Materials mode, so filtering to a set of stations with Craft Mats active seeds the list with the aggregated station materials instead of the unfiltered item list. Page title and list names also now use the Norse font to match the rest of MegaLoad's typography.",
+  "pub_date": "2026-04-19T01:15:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUl6eUdFSjl4Qm4zVnNOU3BnVmNPTjN5UFpQYlJkclJuNDFPWWQxSHA3WUVJeTkwaWQyV2JLVVZ6VWloSzg4ZCtSMkhOQ2owcXRMU3RBeGo4bkhPdndJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTU5NjQyCWZpbGU6TWVnYUxvYWRfMS44LjBfeDY0LXNldHVwLm5zaXMuemlwCjNLVVJ4WXgrSmcyL2MwRlhBWFpUVWFEVFFBcEhDRU1sQWFVbStoZ0pCK3QyZTQrMTVQODRrNG1Bd3czL0h0TlBaeVExTWdaNVV2M1psY0hQQ0VBekNnPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.8.0/MegaLoad_1.8.0_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUpxbzBwSUF4REk4UzVCYmxTb09pNS9kdklYemgyaTgwV3dtSzRSNkJUdjlJaUpaRTIySmMvcDZtLzBTOVdZZnpabTRqcGZjWDdTaVF3d0xmWUpWVndzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTYwMzQ1CWZpbGU6TWVnYUxvYWRfMS44LjFfeDY0LXNldHVwLm5zaXMuemlwCmNQUHJtdHA5Y2JpcnRjbjVacTdkVEJOK0xlRVlqWkI5bkZ6ZVRjQWZoVGw4ZElOdU1uQ0REY01rcFR2UFJmbHBwb3NNdHl0SUlmVmZlaUF1N25OVUFRPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.8.1/MegaLoad_1.8.1_x64-setup.nsis.zip"
     }
   }
 }

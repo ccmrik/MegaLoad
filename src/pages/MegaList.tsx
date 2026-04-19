@@ -66,8 +66,8 @@ export function MegaList() {
     <div className="max-w-5xl mx-auto">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-zinc-100 flex items-center gap-2">
-            <ListChecks className="w-6 h-6 text-brand-400" />
+          <h1 className="font-norse font-bold text-4xl text-zinc-100 tracking-wide flex items-center gap-3">
+            <ListChecks className="w-7 h-7 text-brand-400" />
             MegaList
           </h1>
           <p className="text-xs text-zinc-500 mt-1">
@@ -133,10 +133,10 @@ export function MegaList() {
                           if (e.key === "Enter") (e.target as HTMLInputElement).blur();
                           if (e.key === "Escape") setEditing(null);
                         }}
-                        className="w-full bg-zinc-900/60 border border-brand-500/40 rounded-md px-2 py-1 text-sm text-zinc-100 focus:outline-none"
+                        className="w-full bg-zinc-900/60 border border-brand-500/40 rounded-md px-2 py-1 font-norse font-bold text-xl text-zinc-100 tracking-wide focus:outline-none"
                       />
                     ) : (
-                      <h3 className="text-sm font-semibold text-zinc-100 truncate">{list.name}</h3>
+                      <h3 className="font-norse font-bold text-xl text-zinc-100 tracking-wide truncate">{list.name}</h3>
                     )}
                     <div className="mt-2 flex items-center gap-2 text-[11px] text-zinc-500">
                       <span className="text-zinc-300 font-semibold">{checked}</span>
