@@ -1391,12 +1391,19 @@ const IRON_COOKING_STATION_ITEMS = new Set([
   "CookedLoxMeat", "SerpentMeatCooked", "CookedBugMeat", "CookedHareMeat",
   "CookedBoneMawSerpentMeat", "CookedAsksvinMeat", "CookedVoltureMeat",
 ]);
+// Stone Oven bakes dough/uncooked items into bread, pies and high-tier dishes.
+const STONE_OVEN_ITEMS = new Set([
+  "Bread", "LoxPie", "FishAndBread", "MeatPlatter", "HoneyGlazedChicken",
+  "MisthareSupreme", "MagicallyStuffedShroom", "PiquantPie",
+  "RoastedCrustPie", "VikingCupcake",
+]);
 const FIRE_COOKED_ITEMS = new Set([...COOKING_STATION_ITEMS, ...IRON_COOKING_STATION_ITEMS]);
 
-// Raw → cooked mappings (1:1). The game stores these as Smelter conversions,
-// not standard Recipes, so the dump extractor misses them — we inject a
-// synthetic single-ingredient recipe downstream so Craft Materials mode on
-// the Cooking Stations surfaces all the raw meats the player needs.
+// Raw/uncooked → cooked mappings (1:1). The game stores these as Smelter
+// conversions, not standard Recipes, so the dump extractor misses them —
+// we inject a synthetic single-ingredient recipe downstream so Craft
+// Materials mode on the Cooking Stations + Stone Oven surfaces the inputs
+// the player actually needs to gather.
 const COOKING_CONVERSIONS = {
   // Cooking Station
   CookedMeat:                 "RawMeat",
@@ -1414,6 +1421,17 @@ const COOKING_CONVERSIONS = {
   CookedBoneMawSerpentMeat:   "BoneMawSerpentMeat",
   CookedAsksvinMeat:          "AsksvinMeat",
   CookedVoltureMeat:          "VoltureMeat",
+  // Stone Oven
+  Bread:                      "BreadDough",
+  LoxPie:                     "LoxPieUncooked",
+  FishAndBread:               "FishAndBreadUncooked",
+  MeatPlatter:                "MeatPlatterUncooked",
+  HoneyGlazedChicken:         "HoneyGlazedChickenUncooked",
+  MisthareSupreme:            "MisthareSupremeUncooked",
+  MagicallyStuffedShroom:     "MagicallyStuffedShroomUncooked",
+  PiquantPie:                 "PiquantPieUncooked",
+  RoastedCrustPie:            "RoastedCrustPieUncooked",
+  VikingCupcake:              "VikingCupcakeUncooked",
 };
 
 // ── Determine source (how to obtain) ──
@@ -1681,6 +1699,7 @@ for (const item of items) {
     source: getSource(item.prefab, recipe, itemDrops),
     station: COOKING_STATION_ITEMS.has(item.prefab) ? "Cooking Station"
            : IRON_COOKING_STATION_ITEMS.has(item.prefab) ? "Iron Cooking Station"
+           : STONE_OVEN_ITEMS.has(item.prefab) ? "Stone Oven"
            : (recipe ? mapStation(recipe.craftingStation) : ""),
     stationLevel: recipe ? recipe.minStationLevel : 0,
     maxQuality: isClothing ? 1 : item.maxQuality,

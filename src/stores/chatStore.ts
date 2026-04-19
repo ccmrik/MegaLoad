@@ -217,7 +217,7 @@ function buildVendorContext(): string {
 function buildProcessingContext(): string {
   const lines: string[] = ["=== PROCESSING STATIONS ==="];
   for (const ps of Object.values(PROCESSING_STATIONS)) {
-    const fuel = ps.fuel ? ` (Fuel: ${ps.fuel})` : "";
+    const fuel = ps.fuels && ps.fuels.length > 0 ? ` (Fuel: ${ps.fuels.map((f) => f.name).join(" or ")})` : "";
     lines.push(`${ps.name}${fuel} [${ps.biome}]: ${ps.description}`);
     if (ps.conversions.length > 0) {
       lines.push(`  Conversions: ${ps.conversions.map((c) => `${c.inputName} → ${c.outputName}`).join(", ")}`);

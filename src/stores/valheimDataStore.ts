@@ -211,6 +211,7 @@ export const STATION_LIST = [
   "Workbench",
   "Cooking Station",
   "Iron Cooking Station",
+  "Stone Oven",
   "Forge",
   "Cauldron",
   "Mead Ketill",
@@ -234,6 +235,7 @@ export const STATION_ICONS: Record<string, string> = {
   "Food Preparation Table": "piece_preptable",
   "Cooking Station": "piece_cookingstation",
   "Iron Cooking Station": "piece_cookingstation_iron",
+  "Stone Oven": "piece_oven",
 };
 
 // ── Processing Stations (Factories) ──────────────────────────
@@ -254,49 +256,11 @@ export interface ProcessingStation {
   prefab: string;        // build piece prefab ID (for icon + build recipe lookup)
   description: string;
   biome: string;
-  fuel?: string;         // fuel item name (e.g. "Coal")
-  fuelId?: string;       // fuel prefab ID
+  fuels?: Array<{ name: string; id: string }>;
   conversions: ProcessingConversion[];
 }
 
 export const PROCESSING_STATIONS: Record<string, ProcessingStation> = {
-  "Cooking Station": {
-    name: "Cooking Station",
-    prefab: "piece_cookingstation",
-    description: "Simple wooden rack placed over a fire (campfire, hearth, or hanging brazier) to grill basic raw meats and fish. Holds two items at a time; overcooking produces Coal.",
-    biome: "Meadows",
-    conversions: [
-      { inputId: "RawMeat", inputName: "Boar Meat", outputId: "CookedMeat", outputName: "Cooked Boar Meat" },
-      { inputId: "NeckTail", inputName: "Neck Tail", outputId: "NeckTailGrilled", outputName: "Grilled Neck Tail" },
-      { inputId: "DeerMeat", inputName: "Deer Meat", outputId: "CookedDeerMeat", outputName: "Cooked Deer Meat" },
-      { inputId: "FishRaw", inputName: "Raw Fish", outputId: "FishCooked", outputName: "Cooked Fish" },
-      { inputId: "WolfMeat", inputName: "Wolf Meat", outputId: "CookedWolfMeat", outputName: "Cooked Wolf Meat" },
-      { inputId: "ChickenMeat", inputName: "Chicken Meat", outputId: "CookedChickenMeat", outputName: "Cooked Chicken" },
-      { inputId: "BjornMeat", inputName: "Bear Meat", outputId: "CookedBjornMeat", outputName: "Cooked Bear Meat" },
-    ],
-  },
-  "Iron Cooking Station": {
-    name: "Iron Cooking Station",
-    prefab: "piece_cookingstation_iron",
-    description: "Iron-framed grill built at a Forge. Requires a Hearth or two Campfires below. Cooks five items at once and handles the tougher meats the basic rack can't (Lox, Serpent, Seeker, Hare, Bonemaw, Asksvin, Volture) in addition to everything the Cooking Station cooks.",
-    biome: "Swamp",
-    conversions: [
-      { inputId: "RawMeat", inputName: "Boar Meat", outputId: "CookedMeat", outputName: "Cooked Boar Meat" },
-      { inputId: "NeckTail", inputName: "Neck Tail", outputId: "NeckTailGrilled", outputName: "Grilled Neck Tail" },
-      { inputId: "DeerMeat", inputName: "Deer Meat", outputId: "CookedDeerMeat", outputName: "Cooked Deer Meat" },
-      { inputId: "FishRaw", inputName: "Raw Fish", outputId: "FishCooked", outputName: "Cooked Fish" },
-      { inputId: "WolfMeat", inputName: "Wolf Meat", outputId: "CookedWolfMeat", outputName: "Cooked Wolf Meat" },
-      { inputId: "ChickenMeat", inputName: "Chicken Meat", outputId: "CookedChickenMeat", outputName: "Cooked Chicken" },
-      { inputId: "BjornMeat", inputName: "Bear Meat", outputId: "CookedBjornMeat", outputName: "Cooked Bear Meat" },
-      { inputId: "LoxMeat", inputName: "Lox Meat", outputId: "CookedLoxMeat", outputName: "Cooked Lox Meat" },
-      { inputId: "SerpentMeat", inputName: "Serpent Meat", outputId: "SerpentMeatCooked", outputName: "Cooked Serpent Meat" },
-      { inputId: "BugMeat", inputName: "Seeker Meat", outputId: "CookedBugMeat", outputName: "Cooked Seeker Meat" },
-      { inputId: "HareMeat", inputName: "Misthare Meat", outputId: "CookedHareMeat", outputName: "Cooked Misthare" },
-      { inputId: "BoneMawSerpentMeat", inputName: "Bonemaw Meat", outputId: "CookedBoneMawSerpentMeat", outputName: "Cooked Bonemaw Meat" },
-      { inputId: "AsksvinMeat", inputName: "Asksvin Tail", outputId: "CookedAsksvinMeat", outputName: "Cooked Asksvin Tail" },
-      { inputId: "VoltureMeat", inputName: "Volture Meat", outputId: "CookedVoltureMeat", outputName: "Cooked Volture Meat" },
-    ],
-  },
   "Charcoal Kiln": {
     name: "Charcoal Kiln",
     prefab: "charcoal_kiln",
@@ -313,8 +277,7 @@ export const PROCESSING_STATIONS: Record<string, ProcessingStation> = {
     prefab: "smelter",
     description: "Smelts basic ores into metal bars using coal as fuel. Processes copper, tin, iron, and silver ores.",
     biome: "Black Forest",
-    fuel: "Coal",
-    fuelId: "Coal",
+    fuels: [{ name: "Coal", id: "Coal" }],
     conversions: [
       { inputId: "CopperOre", inputName: "Copper Ore", outputId: "Copper", outputName: "Copper" },
       { inputId: "TinOre", inputName: "Tin Ore", outputId: "Tin", outputName: "Tin" },
@@ -330,8 +293,7 @@ export const PROCESSING_STATIONS: Record<string, ProcessingStation> = {
     prefab: "blastfurnace",
     description: "An advanced furnace that smelts high-tier ores. Processes black metal scraps and flametal ore using coal.",
     biome: "Plains",
-    fuel: "Coal",
-    fuelId: "Coal",
+    fuels: [{ name: "Coal", id: "Coal" }],
     conversions: [
       { inputId: "BlackMetalScrap", inputName: "Black Metal Scrap", outputId: "BlackMetal", outputName: "Black Metal" },
       { inputId: "FlametalOreNew", inputName: "Flametal Ore", outputId: "FlametalNew", outputName: "Refined Flametal" },
@@ -365,31 +327,15 @@ export const PROCESSING_STATIONS: Record<string, ProcessingStation> = {
       { inputId: "Softtissue", inputName: "Soft Tissue", outputId: "Eitr", outputName: "Refined Eitr" },
     ],
   },
-  "Stone Oven": {
-    name: "Stone Oven",
-    prefab: "piece_oven",
-    description: "Bakes bread and pies from prepared dough. Produces high-tier food items that cannot be made on a regular cooking station.",
-    biome: "Plains",
-    conversions: [
-      { inputId: "BreadDough", inputName: "Bread Dough", outputId: "Bread", outputName: "Bread" },
-      { inputId: "LoxPie_uncooked", inputName: "Unbaked Lox Pie", outputId: "LoxPie", outputName: "Lox Meat Pie" },
-      { inputId: "FishAndBread_uncooked", inputName: "Unbaked Fish & Bread", outputId: "FishAndBread", outputName: "Fish & Bread" },
-      { inputId: "MeatPlatter_uncooked", inputName: "Unbaked Meat Platter", outputId: "MeatPlatter", outputName: "Meat Platter" },
-      { inputId: "HoneyGlazedChicken_uncooked", inputName: "Honey Glazed Chicken (raw)", outputId: "HoneyGlazedChicken", outputName: "Honey Glazed Chicken" },
-      { inputId: "MisthareSupreme_uncooked", inputName: "Unbaked Misthare Supreme", outputId: "MisthareSupreme", outputName: "Misthare Supreme" },
-      { inputId: "MagicallyStuffedShroom_uncooked", inputName: "Unbaked Stuffed Shroom", outputId: "MagicallyStuffedShroom", outputName: "Magically Stuffed Shroom" },
-      { inputId: "PiquantPie_uncooked", inputName: "Unbaked Piquant Pie", outputId: "PiquantPie", outputName: "Piquant Pie" },
-      { inputId: "RoastedCrustPie_uncooked", inputName: "Unbaked Roasted Crust Pie", outputId: "RoastedCrustPie", outputName: "Roasted Crust Pie" },
-      { inputId: "VikingCupcake_uncooked", inputName: "Unbaked Viking Cupcake", outputId: "VikingCupcake", outputName: "Viking Cupcake" },
-    ],
-  },
   "Shield Generator": {
     name: "Shield Generator",
     prefab: "piece_shieldgenerator",
-    description: "Creates a protective shield against weather and projectiles. Fuelled by bones — consumes Bone Fragments to maintain its barrier.",
+    description: "Creates a protective shield against weather and projectiles. Fuelled by bones — consumes Bone Fragments or Charred Bones to maintain its barrier.",
     biome: "Mistlands",
-    fuel: "Bone Fragments",
-    fuelId: "BoneFragments",
+    fuels: [
+      { name: "Bone Fragments", id: "BoneFragments" },
+      { name: "Charred Bones", id: "CharredBone" },
+    ],
     conversions: [],
   },
   "Ballista": {
@@ -406,20 +352,17 @@ export const PROCESSING_STATIONS: Record<string, ProcessingStation> = {
 };
 
 export const PROCESSING_STATION_LIST = [
-  "Cooking Station", "Iron Cooking Station", "Charcoal Kiln", "Smelter", "Blast Furnace",
-  "Spinning Wheel", "Windmill", "Eitr Refinery", "Stone Oven", "Shield Generator", "Ballista",
+  "Charcoal Kiln", "Smelter", "Blast Furnace",
+  "Spinning Wheel", "Windmill", "Eitr Refinery", "Shield Generator", "Ballista",
 ] as const;
 
 export const PROCESSING_STATION_ICONS: Record<string, string> = {
-  "Cooking Station": "piece_cookingstation",
-  "Iron Cooking Station": "piece_cookingstation_iron",
   "Charcoal Kiln": "charcoal_kiln",
   "Smelter": "smelter",
   "Blast Furnace": "blastfurnace",
   "Spinning Wheel": "piece_spinningwheel",
   "Windmill": "windmill",
   "Eitr Refinery": "eitrrefinery",
-  "Stone Oven": "piece_oven",
   "Shield Generator": "piece_shieldgenerator",
   "Ballista": "piece_turret",
 };
@@ -450,7 +393,7 @@ export function getProcessingStationItemIds(stationName: string): Set<string> {
   const ps = PROCESSING_STATIONS[stationName];
   if (!ps) return new Set();
   const ids = new Set<string>();
-  if (ps.fuelId) ids.add(ps.fuelId);
+  if (ps.fuels) for (const f of ps.fuels) ids.add(f.id);
   for (const c of ps.conversions) {
     ids.add(c.inputId);
     ids.add(c.outputId);
@@ -989,7 +932,7 @@ export function getFactoryCounts(
   const counts: Record<string, number> = {};
   for (const [name, ps] of Object.entries(PROCESSING_STATIONS)) {
     const seen = new Set<string>();
-    if (ps.fuelId && baseIds.has(ps.fuelId)) seen.add(ps.fuelId);
+    if (ps.fuels) for (const f of ps.fuels) if (baseIds.has(f.id)) seen.add(f.id);
     for (const c of ps.conversions) {
       if (baseIds.has(c.inputId)) seen.add(c.inputId);
       if (baseIds.has(c.outputId)) seen.add(c.outputId);

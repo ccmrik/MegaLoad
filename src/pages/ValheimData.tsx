@@ -2768,17 +2768,20 @@ function ProcessingStationDetailView({ stationName, onBack }: { stationName: str
                   <span className="text-xs text-zinc-300">{buildPiece.station}</span>
                 </div>
               )}
-              {station.fuel && (
-                <div className="flex items-center gap-2">
+              {station.fuels && station.fuels.length > 0 && (
+                <div className="flex items-center gap-2 flex-wrap">
                   <span className="text-[10px] text-zinc-500 uppercase tracking-wider">Fuel:</span>
-                  <button onClick={() => station.fuelId && handleNavigate(station.fuelId)} className="flex items-center gap-1.5 hover:text-brand-400 transition-colors">
-                    {station.fuelId && (
-                      <div className="w-5 h-5 shrink-0 flex items-center justify-center">
-                        <ItemIcon id={station.fuelId} size={20} />
-                      </div>
-                    )}
-                    <span className="text-xs text-brand-400 hover:underline">{station.fuel}</span>
-                  </button>
+                  {station.fuels.map((f, i) => (
+                    <div key={f.id} className="flex items-center">
+                      {i > 0 && <span className="text-[10px] text-zinc-600 mr-2">or</span>}
+                      <button onClick={() => handleNavigate(f.id)} className="flex items-center gap-1.5 hover:text-brand-400 transition-colors">
+                        <div className="w-5 h-5 shrink-0 flex items-center justify-center">
+                          <ItemIcon id={f.id} size={20} />
+                        </div>
+                        <span className="text-xs text-brand-400 hover:underline">{f.name}</span>
+                      </button>
+                    </div>
+                  ))}
                 </div>
               )}
             </div>

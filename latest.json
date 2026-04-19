@@ -1,11 +1,11 @@
 {
-  "version": "1.9.2",
-  "notes": "Data fix: Cooking Station and Iron Cooking Station now surface their raw meats under Craft Materials. Filter to Cooking Station + Iron Cooking Station, flick Craft Mats on, and you'll get Boar, Deer, Neck, Chicken, Wolf, Bear, Fish, Lox, Serpent, Seeker, Hare, Bonemaw, Asksvin and Volture meat listed as the aggregated ingredients. The game stores those mappings as Smelter conversions (not standard recipes), so a synthetic 1:1 ingredient is now injected for each fire-cooked output in both the live data file and the convert-dump script so future regenerations keep it.",
-  "pub_date": "2026-04-19T02:00:00Z",
+  "version": "1.9.3",
+  "notes": "Valheim Data factory cleanup. Cooking Station and Iron Cooking Station removed from the Factory list (they're real Stations now after the 1.9.2 fix). Stone Oven promoted to Stations too — filter to it, flip Craft Mats on, and you'll see Bread Dough plus the nine Uncooked pies and platters that feed the oven. Shield Generator fuel line now shows both Bone Fragments and Charred Bones (wiki confirmed).",
+  "pub_date": "2026-04-19T02:15:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUJzSGtMSnFTVjhzRGxMRXhKRzllck1qdDl3c0srczFxeXFRYUl5M1VIM21ET1h4b1BGSGdOdEx2RHYwTWwrc2dFVi9iekxyUCtVSDhmTkh0TmlCVGc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTYzMzI5CWZpbGU6TWVnYUxvYWRfMS45LjJfeDY0LXNldHVwLm5zaXMuemlwCnNNMHpyWFZacUJ5TkNIRlJJR1FEdk51ZE81WTRNNzhUNXpNZHowNklJQkx2RXZvWjh4bEM5S3lUYUVJVXJmTWcwNTQvNzViQm5EYXlsUTlNYjZoL0JBPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.9.2/MegaLoad_1.9.2_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUJTSVR2UDZJRGZnQXVoQnJJT09DdDFUT0ZEdVZpTjFFRit0a3RuUFUwRkYxcG1sLzd1YjFkTDRWektLaE5sZ1pmcnJnZVRpQ3RVdkppOTB3cWMwUXdnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTY0NDA1CWZpbGU6TWVnYUxvYWRfMS45LjNfeDY0LXNldHVwLm5zaXMuemlwCjdaczA2TGVxc2xtS1FYT0Q5QnAyYUpUK0IvVys0RmVsOUpVWGxTY0NxdFQ5N3NuaHl2bWY0OHlETGR5dFVKRkwyOTJ0d2hRZlNrZFhlZy9KUWZLdUJnPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.9.3/MegaLoad_1.9.3_x64-setup.nsis.zip"
     }
   }
 }
