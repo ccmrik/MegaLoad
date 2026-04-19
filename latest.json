@@ -1,11 +1,11 @@
 {
-  "version": "1.10.1",
-  "notes": "Data: Rotten Meat added. The item was missing from Valheim Data even though Vile's drop table already references it — the extractor dump skipped the ObjectDB entry, so it was stranded. Now listed as a Swamp + Plains Material (stack 50, wt 1) with its wiki link wired up. convert-dump.cjs carries the addition forward for future regenerations.",
-  "pub_date": "2026-04-19T03:00:00Z",
+  "version": "1.10.2",
+  "notes": "Data: Rotten Meat source corrected to Ashlands Putrid Holes. The entry now lists Mound of Flesh destructibles as its primary pickable source (with Vile still covering the Plains creature drop). Swamp dropped from the biomes after the wiki confirmed it — no vanilla Swamp creature drops Rotten Meat.",
+  "pub_date": "2026-04-19T03:15:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUw0SExKMTRjQWpoam5kaGZUZWxmTERhaXpvbUlaTU1MRkttVER6bjFHNDd1eVdhL0NwNE53Vk9IbzUyZWhpU0lZUGtQdkJKdDlzVVRoYXhWTDNKeHdJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTY2NjI0CWZpbGU6TWVnYUxvYWRfMS4xMC4xX3g2NC1zZXR1cC5uc2lzLnppcAp3NTJJOU5RYk4zWG8rNjVwUndYUUM4aUFDZ1VuTnptR0tTSXE4NFhqNXZ6OE5BdXYwSUgwVGxCZDJnL05TUUh2SDcrM0dxcHRkREgrWVdJNFlNeENCZz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.1/MegaLoad_1.10.1_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU52aHZPWkFUS1MwTjg1SHpvbExWdU1DSkJVSVVhSWVwbW5NdEhhODNqWk1XTENTTmRXdDRUZjB3azh5bUxiV0luNzRBOWJxYjg5Um1GMFEwMVNmMEFZPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTY3OTU0CWZpbGU6TWVnYUxvYWRfMS4xMC4yX3g2NC1zZXR1cC5uc2lzLnppcApmSkkwSGYweDE0eXBzMndJeWl1a3RrRE1pR2diK3BjcmREZEgyYlJreE5HZ0J3RDhMZXd4a3dyK1RBNUVYSGVXSVp4dzZPaDdTcUkwVFM4K0l6a1FEdz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.2/MegaLoad_1.10.2_x64-setup.nsis.zip"
     }
   }
 }

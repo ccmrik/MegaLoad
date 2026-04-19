@@ -2237,11 +2237,11 @@ const ITEM_ADDITIONS = [
   // contested towers. Drops a Queen Bee + Honey when broken; stings the player for
   // 10 poison in a 4m radius every 4 seconds while they're close.
   {id:"BeeNest",token:"",name:"Bee Nest",type:"WorldObject",subcategory:"Destructible",description:"A wild hive clinging to rafters and ruins. Break it for Queen Bee and Honey — mind the sting.",biomes:["Meadows","Black Forest"],source:["World"],station:"",stationLevel:0,maxQuality:1,stack:1,weight:0,value:0,recipe:[],upgradeCosts:[],drops:[{id:"QueenBee",name:"Queen Bee",chance:1,min:1,max:1},{id:"Honey",name:"Honey",chance:1,min:1,max:3}],worldSources:[],stats:[{label:"Health",value:"30"},{label:"Poison attack",value:"10"},{label:"Attack radius",value:"4m"},{label:"Attack rate",value:"every 4s"}],wikiUrl:"https://valheim.fandom.com/wiki/Bee_Nest",wikiGroup:""},
-  // Rotten Meat — dropped by Vile and other undead. The extractor dump
-  // misses the ObjectDB entry, but Vile already references RottenMeat in
-  // its drops (see creature processing), so the row is stranded without
-  // this manual addition.
-  {id:"RottenMeat",token:"$item_rottenmeat",name:"Rotten Meat",type:"Material",subcategory:"Material",description:"Foul, festering flesh — some creatures still find it appetising.",biomes:["Swamp","Plains"],source:["Creature Drop"],station:"",stationLevel:0,maxQuality:1,stack:50,weight:1,value:0,recipe:[],upgradeCosts:[],drops:[],worldSources:[],stats:[],wikiUrl:"https://valheim.fandom.com/wiki/Rotten_meat",wikiGroup:""},
+  // Rotten Meat — pickable from mounds of flesh inside Ashlands Putrid
+  // Holes, and dropped by Vile. The extractor dump misses the ObjectDB
+  // entry, so we seed it here. Eating it gives the "Feeling sick" status
+  // the same as Bukeperries — best left as sacrificial fodder.
+  {id:"RottenMeat",token:"$item_rottenmeat",name:"Rotten Meat",type:"Material",subcategory:"Material",description:"Foul, festering flesh harvested from mounds of meat in Ashlands Putrid Holes. Eating it will make you feel sick.",biomes:["Plains","Ashlands"],source:["Creature Drop","Destructible"],station:"",stationLevel:0,maxQuality:1,stack:50,weight:1,value:0,recipe:[],upgradeCosts:[],drops:[],worldSources:[{source:"Mound of Flesh",type:"Destructible",biomes:["Ashlands"]}],stats:[],wikiUrl:"https://valheim.fandom.com/wiki/Rotten_meat",wikiGroup:""},
 ];
 
 // Remove blacklisted items
