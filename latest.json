@@ -1,11 +1,11 @@
 {
-  "version": "1.9.4",
-  "notes": "Iron Cooking Station is now a proper superset. Filter to Iron with Craft Mats on and you'll see all 14 raw meats — Boar, Neck, Deer, Raw Fish, Chicken, Wolf, Bear, Lox, Serpent, Seeker, Hare, Bonemaw, Asksvin, Volture — because anything grilled on the basic rack also cooks on the iron one. Item list at the Iron station detail view expands the same way.",
-  "pub_date": "2026-04-19T02:30:00Z",
+  "version": "1.10.0",
+  "notes": "MegaList index: tile/list view toggle + A-Z default sort + drag-and-drop reordering on tiles. The card grid is still there as Tile view; List view gives you one compact row per list with the same rename/duplicate/copy/delete actions. Drag any tile to move it — the new order persists and syncs across devices via cloud sync. A reset 'A-Z' button appears once you've reordered so you can snap back to alphabetical in one click.",
+  "pub_date": "2026-04-19T02:45:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFkR1FBUEZOVGtWc0Jna3dNUTFBRG0xWm5nQi96Q1hVYUtmRU1XRVVlaEs5eTlQYkRHOW9STyt0ZHdPVXJxb3lmdzlDTG1TRmZvMXNKejBaYStiUUFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTY1NDU5CWZpbGU6TWVnYUxvYWRfMS45LjRfeDY0LXNldHVwLm5zaXMuemlwCmMzSjkrWVhwc21ieDdRd3ZaaVZWdVVlcU5LNGRCZnVhSjVuRU1sQ1JzcWI1MWpielNHSGc5bkh3ZS9kWnpLclY2Y0pTREltSU1oOEJnT3VXdkhPSkN3PT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.9.4/MegaLoad_1.9.4_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUlLcU1vWWFnSXZJc2tHajlCUVJqZHhSUVBDQ2t0aitBN2hrWFdNRERjUWRHNjN0SmdoSEpsWkVoNzZrZnFPb0pyNHZuMk5wdk1TVktvVWg1ZVRqRUFjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTY1OTc4CWZpbGU6TWVnYUxvYWRfMS4xMC4wX3g2NC1zZXR1cC5uc2lzLnppcAoyV3VpamhPcXZEQjlNYVA0Y0diTmpOcjI2WGc0SEdXc01RVmhZZmFPSzJpeFEzZlJzWWdwNDJidUQ0T0dLZS9NZTF2MlkvZTE5N3piaUx0M3p3OTlDZz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.0/MegaLoad_1.10.0_x64-setup.nsis.zip"
     }
   }
 }

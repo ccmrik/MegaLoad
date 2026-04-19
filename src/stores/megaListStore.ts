@@ -85,6 +85,11 @@ interface MegaListState {
   removeItem: (listId: string, itemId: string) => void;
   toggleItem: (listId: string, itemId: string) => void;
   setChecked: (listId: string, itemIds: string[], checked: boolean) => void;
+
+  /** Persist a new ordering of lists. `orderedIds` is the full id sequence. */
+  reorderLists: (orderedIds: string[]) => void;
+  /** Clear manual ordering on every list — back to alphabetical. */
+  clearManualOrder: () => void;
 }
 
 function buildBlob(state: MegaListState, deviceId: string): MegaListBlob {
@@ -281,5 +286,28 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
           : l,
       ),
     );
+  },
+
+  reorderLists: (orderedIds) => {
+    const indexOf = new Map(orderedIds.map((id, idx) => [id, idx]));
+    commit(set, get, (lists) =>
+      lists.map((l) => {
+        const idx = indexOf.get(l.id);
+        return idx !== undefined ? { ...l, order: idx } : l;
+      }),
+    );
+    debugLog(`MegaList: reordered ${orderedIds.length} lists`);
+  },
+
+  clearManualOrder: () => {
+    commit(set, get, (lists) =>
+      lists.map((l) => {
+        if (l.order === undefined) return l;
+        const { order: _drop, ...rest } = l;
+        void _drop;
+        return rest;
+      }),
+    );
+    debugLog("MegaList: manual order cleared → alphabetical");
   },
 }));

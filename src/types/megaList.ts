@@ -26,6 +26,9 @@ export interface MegaList {
   updatedAt: string;
   filterSnapshot?: MegaListFilterSnapshot;
   items: MegaListItem[];
+  /** Manual ordering index — set when the user drags to reorder.
+   *  Undefined means "sort alphabetically" (the default). */
+  order?: number;
 }
 
 export interface MegaListBlob {
