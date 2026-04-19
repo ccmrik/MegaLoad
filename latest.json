@@ -1,11 +1,11 @@
 {
-  "version": "1.9.1",
-  "notes": "MegaList biome fit + Norse bold sidebar. Biome chips on the list detail now stay on one line (column widened to 400px with nowrap) — items with up to five biomes line up cleanly instead of wrapping under each other. Sidebar nav labels swapped to the Norse bold face for a punchier read.",
-  "pub_date": "2026-04-19T01:45:00Z",
+  "version": "1.9.2",
+  "notes": "Data fix: Cooking Station and Iron Cooking Station now surface their raw meats under Craft Materials. Filter to Cooking Station + Iron Cooking Station, flick Craft Mats on, and you'll get Boar, Deer, Neck, Chicken, Wolf, Bear, Fish, Lox, Serpent, Seeker, Hare, Bonemaw, Asksvin and Volture meat listed as the aggregated ingredients. The game stores those mappings as Smelter conversions (not standard recipes), so a synthetic 1:1 ingredient is now injected for each fire-cooked output in both the live data file and the convert-dump script so future regenerations keep it.",
+  "pub_date": "2026-04-19T02:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU5xVjNpQW0vNHBuRnRVQzRIUGMyQld3UHl6U2ptd0MvYXdmeTEzTnF2dm1xdlNMWS9hNFEvTkZvbFI0N3BxNS9qNGRURnFZOE9EcUgyK0JQNzluSVF3PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTYyMjc3CWZpbGU6TWVnYUxvYWRfMS45LjFfeDY0LXNldHVwLm5zaXMuemlwCkJSREJmUTBWZlYxVHdiMnRRUDR1ZWJqOU9QeGFLM3VXSGFHVFAzSDVKbDFoUm03d0hpZXFOY04vVi9JbHNMZXBycHpSQ1lTMlc1S3V6Y3R1UDJMaEJRPT0K",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.9.1/MegaLoad_1.9.1_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUJzSGtMSnFTVjhzRGxMRXhKRzllck1qdDl3c0srczFxeXFRYUl5M1VIM21ET1h4b1BGSGdOdEx2RHYwTWwrc2dFVi9iekxyUCtVSDhmTkh0TmlCVGc4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTYzMzI5CWZpbGU6TWVnYUxvYWRfMS45LjJfeDY0LXNldHVwLm5zaXMuemlwCnNNMHpyWFZacUJ5TkNIRlJJR1FEdk51ZE81WTRNNzhUNXpNZHowNklJQkx2RXZvWjh4bEM5S3lUYUVJVXJmTWcwNTQvNzViQm5EYXlsUTlNYjZoL0JBPT0K",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.9.2/MegaLoad_1.9.2_x64-setup.nsis.zip"
     }
   }
 }

@@ -1393,6 +1393,29 @@ const IRON_COOKING_STATION_ITEMS = new Set([
 ]);
 const FIRE_COOKED_ITEMS = new Set([...COOKING_STATION_ITEMS, ...IRON_COOKING_STATION_ITEMS]);
 
+// Raw → cooked mappings (1:1). The game stores these as Smelter conversions,
+// not standard Recipes, so the dump extractor misses them — we inject a
+// synthetic single-ingredient recipe downstream so Craft Materials mode on
+// the Cooking Stations surfaces all the raw meats the player needs.
+const COOKING_CONVERSIONS = {
+  // Cooking Station
+  CookedMeat:                 "RawMeat",
+  NeckTailGrilled:            "NeckTail",
+  CookedDeerMeat:             "DeerMeat",
+  FishCooked:                 "FishRaw",
+  CookedChickenMeat:          "ChickenMeat",
+  CookedWolfMeat:             "WolfMeat",
+  CookedBjornMeat:            "BjornMeat",
+  // Iron Cooking Station
+  CookedLoxMeat:              "LoxMeat",
+  SerpentMeatCooked:          "SerpentMeat",
+  CookedBugMeat:              "BugMeat",
+  CookedHareMeat:             "HareMeat",
+  CookedBoneMawSerpentMeat:   "BoneMawSerpentMeat",
+  CookedAsksvinMeat:          "AsksvinMeat",
+  CookedVoltureMeat:          "VoltureMeat",
+};
+
 // ── Determine source (how to obtain) ──
 function getSource(prefab, recipe, itemDrops) {
   const sources = [];
@@ -1588,6 +1611,18 @@ for (const item of items) {
       name: loc(findItemName(r.item)),
       amount: r.amount,
     })) : [];
+
+  // Cooking Station outputs use Smelter conversions, not standard Recipes —
+  // inject a synthetic 1:1 ingredient so Craft Materials mode surfaces the
+  // raw meats.
+  if (recipeIngredients.length === 0 && COOKING_CONVERSIONS[item.prefab]) {
+    const rawId = COOKING_CONVERSIONS[item.prefab];
+    recipeIngredients.push({
+      id: rawId,
+      name: loc(findItemName(rawId)),
+      amount: 1,
+    });
+  }
 
   // Build upgrade costs (level 2+)
   const upgradeCosts = [];
