@@ -961,7 +961,7 @@ function TicketRow({
           {visibleTags.map((tag) => (
             <span
               key={tag}
-              className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-brand-500/10 text-brand-400 border border-brand-500/20 shrink-0"
+              className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20 shrink-0"
             >
               {MOD_TAG_LABELS[tag]}
             </span>

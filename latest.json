@@ -1,11 +1,11 @@
 {
-  "version": "1.10.3",
-  "notes": "Cart → MegaList. New 'Add to list…' button in the Cart header opens the same modal Valheim Data uses — pick a name for a new list or append to an existing one, and the cart's items land in MegaList for ticking off while you gather.",
-  "pub_date": "2026-04-19T03:30:00Z",
+  "version": "1.10.5",
+  "notes": "MegaList — Copy button on an item now pads the name to fit a 50-character Valheim sign. One word lands right-aligned, two words hug the edges, and three+ words split into two balanced halves with a big gap between.",
+  "pub_date": "2026-04-21T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUpuZHFENkR0Szd1OGtSWmVENVRobDRSWHZBc1FqLzFhUW9tbjIzMXV0MlNQUllmV1g4V0RMdDZSSnVpTzRlRThRdS8wZFZtY0UxSURveVlqZUMramdBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NTcwMjI4CWZpbGU6TWVnYUxvYWRfMS4xMC4zX3g2NC1zZXR1cC5uc2lzLnppcApYUEZDT29vZHIvbG43N2J6MXUyU3lhd1orYXFwUVlIT3A1N3dlQXJKb2haSDRRTEtrN2JLZGxHN3lua2FVdXJZcTNzcGNCY1NKRnZOdURIRk5ya2hEZz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.3/MegaLoad_1.10.3_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUJrb3BUMUcxdHhDOXFIcjU2dFpub09iVXpsYlZyQUdVWHJKRXdTejJCVkFYV1VLRDNQaC9QR3NxN3hTT3dsb2ljTVpNQ21iWG5NZnk5OWczOXRWQndzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NzY0MTg4CWZpbGU6TWVnYUxvYWRfMS4xMC41X3g2NC1zZXR1cC5uc2lzLnppcApaZUttMW1MeUlCV3R0c3BhNEZSKyt6Y0VNRUNldktTVXYxSmpiQWFMVHZkbjhOK09UR0E2Ly9XeWNUeEsrdWpUVVZvRTNxQityUWp0SUE2TVkrU0RBZz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.5/MegaLoad_1.10.5_x64-setup.nsis.zip"
     }
   }
 }

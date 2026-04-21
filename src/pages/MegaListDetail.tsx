@@ -17,6 +17,7 @@ import { useMegaListStore } from "../stores/megaListStore";
 import { getItemById, useValheimDataStore } from "../stores/valheimDataStore";
 import { ItemIcon } from "../components/ui/ItemIcon";
 import { copyText } from "../lib/clipboard";
+import { formatForValheimSign } from "../lib/valheimSign";
 import { AddItemModal } from "../components/megalist/AddItemModal";
 import { DeleteListConfirm } from "../components/megalist/DeleteListConfirm";
 import { BIOME_COLORS, BIOME_BG_COLORS } from "./ValheimData";
@@ -366,8 +367,8 @@ export function MegaListDetail() {
                     ))}
                   </div>
                   <button
-                    onClick={() => copyText(name)}
-                    title="Copy name"
+                    onClick={() => copyText(formatForValheimSign(name))}
+                    title="Copy name (padded for a 50-char Valheim sign)"
                     className="p-1.5 rounded text-zinc-500 hover:text-zinc-200 hover:bg-zinc-800/60 transition-colors shrink-0"
                   >
                     <Copy className="w-3.5 h-3.5" />
