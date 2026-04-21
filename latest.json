@@ -1,11 +1,11 @@
 {
-  "version": "1.10.7",
-  "notes": "Player data sync — fixed the bug where MegaLoad pushed local data on every open instead of pulling. Steam Cloud bumps the local .fch mtime on every download, making local look 'newer' even when bytes matched. Reconcile now compares bytes first and only moves data when they actually differ.",
-  "pub_date": "2026-04-21T00:00:00Z",
+  "version": "1.10.8",
+  "notes": "MegaList — once every item is ticked, the list title turns green in both card and table views so completed lists pop at a glance.",
+  "pub_date": "2026-04-21T12:14:27Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU01N1dUQU4zS1NPRS9aMGdHWEszRkNYa3JEWnd2d1ZzWjRpSGdnb25ieStrdFJGQ3VrRzNOeC8xdjBvbXlBSFVmT0tYY3VFVnYyOTQxbW5PYkdqMGdBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NzcxNjQ2CWZpbGU6TWVnYUxvYWRfMS4xMC43X3g2NC1zZXR1cC5uc2lzLnppcApTSmVIbEhJMlNQMU5wQkV6U01MQlFKTW14SFNLcFhxYjNmVkMxeVMrS3VoT09pTlAxYS92b0JORzF2MVVKWUd2KzRtTnk2bWl6ZUhrWm9iSG9zaG1BZz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.7/MegaLoad_1.10.7_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUtta2Q4RDF5WVREVE9PWHpqaTRsSzdycllTSWFyVHNYcWFCYlZoS1hSR0tHajlYbnFlZUloalU3eTJ1QnpjZ3RmVUpzNUdCYlozalV5Y3NRYUFIZEFFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NzczODg1CWZpbGU6TWVnYUxvYWRfMS4xMC44X3g2NC1zZXR1cC5uc2lzLnppcAo0a1I4R2MvdWN0TE9QQm1qb0NwWittOGNIVFpTMnBndVVGaFJ0cVJmRTRLNXhVemRGbStjWjRUQmJydWkra2t2NDlUWWE0Smk4MnhGQmdwZlRVR01CUT09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.8/MegaLoad_1.10.8_x64-setup.nsis.zip"
     }
   }
 }

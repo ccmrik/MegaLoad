@@ -208,6 +208,7 @@ export function MegaList() {
               {filtered.map((list) => {
                 const total = list.items.length;
                 const checked = list.items.filter((it) => it.checked).length;
+                const isComplete = total > 0 && checked === total;
                 const snapshot = list.filterSnapshot;
                 const isEditing = editing === list.id;
                 const isDragTarget = dragOverId === list.id && dragId !== list.id;
@@ -273,7 +274,10 @@ export function MegaList() {
                             className="w-full bg-zinc-900/60 border border-brand-500/40 rounded-md px-2 py-1 font-norse font-bold text-xl text-zinc-100 tracking-wide focus:outline-none"
                           />
                         ) : (
-                          <h3 className="font-norse font-bold text-xl text-zinc-100 tracking-wide truncate">{list.name}</h3>
+                          <h3 className={cn(
+                            "font-norse font-bold text-xl tracking-wide truncate",
+                            isComplete ? "text-emerald-400" : "text-zinc-100",
+                          )}>{list.name}</h3>
                         )}
                         <div className="mt-2 flex items-center gap-2 text-[11px] text-zinc-500">
                           <span className="text-zinc-300 font-semibold">{checked}</span>
@@ -339,6 +343,7 @@ export function MegaList() {
                 {filtered.map((list) => {
                   const total = list.items.length;
                   const checked = list.items.filter((it) => it.checked).length;
+                  const isComplete = total > 0 && checked === total;
                   const isEditing = editing === list.id;
                   return (
                     <li
@@ -367,7 +372,12 @@ export function MegaList() {
                             className="flex-1 bg-zinc-900/60 border border-brand-500/40 rounded-md px-2 py-0.5 font-norse font-bold text-lg text-zinc-100 tracking-wide focus:outline-none"
                           />
                         ) : (
-                          <span className="font-norse font-bold text-lg text-zinc-100 tracking-wide truncate group-hover:text-brand-400 transition-colors">
+                          <span className={cn(
+                            "font-norse font-bold text-lg tracking-wide truncate transition-colors",
+                            isComplete
+                              ? "text-emerald-400 group-hover:text-emerald-300"
+                              : "text-zinc-100 group-hover:text-brand-400",
+                          )}>
                             {list.name}
                           </span>
                         )}
