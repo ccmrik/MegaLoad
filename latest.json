@@ -1,11 +1,11 @@
 {
-  "version": "1.10.6",
-  "notes": "MegaList — ticking an item's checkbox now also copies the sign-padded name to clipboard (same formatter as the Copy button), so you can label the chest in one motion.",
+  "version": "1.10.7",
+  "notes": "Player data sync — fixed the bug where MegaLoad pushed local data on every open instead of pulling. Steam Cloud bumps the local .fch mtime on every download, making local look 'newer' even when bytes matched. Reconcile now compares bytes first and only moves data when they actually differ.",
   "pub_date": "2026-04-21T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOURYWlFnOCtjNWVLYlU5K2czSHYxOURzQTdBZFpCU0E1ZjJMZkhMSVpnZk56c0kvdWdhb24yNzBIc1ZWeUtFdlNRMktXRzhBbllRQk8vTFpTSmg3RWdvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NzY0OTY1CWZpbGU6TWVnYUxvYWRfMS4xMC42X3g2NC1zZXR1cC5uc2lzLnppcApHNlVhWFQ5TEFEdnh0bFRscEp2YytBQVRmZ0pYOFUzRUhhR25HdStxa2FlMXJKOWRDeUMrVkJOZk11L29wVFdxcDlrZXhhZVFZTmZhUUdCWUVWMzFBdz09Cg==",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.6/MegaLoad_1.10.6_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU01N1dUQU4zS1NPRS9aMGdHWEszRkNYa3JEWnd2d1ZzWjRpSGdnb25ieStrdFJGQ3VrRzNOeC8xdjBvbXlBSFVmT0tYY3VFVnYyOTQxbW5PYkdqMGdBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2NzcxNjQ2CWZpbGU6TWVnYUxvYWRfMS4xMC43X3g2NC1zZXR1cC5uc2lzLnppcApTSmVIbEhJMlNQMU5wQkV6U01MQlFKTW14SFNLcFhxYjNmVkMxeVMrS3VoT09pTlAxYS92b0JORzF2MVVKWUd2KzRtTnk2bWl6ZUhrWm9iSG9zaG1BZz09Cg==",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.7/MegaLoad_1.10.7_x64-setup.nsis.zip"
     }
   }
 }

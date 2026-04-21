@@ -775,7 +775,7 @@ fn sync_push_player_data_impl() -> Result<u32, String> {
 
     for summary in &characters {
         let local_path = PathBuf::from(&summary.path);
-        let (payload, _bytes, local_mtime) = match build_payload(&summary.name, &local_path) {
+        let (payload, bytes, local_mtime) = match build_payload(&summary.name, &local_path) {
             Ok(t) => t,
             Err(e) => {
                 app_log(&format!("Sync push: skipping {} — {}", summary.name, e));
@@ -788,6 +788,29 @@ fn sync_push_player_data_impl() -> Result<u32, String> {
         let sha = match github_get_file(&remote_path) {
             Ok((content, sha)) => {
                 if let Some(remote) = parse_remote(&content) {
+                    // Content equality trumps mtime. Steam Cloud bumps the
+                    // local .fch mtime on every download, so local can look
+                    // "newer" than the cloud even when the bytes are identical.
+                    // Skip and restamp the local mtime to match remote so
+                    // future reconciles stop flagging a false local-newer.
+                    if let Ok(remote_bytes) = B64.decode(remote.bytes_b64.as_bytes()) {
+                        if remote_bytes == bytes {
+                            if local_mtime != remote.mtime_secs {
+                                let when = std::time::UNIX_EPOCH
+                                    + std::time::Duration::from_secs(remote.mtime_secs);
+                                let _ = filetime::set_file_mtime(
+                                    &local_path,
+                                    filetime::FileTime::from_system_time(when),
+                                );
+                                app_log(&format!(
+                                    "Sync push: {} bytes match — restamped local mtime {} → {}",
+                                    summary.name, local_mtime, remote.mtime_secs
+                                ));
+                            }
+                            skipped += 1;
+                            continue;
+                        }
+                    }
                     if remote.mtime_secs >= local_mtime {
                         app_log(&format!(
                             "Sync push: {} remote mtime {} >= local {} — skip",
@@ -901,6 +924,38 @@ fn sync_pull_player_data_impl() -> Result<(PlayerReconcileSummary, Vec<Character
             .map(|d| d.as_secs())
             .unwrap_or(0);
 
+        let bytes = match B64.decode(remote.bytes_b64.as_bytes()) {
+            Ok(b) => b,
+            Err(e) => {
+                app_log(&format!("Sync pull: base64 decode failed for {}: {}", remote.name, e));
+                summary.skipped += 1;
+                continue;
+            }
+        };
+
+        // Byte-equality beats mtime. Steam Cloud rewrites local mtime on
+        // download, so local can look newer even when bytes are identical.
+        // When they match, restamp local mtime to remote so the push pass
+        // doesn't then try to ship the same bytes back up.
+        let local_bytes_match = fs::read(&local_path).ok().map(|lb| lb == bytes).unwrap_or(false);
+        if local_bytes_match {
+            if local_mtime != remote.mtime_secs {
+                let when = std::time::UNIX_EPOCH
+                    + std::time::Duration::from_secs(remote.mtime_secs);
+                let _ = filetime::set_file_mtime(
+                    &local_path,
+                    filetime::FileTime::from_system_time(when),
+                );
+                app_log(&format!(
+                    "Sync pull: {} bytes match — restamped local mtime {} → {}",
+                    remote.name, local_mtime, remote.mtime_secs
+                ));
+            }
+            summary.skipped += 1;
+            if let Some(p) = remote.preview { previews.push(p); }
+            continue;
+        }
+
         if remote.mtime_secs <= local_mtime {
             app_log(&format!(
                 "Sync pull: {} local mtime {} >= remote {} — skip",
@@ -910,15 +965,6 @@ fn sync_pull_player_data_impl() -> Result<(PlayerReconcileSummary, Vec<Character
             if let Some(p) = remote.preview { previews.push(p); }
             continue;
         }
-
-        let bytes = match B64.decode(remote.bytes_b64.as_bytes()) {
-            Ok(b) => b,
-            Err(e) => {
-                app_log(&format!("Sync pull: base64 decode failed for {}: {}", remote.name, e));
-                summary.skipped += 1;
-                continue;
-            }
-        };
 
         match player_data::write_fch_with_mtime(&local_path, &bytes, remote.mtime_secs) {
             Ok(_) => {
