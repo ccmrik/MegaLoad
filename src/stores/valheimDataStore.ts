@@ -491,9 +491,13 @@ export function getStationMaterials(stationNames: string[], mode: "craft" | "bui
   const totals = new Map<string, CartMaterial>();
   for (const name of expanded) {
     for (const item of VALHEIM_ITEMS.filter((i) => i.station === name)) {
-      // Split: "craft" = non-BuildPiece items, "build" = BuildPiece items
-      if (mode === "craft" && item.type === "BuildPiece") continue;
-      if (mode === "build" && item.type !== "BuildPiece") continue;
+      // Split: "craft" = non-BuildPiece items, "build" = BuildPiece items.
+      // Siege engines (Catapult, Battering Ram) are BuildPiece by game model
+      // but are crafted assemblies, not construction — group their mats with
+      // Craft so they sit alongside the payloads they fire.
+      const isSiege = item.subcategory === "Siege";
+      if (mode === "craft" && item.type === "BuildPiece" && !isSiege) continue;
+      if (mode === "build" && (item.type !== "BuildPiece" || isSiege)) continue;
       for (const ing of item.recipe) {
         const prev = totals.get(ing.id);
         totals.set(ing.id, { id: ing.id, name: ing.name, amount: (prev?.amount || 0) + ing.amount });

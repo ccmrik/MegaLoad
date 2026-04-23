@@ -1,11 +1,11 @@
 {
-  "version": "1.10.11",
-  "notes": "Valheim Data — new Siege subcategory surfaces Workbench 'Others' items (Catapult, Battering Ram) in the station detail, with their payloads cross-linked as Related Items.",
+  "version": "1.10.12",
+  "notes": "Valheim Data — siege engine materials (Catapult, Battering Ram) now roll up under Workbench Craft Materials instead of Build Materials, matching the Siege Ammo payloads.",
   "pub_date": "2026-04-23T00:00:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdRT0g4azFmVmVRYW90UkhXYkNmVitJMlVrUGJ3U1ZPdzhwdmJzaDh0SFpHSHI1MjllbElYMk44dmZ6RlY5SE9uUVlMVXh5dG8zbHozMGVQMTRyOFFVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2OTM4MzgyCWZpbGU6TWVnYUxvYWRfMS4xMC4xMV94NjQtc2V0dXAubnNpcy56aXAKb2JWck5rSzN1dHpOaHpmT0VWcFYzWUhwanBTZmQrdmJsdXl2ODJrSXpPMWtoYkhtMy80cHJPUmxxNEpCT0RwUlQ4dHRacDc2anM1YjBNbnFtS05VRFE9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.11/MegaLoad_1.10.11_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOVBCWStOWVZ0MU0yOWdVS2U4Y1VMQTRQYk0xemNTZGtkUHZUeW9yeUw5MENTTlVwNVFnSGpkWGJVK1VzT2NvOWh3WDc2eGx1bHRhRGpDcVVuMzhrYVFjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2OTM5MDM3CWZpbGU6TWVnYUxvYWRfMS4xMC4xMl94NjQtc2V0dXAubnNpcy56aXAKZGZnZTdHNHUraEhiZVdIU1FkVzVLWFY4OXcyK0hRKzBXbS92NjNLNlVzTVZ2RmxDUlJIbEFwMUh4aHQ5U1luTTJGd0JyVmx6aG1meERyK2d5cmVpQUE9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.12/MegaLoad_1.10.12_x64-setup.nsis.zip"
     }
   }
 }
