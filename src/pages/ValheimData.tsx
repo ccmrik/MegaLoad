@@ -2548,8 +2548,14 @@ function StationDetailView({ station, onBack }: { station: string; onBack: () =>
     }
   };
 
-  // Group items by type within each level
-  const typeOrder = ["Weapon", "Armor", "Tool", "Food", "Potion", "Ammo", "Material", "Misc"];
+  // Group items by type within each level.
+  // "Siege" is a synthetic bucket: BuildPiece items with subcategory "Siege"
+  // (catapult, battering ram) and their ammo land here so the Workbench detail
+  // surfaces the hammer-menu "Others" siege engines that are otherwise hidden
+  // by the BuildPiece exclusion.
+  const typeOrder = ["Weapon", "Armor", "Tool", "Food", "Potion", "Ammo", "Siege", "Material", "Misc"];
+  const groupKeyFor = (i: ValheimItem) =>
+    i.subcategory === "Siege" || i.subcategory === "Siege Ammo" ? "Siege" : i.type;
 
   return (
     <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-300 max-w-5xl mx-auto w-full">
@@ -2656,10 +2662,10 @@ function StationDetailView({ station, onBack }: { station: string; onBack: () =>
         {/* Items by level */}
         {levels.map((level) => {
           const levelItems = itemsByLevel.get(level) || [];
-          // Group by type
+          // Group by type (siege items bucket together regardless of type)
           const grouped: Record<string, ValheimItem[]> = {};
           for (const item of levelItems) {
-            const t = item.type;
+            const t = groupKeyFor(item);
             if (!grouped[t]) grouped[t] = [];
             grouped[t].push(item);
           }
