@@ -62,6 +62,7 @@ import {
   getVendorCounts,
   getFactoryCounts,
   getArmorSet,
+  getArmorSetName,
   getVendorForItem,
   getVendorBuyPrice,
   getStationItems,
@@ -1303,6 +1304,14 @@ export function ValheimData() {
                               {item.subcategory && (
                                 <span className="text-[10px] text-zinc-500">{item.subcategory}</span>
                               )}
+                              {(() => {
+                                const setName = getArmorSetName(item);
+                                return setName ? (
+                                  <span className="text-[10px] text-amber-500/80 truncate" title={`${setName} set`}>
+                                    · {setName} set
+                                  </span>
+                                ) : null;
+                              })()}
                             </div>
                             {item.biomes.length > 0 && (
                               <div className="flex flex-wrap gap-1 mt-1">
@@ -1472,7 +1481,19 @@ function ItemTable({
             </div>
             {/* Subcategory */}
             <div className={cn("px-2 text-[11px] text-zinc-600 truncate", TABLE_COLUMNS[2].className)}>
-              {item.subcategory !== item.type ? item.subcategory : ""}
+              {(() => {
+                const setName = getArmorSetName(item);
+                const sub = item.subcategory !== item.type ? item.subcategory : "";
+                if (setName) {
+                  return (
+                    <span title={`${setName} set`}>
+                      {sub && <span>{sub} · </span>}
+                      <span className="text-amber-500/80">{setName}</span>
+                    </span>
+                  );
+                }
+                return sub;
+              })()}
             </div>
             {/* Biome */}
             <div className={cn("px-2 flex flex-wrap gap-1", TABLE_COLUMNS[3].className)}>
@@ -2538,7 +2559,7 @@ function StationDetailView({ station, onBack }: { station: string; onBack: () =>
   const levels = [...itemsByLevel.keys()].sort((a, b) => a - b);
   const maxLevel = upgrades.length > 0 ? upgrades.length + 1 : levels.length;
   const buildMaterials = getStationMaterials([station], "build");
-  const buildPieceCount = allItems.filter((i) => i.type === "BuildPiece" && i.subcategory !== "Siege").length;
+  const buildPieceCount = allItems.filter((i) => i.type === "BuildPiece" && i.subcategory !== "Siege" && i.subcategory !== "Vehicle").length;
 
   // Find the station's own build piece item (for its recipe)
   const stationPrefab = STATION_ICONS[station];
@@ -2555,13 +2576,16 @@ function StationDetailView({ station, onBack }: { station: string; onBack: () =>
   };
 
   // Group items by type within each level.
-  // "Siege" is a synthetic bucket: BuildPiece items with subcategory "Siege"
-  // (catapult, battering ram) and their ammo land here so the Workbench detail
-  // surfaces the hammer-menu "Others" siege engines that are otherwise hidden
-  // by the BuildPiece exclusion.
-  const typeOrder = ["Weapon", "Armor", "Tool", "Food", "Potion", "Ammo", "Siege", "Material", "Misc"];
-  const groupKeyFor = (i: ValheimItem) =>
-    i.subcategory === "Siege" || i.subcategory === "Siege Ammo" ? "Siege" : i.type;
+  // "Siege" and "Vehicle" are synthetic buckets: BuildPiece items with the
+  // matching subcategory (catapult/ram + their ammo, or cart/boats) land here
+  // so the Workbench detail surfaces hammer-menu "Others" entries that would
+  // otherwise be hidden by the BuildPiece exclusion.
+  const typeOrder = ["Weapon", "Armor", "Tool", "Food", "Potion", "Ammo", "Siege", "Vehicle", "Material", "Misc"];
+  const groupKeyFor = (i: ValheimItem) => {
+    if (i.subcategory === "Siege" || i.subcategory === "Siege Ammo") return "Siege";
+    if (i.subcategory === "Vehicle") return "Vehicle";
+    return i.type;
+  };
 
   return (
     <div className="flex flex-col h-full animate-in fade-in slide-in-from-right-4 duration-300 max-w-5xl mx-auto w-full">

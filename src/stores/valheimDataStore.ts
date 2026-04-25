@@ -165,6 +165,16 @@ export function getArmorSet(item: ValheimItem): ArmorSet | null {
   return { setId, setName: formatSetName(setId), pieces, setSize };
 }
 
+// Lightweight helper for list views — just returns the display name, no piece lookup.
+// Used by ValheimData card/table rows; getArmorSet() is for the detail page.
+export function getArmorSetName(item: ValheimItem): string | null {
+  const setStat = item.stats.find((s) => s.label === "Set");
+  if (!setStat) return null;
+  const match = setStat.value.match(/^(.+?)\s+\((\d+)pc\)$/);
+  if (!match) return null;
+  return formatSetName(match[1]);
+}
+
 function formatSetName(setId: string): string {
   // Convert "AshlandsMediumArmor" → "Ashlands Medium Armor"
   return setId.replace(/([a-z])([A-Z])/g, "$1 $2").replace(/_/g, " ");
@@ -492,12 +502,13 @@ export function getStationMaterials(stationNames: string[], mode: "craft" | "bui
   for (const name of expanded) {
     for (const item of VALHEIM_ITEMS.filter((i) => i.station === name)) {
       // Split: "craft" = non-BuildPiece items, "build" = BuildPiece items.
-      // Siege engines (Catapult, Battering Ram) are BuildPiece by game model
-      // but are crafted assemblies, not construction — group their mats with
-      // Craft so they sit alongside the payloads they fire.
-      const isSiege = item.subcategory === "Siege";
-      if (mode === "craft" && item.type === "BuildPiece" && !isSiege) continue;
-      if (mode === "build" && (item.type !== "BuildPiece" || isSiege)) continue;
+      // Siege engines (Catapult, Battering Ram) and Vehicles (Cart, boats) are
+      // BuildPiece by game model but are crafted assemblies, not construction —
+      // group their mats with Craft so they sit alongside their payloads / each
+      // other instead of inflating wall-and-floor totals.
+      const isAssembly = item.subcategory === "Siege" || item.subcategory === "Vehicle";
+      if (mode === "craft" && item.type === "BuildPiece" && !isAssembly) continue;
+      if (mode === "build" && (item.type !== "BuildPiece" || isAssembly)) continue;
       for (const ing of item.recipe) {
         const prev = totals.get(ing.id);
         totals.set(ing.id, { id: ing.id, name: ing.name, amount: (prev?.amount || 0) + ing.amount });

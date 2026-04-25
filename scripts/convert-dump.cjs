@@ -702,6 +702,7 @@ const BIOME_OVERRIDE = {
 
   // ─── Cooked/processed foods (no recipe, source=Pickup from cooking station) ───
   // Biome = max(ingredient_tiers) of the uncooked recipe
+  "Sausages": ["Swamp"],             // Entrails=Swamp(3), BoarMeat=Meadows — found pre-made in Mistlands chests but craftable from Swamp
   "Bread": ["Plains"],               // BarleyFlour=Plains(5)
   "SerpentMeatCooked": ["Ocean"],     // SerpentMeat=Ocean(2)
   "HoneyGlazedChicken": ["Mistlands"],// ChickenMeat=Plains, Honey=Meadows, JotunPuffs=Mistlands(6)
@@ -2092,16 +2093,18 @@ function guessCreatureBiome(prefab) {
 }
 
 function mapPieceCategory(cat) {
+  // Match the in-game hammer-menu category labels so the Workbench detail page
+  // groups read like the player's build wheel. Ticket 20260425-081018-0c66abac.
   switch (cat) {
     case "BuildingWorkbench": return "Building";
-    case "BuildingStonecutter": return "Stone Building";
+    case "BuildingStonecutter": return "Heavy Build";
     case "Furniture": return "Furniture";
-    case "Crafting": return "Crafting Station";
+    case "Crafting": return "Crafting";
     case "Food": return "Food Station";
     case "Meads": return "Fermenter";
-    case "Misc": return "Misc";
+    case "Misc": return "Miscellaneous";
     case "Feasts": return "Feast";
-    case "All": return "Misc";
+    case "All": return "Miscellaneous";
     default: return cat;
   }
 }
@@ -2213,6 +2216,62 @@ const ITEM_FIXUPS = {
   // Creature renames / subcategory fixes
   "GoblinShaman_Hildir": { name: "Zil", subcategory: "Miniboss" },
   "GoblinBrute_Hildir":  { name: "Thungr", subcategory: "Miniboss" },
+  // ── Siege engines + payloads ──
+  // Surfaced via the synthetic "Siege" bucket on the Workbench detail page so the
+  // hammer-menu "Others" engines + their ammo sit together. See ticket
+  // 20260423-190000-siege.
+  "Catapult": {
+    subcategory: "Siege",
+    description: "A wheeled siege engine that lobs Grausten or Explosive Payloads in a high arc. Built at the Workbench and wheeled into position.",
+    wikiGroup: "Catapult",
+  },
+  "BatteringRam": {
+    subcategory: "Siege",
+    description: "A wheeled siege engine that smashes through walls and gates with a swinging head. Built at the Workbench and shoved up to the target.",
+    wikiGroup: "Catapult",
+  },
+  "Catapult_ammo": {
+    subcategory: "Siege Ammo",
+    wikiGroup: "Catapult",
+  },
+  "BombSiege": {
+    subcategory: "Siege Ammo",
+    wikiGroup: "Catapult",
+  },
+  // ── Vehicles (Cart + boats) ──
+  // Surfaced via the synthetic "Vehicle" bucket on the Workbench detail page,
+  // mirroring the Siege treatment so vehicle BuildPieces don't get lost in Misc.
+  // Ticket 20260425-081018-0c66abac.
+  "Cart": {
+    subcategory: "Vehicle",
+    description: "A wheeled handcart for hauling stacks of resources back to base. Built at the Workbench, hitched to the player and shoved or dragged.",
+    wikiGroup: "Cart",
+  },
+  "Raft": {
+    subcategory: "Vehicle",
+    description: "A simple wooden raft. Slow and fragile, but enough to cross a river or hop a coastal stretch before you can build a Karve.",
+    wikiGroup: "Raft",
+  },
+  "Karve": {
+    subcategory: "Vehicle",
+    description: "A small single-mast sailing ship — faster than the Raft and lighter than the Longship, with a modest cargo hold.",
+    wikiGroup: "Karve",
+  },
+  "VikingShip": {
+    subcategory: "Vehicle",
+    description: "A long, lean sail-and-oar warship for crossing the open ocean with cargo and crew.",
+    wikiGroup: "Longship",
+  },
+  "Trailership": {
+    subcategory: "Vehicle",
+    description: "A long, lean sail-and-oar warship for crossing the open ocean with cargo and crew.",
+    wikiGroup: "Longship",
+  },
+  "VikingShip_Ashlands": {
+    subcategory: "Vehicle",
+    description: "The Drakkar — the largest sail-and-oar warship, hardened to punch through the Ashlands surf where weaker hulls scuttle.",
+    wikiGroup: "Drakkar",
+  },
   // Stone Oven outputs — these have no recipe in the game data, they're baked from uncooked items
   "Bread":                    { source: ["Cooking"] },
   "FishAndBread":             { source: ["Cooking"] },
