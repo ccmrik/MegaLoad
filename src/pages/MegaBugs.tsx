@@ -28,7 +28,7 @@ import {
   Download,
   FolderOpen,
   Flame,
-  Minus,
+  Smile,
   ArrowDown,
   ClipboardCopy,
 } from "lucide-react";
@@ -45,8 +45,8 @@ const priorityStyles: Record<TicketPriority, { label: string; classes: string; I
   },
   normal: {
     label: "Normal",
-    classes: "text-zinc-400 bg-zinc-500/10 border-zinc-500/20",
-    Icon: Minus,
+    classes: "text-teal-300 bg-teal-500/10 border-teal-500/25",
+    Icon: Smile,
   },
   low: {
     label: "Low",
@@ -1129,9 +1129,6 @@ function PriorityBadge({
   compact?: boolean;
 }) {
   const p = effectivePriority(priority);
-  // Don't show a badge for the default "Normal" priority — keeps the list quiet,
-  // only urgent/low draw the eye.
-  if (p === "normal") return null;
   const style = priorityStyles[p];
   const Icon = style.Icon;
   return (

@@ -1,11 +1,11 @@
 {
-  "version": "1.10.18",
-  "notes": "MegaBugs ticket form: Mods/Apps multi-select picker (between Bug/Feature and Priority) so tickets get tagged at submit time. Owner-only Priority dropdown in the ticket detail header — change a ticket's priority after the fact. Form flow now Bug/Feature → Mods/Apps → Priority (Normal default) → Title → Description.",
-  "pub_date": "2026-04-25T05:15:00Z",
+  "version": "1.10.19",
+  "notes": "MegaBugs: Normal priority now renders a proper teal smiley badge alongside Urgent and Low — visual consistency across all three priorities.",
+  "pub_date": "2026-04-25T05:25:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUtjbXBpUmEzeVZpUGZ0S1FoYkRjUjdTR1R5eWdmcHUyNjN5cDFhelZxR05KTGlZVC9abFhrVWt5RC9vOWoySWJlQmhMWHJvdVArU0QySmI4cDg0TEFnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MDkyNjczCWZpbGU6TWVnYUxvYWRfMS4xMC4xOF94NjQtc2V0dXAubnNpcy56aXAKU2tpVHRWdk9OQXpENjFWWTRYQ3lETnhGQjlaUkdWaG9mY21taTVHbGhKYTF1SUE1c2E0aCs1cFBwZDJNSUtjTTFvaGl4bE1NZnF5S3R2MXYxK0xnQnc9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.18/MegaLoad_1.10.18_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdPV085UVFtWlNMQ09OZHNFa3hOclJ3NDVnSFhldStCQUxzV2xyRGt2eEYxbmUrSGtXbDRPa2EvazhZVEgvTlI1U0NCMlM5L2JsUmQwWDRoYkdBVkFBPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MDkzMTE1CWZpbGU6TWVnYUxvYWRfMS4xMC4xOV94NjQtc2V0dXAubnNpcy56aXAKd2szckdkWlFkWnc5aFpocTY0d1F4QVlaZWlMZ2FxYWFkQmE1ak42Rk9HcEpMdkR2cTdCeDlhaTQvZVBUQWgrUHZ4aVJoUWFCN0tWWTFENnFMaUw2RHc9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.19/MegaLoad_1.10.19_x64-setup.nsis.zip"
     }
   }
 }
