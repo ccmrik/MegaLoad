@@ -194,6 +194,7 @@ export function MegaBugs() {
   const [view, setView] = useState<View>("list");
   const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
   const [filterMod, setFilterMod] = useState<"all" | "untagged" | ModTag>("all");
+  const [filterPriority, setFilterPriority] = useState<"all" | TicketPriority>("all");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
   // Reset to list view when navigating to this page
@@ -412,9 +413,10 @@ export function MegaBugs() {
     loadTickets();
   }
 
-  // Filter tickets by status, then by mod tag.
+  // Filter tickets by status, then priority, then mod/app tag.
   const filteredTickets = tickets.filter((t) => {
     if (filterStatus !== "all" && t.status !== filterStatus) return false;
+    if (filterPriority !== "all" && effectivePriority(t.priority) !== filterPriority) return false;
     if (filterMod === "all") return true;
     const tags = getModTags(t.labels);
     if (filterMod === "untagged") return tags.length === 0;
@@ -926,6 +928,7 @@ export function MegaBugs() {
             {status === "all" ? "All" : status.charAt(0).toUpperCase() + status.slice(1)}
           </button>
         ))}
+        <PriorityFilterDropdown value={filterPriority} onChange={setFilterPriority} />
         <ModFilterDropdown value={filterMod} onChange={setFilterMod} />
         <span className="ml-auto text-xs text-zinc-500">
           {filteredTickets.length} ticket{filteredTickets.length !== 1 ? "s" : ""}
@@ -1008,6 +1011,7 @@ function TicketRow({
         )}
       </div>
       <div className="flex-1 min-w-0">
+        {/* Title row — title + status + priority. Mod tags moved to their own line below. */}
         <div className="flex items-center gap-2 flex-wrap">
           <span className={cn("text-sm font-medium truncate", unread ? "text-zinc-100" : "text-zinc-200")}>
             {ticket.title}
@@ -1022,20 +1026,25 @@ function TicketRow({
             {ticket.status}
           </span>
           <PriorityBadge priority={ticket.priority} compact />
-          {visibleTags.map((tag) => (
-            <span
-              key={tag}
-              className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20 shrink-0"
-            >
-              {MOD_TAG_LABELS[tag]}
-            </span>
-          ))}
-          {extraTags > 0 && (
-            <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-zinc-800/50 text-zinc-400 border border-zinc-700/40 shrink-0">
-              +{extraTags}
-            </span>
-          )}
         </div>
+        {/* Mod/app tags row — only renders when at least one canonical mod tag is present. */}
+        {modTags.length > 0 && (
+          <div className="flex items-center gap-1.5 flex-wrap mt-1.5">
+            {visibleTags.map((tag) => (
+              <span
+                key={tag}
+                className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 text-sky-400 border border-sky-500/20 shrink-0"
+              >
+                {MOD_TAG_LABELS[tag]}
+              </span>
+            ))}
+            {extraTags > 0 && (
+              <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-zinc-800/50 text-zinc-400 border border-zinc-700/40 shrink-0">
+                +{extraTags}
+              </span>
+            )}
+          </div>
+        )}
         <p className="text-xs text-zinc-500 mt-1">
           {ticket.author_name} · {formatDate(ticket.created_at)} · {ticket.message_count} message
           {ticket.message_count !== 1 ? "s" : ""}
@@ -1407,6 +1416,66 @@ function ModTagPicker({
                 >
                   <span>{MOD_TAG_LABELS[tag]}</span>
                   {on && <CheckCircle2 className="w-3.5 h-3.5" />}
+                </button>
+              );
+            })}
+          </div>
+        </>
+      )}
+    </div>
+  );
+}
+
+function PriorityFilterDropdown({
+  value,
+  onChange,
+}: {
+  value: "all" | TicketPriority;
+  onChange: (next: "all" | TicketPriority) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const label = value === "all" ? "All priorities" : priorityStyles[value].label;
+  const ButtonIcon = value === "all" ? Tag : priorityStyles[value].Icon;
+  return (
+    <div className="relative">
+      <button
+        type="button"
+        className={cn(
+          "flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium transition-all border",
+          value === "all"
+            ? "bg-zinc-800/30 text-zinc-400 border-zinc-700/30 hover:text-zinc-300"
+            : priorityStyles[value].classes,
+        )}
+        onClick={() => setOpen(!open)}
+      >
+        <ButtonIcon className="w-3 h-3" />
+        {label}
+        <ChevronDown className={cn("w-3 h-3 transition-transform", open && "rotate-180")} />
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-10" onClick={() => setOpen(false)} />
+          <div className="absolute left-0 top-full mt-1 w-44 bg-zinc-900 border border-zinc-700/50 rounded-lg shadow-xl z-20 py-1">
+            {(["all", "urgent", "normal", "low"] as const).map((opt) => {
+              const selected = opt === value;
+              const optLabel = opt === "all" ? "All priorities" : priorityStyles[opt].label;
+              const OptIcon = opt === "all" ? Tag : priorityStyles[opt].Icon;
+              return (
+                <button
+                  key={opt}
+                  type="button"
+                  className={cn(
+                    "w-full flex items-center gap-2 text-left px-3 py-2 text-xs hover:bg-zinc-800/50 transition-colors",
+                    selected ? "text-brand-400" : "text-zinc-400",
+                  )}
+                  onClick={() => {
+                    onChange(opt);
+                    setOpen(false);
+                  }}
+                >
+                  <OptIcon className="w-3 h-3" />
+                  <span>{optLabel}</span>
+                  {selected && <span className="ml-auto">✓</span>}
                 </button>
               );
             })}

@@ -1,11 +1,11 @@
 {
-  "version": "1.10.16",
-  "notes": "MegaChat fixed (model bumped to claude-sonnet-4-6, sidebar now appears live on API key save). New Sync Log tab in Log Viewer with structured Push/Pull/No-op events per action. Per-mod thematic icons on the Mods page (Hoe → shovel, Shot → crosshair, Fishing → fish, etc.). MegaBugs gains ticket priority (Urgent/Normal/Low) and a clickable ticket ID with copy-to-clipboard. UI lag on MegaBugs status changes/replies fixed — backend commands no longer block the UI thread; status and reply actions update optimistically and reconcile in the background.",
-  "pub_date": "2026-04-25T04:30:00Z",
+  "version": "1.10.17",
+  "notes": "MegaBugs UI: ticket priorities applied to all in-progress tickets, new Priority filter dropdown alongside Status and Mods, mod/app tags now render on their own line below the ticket title for better scannability.",
+  "pub_date": "2026-04-25T04:55:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUtValJzQVZ0VlhFa2J2R3kzYXdvaFpydEZMUFdoSUNOamt2RTZtNUd1R1FTcmxJamVMR2FsUmhoRW12L1hOTDNLK2tNV3NXalJCU3BFeUVKejFDOVE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MDkwNDI2CWZpbGU6TWVnYUxvYWRfMS4xMC4xNl94NjQtc2V0dXAubnNpcy56aXAKZnJnYkZ1Q253UTN4V1l1N1BpUS9JQzB4T2tIcVJYMzBLcitmR3ZBSUwxMFFXZXFiUEdNZHBwclkvL2pib2phenJqT3c4c01JekEvOWovTmI2a2E1QlE9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.16/MegaLoad_1.10.16_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFxYk5MVEZZclVEbDBMYm8zVHNlWGFqUkFhQmh4S3hrMG5BcDNEMWFaenhHNWtNZFMyeDJhSEZhMHVBYjJmTDhTaXp0Ymp4TkdkZHlPMWFSOVV6WEFNPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MDkxMjY2CWZpbGU6TWVnYUxvYWRfMS4xMC4xN194NjQtc2V0dXAubnNpcy56aXAKNzZCekFiS2Q4UEt4NXFyb0x1bytvckFyZW92OUFJSUE5Y2pmNmMxYTZhRmFhS2o1ZzE3WGdIcjZnQ3ZvdTZ6YnI4TkE1YUxtK2lJRkx5Nk9pamRJQXc9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.17/MegaLoad_1.10.17_x64-setup.nsis.zip"
     }
   }
 }
