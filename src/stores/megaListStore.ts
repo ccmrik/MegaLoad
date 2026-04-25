@@ -175,10 +175,21 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
       debugLog("MegaList reconcile: cloud sync disabled — skip");
       return;
     }
+    // Snapshot the watermark so we can detect concurrent local edits across the await.
+    // Without this, a checkbox tap landing during the in-flight Tauri call would be
+    // overwritten when the (now-stale) merged result lands on top.
+    const snapshotAt = get().updatedAt;
     const local = buildBlob(get(), get().deviceId);
     try {
       const mergedJson = await syncReconcileMegaLists(JSON.stringify(local));
       const merged = JSON.parse(mergedJson) as MegaListBlob;
+      if (get().updatedAt !== snapshotAt) {
+        // Local edits arrived during the await — discard the merged result and re-push.
+        // Backend merge is idempotent so peer changes will land on the next round.
+        debugLog("MegaList reconcile: local edits during await — discarding merged result, scheduling re-push");
+        get().schedulePush();
+        return;
+      }
       set({ lists: merged.lists, updatedAt: merged.updated_at });
       saveBlob(merged);
       debugLog(`MegaList reconcile: merged (${merged.lists.length} lists, updated_at ${merged.updated_at})`);

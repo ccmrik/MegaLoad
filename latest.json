@@ -1,11 +1,11 @@
 {
-  "version": "1.10.25",
-  "notes": "Valheim Data — Sausages now tagged Swamp (craftable from Swamp onward, not Mistlands-only). Armor set name shown next to subcategory in both card and table search views. Workbench Builds get two synthetic buckets — Vehicle (Cart, Drakkar, Longship, Karve, Raft) and Siege — surfaced beside the existing crafted items. BuildPiece subcategories renamed to match the in-game hammer menu: Misc → Miscellaneous, Crafting Station → Crafting, Stone Building → Heavy Build (Building and Furniture unchanged).",
-  "pub_date": "2026-04-25T18:30:00Z",
+  "version": "1.10.26",
+  "notes": "MegaList — fixes intermittent bug where freshly checked items would revert to unchecked a few seconds later. Reconcile now detects local edits made during the in-flight cloud merge and discards the stale merged result instead of clobbering them.",
+  "pub_date": "2026-04-25T11:30:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUp0bDhSczQzQXBVOExKdTh6bE5DZzFFRTNjczdlcGRwZjcrR0R6a0tnZTZWRURJYnkvM2xLemxKcW1DQmdXVU03UE9EL0gzTmw0LzAwUFB5L1hhdlFJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTA2MDIwCWZpbGU6TWVnYUxvYWRfMS4xMC4yNV94NjQtc2V0dXAubnNpcy56aXAKb3drck81ZVNaaFZnSzl1UGVEbTBxOGkxNUlBdEs1VTZNSkJ4bXozcmlOcTJYLzBVczVqczVOR1hLNnJmdGMyUlhEVjdNWXlBUjdoM3NrUlBLMFpCQkE9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.25/MegaLoad_1.10.25_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUR1RFhFNVBSZjBYM3BQeGhFT0VpcDk3WUFlY1hXZXpFcWRaQ3VoUEh3U0ZnZGZGYzRxMmV2b08vL1N6cE5VRHQrQmhUZ3V0ZlBXWFBOaU15K01BWWcwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTE1NzgzCWZpbGU6TWVnYUxvYWRfMS4xMC4yNl94NjQtc2V0dXAubnNpcy56aXAKbmFmWkF0cEJZQVlxdVJUbHRnZ2YxaFlGbW01MzZVdmFTV3NSZ2d6VjV0YUM0OGlOeG0zb2YvWFNtRFNyMXhvc1RNRXZjVlJVcTA5SHRzWXFIK2NxRGc9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.26/MegaLoad_1.10.26_x64-setup.nsis.zip"
     }
   }
 }
