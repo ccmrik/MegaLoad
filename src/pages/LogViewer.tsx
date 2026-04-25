@@ -9,8 +9,11 @@ import {
   saveTextFile,
   getUpdateLog,
   getDiagnosticLogsPath,
+  readSyncEvents,
+  clearSyncEvents,
   type LogLine,
   type UpdateLogEntry,
+  type SyncEvent,
 } from "../lib/tauri-api";
 import { save } from "@tauri-apps/plugin-dialog";
 import {
@@ -24,11 +27,15 @@ import {
   Download,
   Copy,
   History,
+  Cloud,
+  CheckCircle2,
+  CircleSlash,
+  Upload,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 
 type LogLevel = "all" | "error" | "warning" | "info" | "debug";
-type LogTab = "bepinex" | "updates";
+type LogTab = "bepinex" | "updates" | "sync";
 
 // Format: LogOutput_YYYY-MM-DD_HH-MM-SS_{player_id}.log
 // Timestamp and player_id make each export uniquely identifiable per-user,
@@ -55,6 +62,8 @@ export function LogViewer() {
   const [refreshInterval, setRefreshInterval] = useState<number | null>(3000);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [updateEntries, setUpdateEntries] = useState<UpdateLogEntry[]>([]);
+  const [syncEvents, setSyncEvents] = useState<SyncEvent[]>([]);
+  const [syncLoading, setSyncLoading] = useState(false);
 
   const fetchLog = useCallback(async () => {
     if (!profile?.bepinex_path) return;
@@ -82,6 +91,27 @@ export function LogViewer() {
       getUpdateLog().then((entries) => setUpdateEntries(entries.reverse())).catch((e) => console.warn("[MegaLoad]", e));
     }
   }, [activeTab]);
+
+  const fetchSyncEvents = useCallback(() => {
+    setSyncLoading(true);
+    readSyncEvents(500)
+      .then((events) => setSyncEvents([...events].reverse()))
+      .catch((e) => console.warn("[MegaLoad]", e))
+      .finally(() => setSyncLoading(false));
+  }, []);
+
+  // Load sync events when tab switches; refresh every 3s while visible
+  useEffect(() => {
+    if (activeTab !== "sync") return;
+    fetchSyncEvents();
+    const id = setInterval(fetchSyncEvents, 3000);
+    return () => clearInterval(id);
+  }, [activeTab, fetchSyncEvents]);
+
+  const handleClearSyncEvents = async () => {
+    await clearSyncEvents();
+    setSyncEvents([]);
+  };
 
   // Auto-refresh
   useEffect(() => {
@@ -201,8 +231,42 @@ export function LogViewer() {
                 <span className="text-[10px] tabular-nums text-zinc-500">{updateEntries.length}</span>
               )}
             </button>
+            <button
+              onClick={() => setActiveTab("sync")}
+              className={cn(
+                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                activeTab === "sync"
+                  ? "bg-brand-500/15 text-brand-400"
+                  : "text-zinc-500 hover:text-zinc-300"
+              )}
+            >
+              <Cloud className="w-3.5 h-3.5" />
+              Sync Log
+              {syncEvents.length > 0 && (
+                <span className="text-[10px] tabular-nums text-zinc-500">{syncEvents.length}</span>
+              )}
+            </button>
           </div>
         </div>
+        {activeTab === "sync" && (
+          <div className="flex items-center gap-2">
+            <button
+              onClick={fetchSyncEvents}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-zinc-400 hover:text-zinc-200 transition-colors"
+            >
+              <RefreshCw className={cn("w-3.5 h-3.5", syncLoading && "animate-spin")} />
+              Refresh
+            </button>
+            <button
+              onClick={handleClearSyncEvents}
+              disabled={syncEvents.length === 0}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg glass border border-zinc-800 text-xs font-medium text-red-400 hover:bg-red-500/10 transition-colors disabled:opacity-30"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Clear
+            </button>
+          </div>
+        )}
         {activeTab === "bepinex" && (
           <div className="flex items-center gap-2">
             {/* Auto-refresh toggle */}
@@ -274,6 +338,28 @@ export function LogViewer() {
           </div>
         )}
       </div>
+
+      {/* ─── Sync Log Tab ─── */}
+      {activeTab === "sync" && (
+        <div className="flex-1 glass rounded-xl border border-zinc-800/50 overflow-y-auto min-h-0">
+          {syncLoading && syncEvents.length === 0 ? (
+            <div className="flex items-center justify-center h-32">
+              <div className="w-5 h-5 rounded-full border-2 border-brand-400 border-t-transparent animate-spin" />
+            </div>
+          ) : syncEvents.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-32 text-center">
+              <Cloud className="w-8 h-8 text-zinc-700 mb-2" />
+              <p className="text-zinc-500 text-sm">No sync activity recorded yet</p>
+            </div>
+          ) : (
+            <div className="divide-y divide-zinc-800/50">
+              {syncEvents.map((evt) => (
+                <SyncEventRow key={evt.id} event={evt} />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* ─── Update History Tab ─── */}
       {activeTab === "updates" && (
@@ -466,4 +552,88 @@ function formatTimestamp(iso: string): string {
   const hr = String(d.getHours()).padStart(2, "0");
   const min = String(d.getMinutes()).padStart(2, "0");
   return `${day}/${mon}/${yr} ${hr}:${min}`;
+}
+
+function formatTimestampWithSeconds(iso: string): string {
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return iso;
+  const day = String(d.getDate()).padStart(2, "0");
+  const mon = String(d.getMonth() + 1).padStart(2, "0");
+  const yr = d.getFullYear();
+  const hr = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+  const sec = String(d.getSeconds()).padStart(2, "0");
+  return `${day}/${mon}/${yr} ${hr}:${min}:${sec}`;
+}
+
+const ACTION_LABELS: Record<string, string> = {
+  PushAll: "Sync Pushed",
+  PullBundle: "Profile Pulled",
+  PushPlayerData: "Characters Pushed",
+  PullPlayerData: "Characters Pulled",
+  ReconcilePlayerData: "Characters Reconciled",
+  PullMegaLists: "MegaLists Pulled",
+  ReconcileMegaLists: "MegaLists Reconciled",
+  ToggleEnabled: "Cloud Sync Toggled",
+  ToggleAutoSync: "Auto-Sync Toggled",
+};
+
+function SyncEventRow({ event }: { event: SyncEvent }) {
+  const label = ACTION_LABELS[event.action] ?? event.action;
+  const result = event.result;
+
+  let Icon = Cloud;
+  let iconClasses = "text-cyan-400";
+  let bgClasses = "bg-cyan-500/10";
+  let resultClasses = "text-zinc-400";
+  let resultLabel: string = result;
+
+  if (result === "success") {
+    Icon = event.action === "PushAll" || event.action === "PushPlayerData" ? Upload : CheckCircle2;
+    iconClasses = "text-emerald-400";
+    bgClasses = "bg-emerald-500/10";
+    resultClasses = "text-emerald-400";
+    resultLabel = "Success";
+  } else if (result === "noop") {
+    Icon = CircleSlash;
+    iconClasses = "text-zinc-500";
+    bgClasses = "bg-zinc-800";
+    resultClasses = "text-zinc-500";
+    resultLabel = "No Sync Required";
+  } else if (result === "skipped") {
+    Icon = CircleSlash;
+    iconClasses = "text-amber-400";
+    bgClasses = "bg-amber-500/10";
+    resultClasses = "text-amber-400";
+    resultLabel = "Skipped";
+  } else if (result === "failed") {
+    Icon = AlertCircle;
+    iconClasses = "text-red-400";
+    bgClasses = "bg-red-500/10";
+    resultClasses = "text-red-400";
+    resultLabel = "Failed";
+  }
+
+  return (
+    <div className="flex items-center gap-4 px-4 py-3">
+      <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0", bgClasses)}>
+        <Icon className={cn("w-4 h-4", iconClasses)} />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <p className="text-sm font-medium text-zinc-200 truncate">{label}</p>
+          <span className={cn("text-[10px] uppercase tracking-wide font-bold", resultClasses)}>
+            {resultLabel}
+          </span>
+        </div>
+        <p className="text-xs text-zinc-500 truncate">{event.detail}</p>
+      </div>
+      <div className="text-right flex-shrink-0">
+        <p className="text-[10px] text-zinc-600 font-mono">{formatTimestampWithSeconds(event.timestamp)}</p>
+        <p className="text-[9px] text-zinc-700 font-mono truncate max-w-[120px]" title={event.id}>
+          #{event.id}
+        </p>
+      </div>
+    </div>
+  );
 }

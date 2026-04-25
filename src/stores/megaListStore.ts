@@ -6,7 +6,6 @@ import type {
   MegaListFilterSnapshot,
 } from "../types/megaList";
 import {
-  syncPushMegaLists,
   syncReconcileMegaLists,
 } from "../lib/tauri-api";
 import { useSyncStore } from "./syncStore";
@@ -26,13 +25,34 @@ function loadDeviceId(): string {
   return id;
 }
 
+function migrateBlob(blob: MegaListBlob): MegaListBlob {
+  // Backfill per-item updatedAt for blobs written before tombstone support shipped.
+  let migrated = false;
+  const lists = blob.lists.map((l) => {
+    let listChanged = false;
+    const items = l.items.map((it) => {
+      if (!it.updatedAt) {
+        listChanged = true;
+        return { ...it, updatedAt: it.addedAt || EPOCH };
+      }
+      return it;
+    });
+    if (listChanged) {
+      migrated = true;
+      return { ...l, items };
+    }
+    return l;
+  });
+  return migrated ? { ...blob, lists } : blob;
+}
+
 function loadBlob(deviceId: string): MegaListBlob {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw) as MegaListBlob;
       if (parsed && parsed.version === 1 && Array.isArray(parsed.lists)) {
-        return parsed;
+        return migrateBlob(parsed);
       }
     }
   } catch (e) {
@@ -57,19 +77,31 @@ function nowIso() {
   return new Date().toISOString();
 }
 
+/** A list/item is "live" when it has no tombstone, or its tombstone is older than its last update. */
+export function isLiveList(l: MegaList): boolean {
+  return !l.deletedAt || l.deletedAt < l.updatedAt;
+}
+
+export function isLiveItem(it: MegaListItem): boolean {
+  if (!it.deletedAt) return true;
+  const last = it.updatedAt ?? it.addedAt ?? EPOCH;
+  return it.deletedAt < last;
+}
+
 let _pushTimer: ReturnType<typeof setTimeout> | null = null;
 
 interface MegaListState {
+  /** All lists, including tombstoned. UI consumers should filter via `isLiveList`. */
   lists: MegaList[];
   updatedAt: string;
   deviceId: string;
   loaded: boolean;
 
-  // Initial load (call once on app mount)
+  // Initial load (call once on app mount). Idempotent.
   init: () => void;
-  // Remote reconcile — pull if remote newer, else schedule push.
+  // Remote reconcile — fetches remote, merges with local on the backend, saves the merged result.
   reconcile: () => Promise<void>;
-  // Direct push — respects sync enabled; safe to call blind.
+  // Direct push — same merge-and-save as reconcile; safe to call blind.
   pushNow: () => Promise<void>;
   // Debounced push — coalesces bursts of edits.
   schedulePush: () => void;
@@ -133,7 +165,11 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
   },
 
   reconcile: async () => {
-    if (!get().loaded) get().init();
+    // Hard-gate: refuse to run before init() so a fresh-state EPOCH blob never races onto the wire.
+    if (!get().loaded) {
+      debugWarn("MegaList reconcile: store not loaded — skipping (init must run first)");
+      return;
+    }
     const syncEnabled = useSyncStore.getState().enabled;
     if (!syncEnabled) {
       debugLog("MegaList reconcile: cloud sync disabled — skip");
@@ -141,31 +177,22 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
     }
     const local = buildBlob(get(), get().deviceId);
     try {
-      const [winningJson, remoteWasNewer] = await syncReconcileMegaLists(JSON.stringify(local));
-      if (remoteWasNewer) {
-        const winning = JSON.parse(winningJson) as MegaListBlob;
-        set({ lists: winning.lists, updatedAt: winning.updated_at });
-        saveBlob(winning);
-        debugLog(`MegaList reconcile: remote won (${winning.lists.length} lists)`);
-      } else {
-        // Local won — make sure remote gets it
-        void get().pushNow();
-      }
+      const mergedJson = await syncReconcileMegaLists(JSON.stringify(local));
+      const merged = JSON.parse(mergedJson) as MegaListBlob;
+      set({ lists: merged.lists, updatedAt: merged.updated_at });
+      saveBlob(merged);
+      debugLog(`MegaList reconcile: merged (${merged.lists.length} lists, updated_at ${merged.updated_at})`);
     } catch (e) {
       debugWarn("MegaList reconcile failed", e);
     }
   },
 
   pushNow: async () => {
+    if (!get().loaded) return;
     const syncEnabled = useSyncStore.getState().enabled;
     if (!syncEnabled) return;
-    const blob = buildBlob(get(), get().deviceId);
-    try {
-      const pushed = await syncPushMegaLists(JSON.stringify(blob));
-      debugLog(`MegaList push: ${pushed ? "uploaded" : "skipped (remote newer)"}`);
-    } catch (e) {
-      debugWarn("MegaList push failed", e);
-    }
+    // Push is just reconcile — backend always merges before writing.
+    await get().reconcile();
   },
 
   schedulePush: () => {
@@ -183,13 +210,14 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
   createList: (name, items = [], filterSnapshot) => {
     const id = uuid();
     const now = nowIso();
+    const stampedItems = items.map((it) => ({ ...it, updatedAt: it.updatedAt ?? now }));
     const list: MegaList = {
       id,
       name: name.trim() || "Untitled list",
       createdAt: now,
       updatedAt: now,
       filterSnapshot,
-      items,
+      items: stampedItems,
     };
     commit(set, get, (lists) => [...lists, list]);
     debugLog(`MegaList: created list "${list.name}" (${items.length} items)`);
@@ -205,12 +233,16 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
   },
 
   deleteList: (listId) => {
-    commit(set, get, (lists) => lists.filter((l) => l.id !== listId));
-    debugLog(`MegaList: deleted list ${listId}`);
+    // Soft-delete: tombstone propagates to peers so they learn about the deletion.
+    const now = nowIso();
+    commit(set, get, (lists) =>
+      lists.map((l) => (l.id === listId ? { ...l, deletedAt: now, updatedAt: now } : l)),
+    );
+    debugLog(`MegaList: tombstoned list ${listId}`);
   },
 
   duplicateList: (listId) => {
-    const src = get().lists.find((l) => l.id === listId);
+    const src = get().lists.find((l) => l.id === listId && isLiveList(l));
     if (!src) return null;
     const id = uuid();
     const now = nowIso();
@@ -220,7 +252,10 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
       name: `${src.name} (copy)`,
       createdAt: now,
       updatedAt: now,
-      items: src.items.map((it) => ({ ...it })),
+      deletedAt: undefined,
+      items: src.items
+        .filter(isLiveItem)
+        .map((it) => ({ ...it, updatedAt: now, deletedAt: undefined })),
     };
     commit(set, get, (lists) => [...lists, copy]);
     return id;
@@ -232,39 +267,73 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
     commit(set, get, (lists) =>
       lists.map((l) => {
         if (l.id !== listId) return l;
-        const existing = new Set(l.items.map((it) => it.itemId));
         const now = nowIso();
-        const newItems = itemIds
-          .filter((id) => !existing.has(id))
-          .map<MegaListItem>((id) => ({ itemId: id, checked: false, addedAt: now, source }));
-        added = newItems.length;
+        // Index existing items by itemId (including tombstoned ones, which we'll un-tombstone).
+        const byId = new Map(l.items.map((it) => [it.itemId, it]));
+        const nextItems = [...l.items];
+        for (const id of itemIds) {
+          const existing = byId.get(id);
+          if (existing) {
+            // If tombstoned, revive it; otherwise leave alone (it's already there).
+            if (existing.deletedAt && !isLiveItem(existing)) {
+              const idx = nextItems.findIndex((it) => it.itemId === id);
+              if (idx >= 0) {
+                nextItems[idx] = {
+                  ...existing,
+                  checked: false,
+                  source,
+                  updatedAt: now,
+                  deletedAt: undefined,
+                };
+                added++;
+              }
+            }
+          } else {
+            nextItems.push({
+              itemId: id,
+              checked: false,
+              addedAt: now,
+              source,
+              updatedAt: now,
+            });
+            added++;
+          }
+        }
         if (added === 0) return l;
-        return { ...l, items: [...l.items, ...newItems], updatedAt: now };
+        return { ...l, items: nextItems, updatedAt: now };
       }),
     );
     return added;
   },
 
   removeItem: (listId, itemId) => {
-    commit(set, get, (lists) =>
-      lists.map((l) =>
-        l.id === listId
-          ? { ...l, items: l.items.filter((it) => it.itemId !== itemId), updatedAt: nowIso() }
-          : l,
-      ),
-    );
-  },
-
-  toggleItem: (listId, itemId) => {
+    const now = nowIso();
     commit(set, get, (lists) =>
       lists.map((l) =>
         l.id === listId
           ? {
               ...l,
               items: l.items.map((it) =>
-                it.itemId === itemId ? { ...it, checked: !it.checked } : it,
+                it.itemId === itemId ? { ...it, deletedAt: now, updatedAt: now } : it,
               ),
-              updatedAt: nowIso(),
+              updatedAt: now,
+            }
+          : l,
+      ),
+    );
+  },
+
+  toggleItem: (listId, itemId) => {
+    const now = nowIso();
+    commit(set, get, (lists) =>
+      lists.map((l) =>
+        l.id === listId
+          ? {
+              ...l,
+              items: l.items.map((it) =>
+                it.itemId === itemId ? { ...it, checked: !it.checked, updatedAt: now } : it,
+              ),
+              updatedAt: now,
             }
           : l,
       ),
@@ -272,6 +341,7 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
   },
 
   setChecked: (listId, itemIds, checked) => {
+    const now = nowIso();
     const set_ = new Set(itemIds);
     commit(set, get, (lists) =>
       lists.map((l) =>
@@ -279,9 +349,9 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
           ? {
               ...l,
               items: l.items.map((it) =>
-                set_.has(it.itemId) ? { ...it, checked } : it,
+                set_.has(it.itemId) ? { ...it, checked, updatedAt: now } : it,
               ),
-              updatedAt: nowIso(),
+              updatedAt: now,
             }
           : l,
       ),
@@ -290,22 +360,24 @@ export const useMegaListStore = create<MegaListState>((set, get) => ({
 
   reorderLists: (orderedIds) => {
     const indexOf = new Map(orderedIds.map((id, idx) => [id, idx]));
+    const now = nowIso();
     commit(set, get, (lists) =>
       lists.map((l) => {
         const idx = indexOf.get(l.id);
-        return idx !== undefined ? { ...l, order: idx } : l;
+        return idx !== undefined ? { ...l, order: idx, updatedAt: now } : l;
       }),
     );
     debugLog(`MegaList: reordered ${orderedIds.length} lists`);
   },
 
   clearManualOrder: () => {
+    const now = nowIso();
     commit(set, get, (lists) =>
       lists.map((l) => {
         if (l.order === undefined) return l;
         const { order: _drop, ...rest } = l;
         void _drop;
-        return rest;
+        return { ...rest, updatedAt: now };
       }),
     );
     debugLog("MegaList: manual order cleared → alphabetical");

@@ -41,6 +41,10 @@ pub struct TicketSummary {
     pub updated_at: String,
     pub message_count: usize,
     pub labels: Vec<String>,
+    /// "urgent" | "normal" | "low". Optional for back-compat with pre-priority tickets;
+    /// missing or null is treated as "normal" by the UI.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub priority: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -77,6 +81,10 @@ pub struct Ticket {
     pub system_info: SystemInfo,
     pub messages: Vec<TicketMessage>,
     pub has_log: bool,
+    /// "urgent" | "normal" | "low". Optional for back-compat — pre-priority tickets
+    /// deserialise to None and render as "normal" in the UI.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub priority: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone, Debug)]
@@ -181,20 +189,28 @@ pub fn check_megabugs_access(_bepinex_path: String) -> Result<MegaBugsAccess, St
 /// (listed in collaborators.json), or "user" (everyone else). Used by the
 /// frontend to gate Delete / Close / admin panel visibility.
 #[command]
-pub fn get_megabugs_role(user_id: String) -> Result<String, String> {
-    if is_local_owner() {
-        return Ok("owner".to_string());
-    }
-    if is_collaborator(&user_id) {
-        return Ok("collaborator".to_string());
-    }
-    Ok("user".to_string())
+pub async fn get_megabugs_role(user_id: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<String, String> {
+        if is_local_owner() {
+            return Ok("owner".to_string());
+        }
+        if is_collaborator(&user_id) {
+            return Ok("collaborator".to_string());
+        }
+        Ok("user".to_string())
+    })
+    .await
+    .map_err(|e| format!("get_megabugs_role task panicked: {}", e))?
 }
 
 /// List collaborators currently granted elevated access.
 #[command]
-pub fn list_collaborators() -> Result<Vec<CollaboratorEntry>, String> {
-    Ok(load_collaborator_list().collaborators)
+pub async fn list_collaborators() -> Result<Vec<CollaboratorEntry>, String> {
+    tauri::async_runtime::spawn_blocking(|| -> Result<Vec<CollaboratorEntry>, String> {
+        Ok(load_collaborator_list().collaborators)
+    })
+    .await
+    .map_err(|e| format!("list_collaborators task panicked: {}", e))?
 }
 
 /// Grant collaborator access to a user_id. Owner-only.
@@ -318,51 +334,59 @@ pub fn set_megabugs_identity(display_name: String) -> Result<UserIdentity, Strin
 
 /// Fetch ticket index (filtered by user_id for non-admin).
 #[command]
-pub fn fetch_tickets(user_id: Option<String>) -> Result<Vec<TicketSummary>, String> {
-    let (content, _sha) = github_get_file("index.json")?;
-    let index: TicketIndex =
-        serde_json::from_str(&content).map_err(|e| format!("Index parse error: {}", e))?;
+pub async fn fetch_tickets(user_id: Option<String>) -> Result<Vec<TicketSummary>, String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<Vec<TicketSummary>, String> {
+        let (content, _sha) = github_get_file("index.json")?;
+        let index: TicketIndex =
+            serde_json::from_str(&content).map_err(|e| format!("Index parse error: {}", e))?;
 
-    let tickets = match user_id {
-        Some(uid) => index
-            .tickets
-            .into_iter()
-            .filter(|t| t.author_id == uid)
-            .collect(),
-        None => index.tickets, // admin sees all
-    };
+        let tickets = match user_id {
+            Some(uid) => index
+                .tickets
+                .into_iter()
+                .filter(|t| t.author_id == uid)
+                .collect(),
+            None => index.tickets, // admin sees all
+        };
 
-    app_log(&format!("MegaBugs: fetched {} tickets", tickets.len()));
-    Ok(tickets)
+        app_log(&format!("MegaBugs: fetched {} tickets", tickets.len()));
+        Ok(tickets)
+    })
+    .await
+    .map_err(|e| format!("fetch_tickets task panicked: {}", e))?
 }
 
 /// Fetch full ticket detail including messages.
 #[command]
-pub fn fetch_ticket_detail(ticket_id: String) -> Result<Ticket, String> {
-    // Validate ticket_id is safe (alphanumeric + dashes only)
-    if !ticket_id
-        .chars()
-        .all(|c| c.is_alphanumeric() || c == '-')
-    {
-        return Err("Invalid ticket ID".to_string());
-    }
+pub async fn fetch_ticket_detail(ticket_id: String) -> Result<Ticket, String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<Ticket, String> {
+        // Validate ticket_id is safe (alphanumeric + dashes only)
+        if !ticket_id
+            .chars()
+            .all(|c| c.is_alphanumeric() || c == '-')
+        {
+            return Err("Invalid ticket ID".to_string());
+        }
 
-    let path = format!("tickets/{}.json", ticket_id);
-    let (content, _sha) = github_get_file(&path)?;
-    let ticket: Ticket =
-        serde_json::from_str(&content).map_err(|e| format!("Ticket parse error: {}", e))?;
+        let path = format!("tickets/{}.json", ticket_id);
+        let (content, _sha) = github_get_file(&path)?;
+        let ticket: Ticket =
+            serde_json::from_str(&content).map_err(|e| format!("Ticket parse error: {}", e))?;
 
-    app_log(&format!(
-        "MegaBugs: loaded ticket {} ({} messages)",
-        ticket_id,
-        ticket.messages.len()
-    ));
-    Ok(ticket)
+        app_log(&format!(
+            "MegaBugs: loaded ticket {} ({} messages)",
+            ticket_id,
+            ticket.messages.len()
+        ));
+        Ok(ticket)
+    })
+    .await
+    .map_err(|e| format!("fetch_ticket_detail task panicked: {}", e))?
 }
 
 /// Submit a new ticket.
 #[command]
-pub fn submit_ticket(
+pub async fn submit_ticket(
     ticket_type: String,
     title: String,
     description: String,
@@ -370,11 +394,19 @@ pub fn submit_ticket(
     bepinex_path: String,
     user_id: String,
     user_name: String,
+    priority: Option<String>,
 ) -> Result<TicketSummary, String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<TicketSummary, String> {
     // Validate type
     if ticket_type != "bug" && ticket_type != "feature" {
         return Err("Type must be 'bug' or 'feature'".to_string());
     }
+    // Validate priority. Default to "normal" when omitted.
+    let priority = match priority.as_deref().map(str::trim) {
+        None | Some("") => "normal".to_string(),
+        Some(p) if matches!(p, "urgent" | "normal" | "low") => p.to_string(),
+        Some(other) => return Err(format!("Priority must be 'urgent', 'normal', or 'low' (got '{}')", other)),
+    };
     let title = title.trim().to_string();
     if title.is_empty() || title.len() > 120 {
         return Err("Title must be 1-120 characters".to_string());
@@ -477,6 +509,7 @@ pub fn submit_ticket(
         system_info,
         messages: vec![first_message],
         has_log,
+        priority: Some(priority.clone()),
     };
 
     // Upload ticket JSON
@@ -501,17 +534,21 @@ pub fn submit_ticket(
         updated_at: now,
         message_count: 1,
         labels: ticket.labels.clone(),
+        priority: Some(priority),
     };
 
     update_index_add(&summary)?;
 
     app_log(&format!("MegaBugs: ticket {} created successfully", ticket_id));
     Ok(summary)
+    })
+    .await
+    .map_err(|e| format!("submit_ticket task panicked: {}", e))?
 }
 
 /// Reply to an existing ticket.
 #[command]
-pub fn reply_to_ticket(
+pub async fn reply_to_ticket(
     ticket_id: String,
     text: String,
     images: Vec<ImageData>,
@@ -519,6 +556,7 @@ pub fn reply_to_ticket(
     user_name: String,
     is_admin: bool,
 ) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<(), String> {
     let text = text.trim().to_string();
     if text.is_empty() {
         return Err("Reply text cannot be empty".to_string());
@@ -609,18 +647,22 @@ pub fn reply_to_ticket(
 
     app_log(&format!("MegaBugs: replied to ticket {}", ticket_id));
     Ok(())
+    })
+    .await
+    .map_err(|e| format!("reply_to_ticket task panicked: {}", e))?
 }
 
 /// Update ticket status/labels. Owner can do anything; collaborators can move
 /// between `open` and `in-progress`; regular users are rejected. Closing a
 /// ticket is reserved for the owner — "only the Lord closes tickets, mate".
 #[command]
-pub fn update_ticket_status(
+pub async fn update_ticket_status(
     ticket_id: String,
     status: String,
     labels: Vec<String>,
     caller_user_id: String,
 ) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<(), String> {
     if !["open", "in-progress", "closed"].contains(&status.as_str()) {
         return Err("Status must be 'open', 'in-progress', or 'closed'".to_string());
     }
@@ -666,12 +708,16 @@ pub fn update_ticket_status(
 
     app_log(&format!("MegaBugs: updated ticket {} status", ticket_id));
     Ok(())
+    })
+    .await
+    .map_err(|e| format!("update_ticket_status task panicked: {}", e))?
 }
 
 /// Delete a ticket and all its attachments. Owner-only — collaborators
 /// cannot delete.
 #[command]
-pub fn delete_ticket(ticket_id: String) -> Result<(), String> {
+pub async fn delete_ticket(ticket_id: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<(), String> {
     if !is_local_owner() {
         return Err("Only the owner can delete tickets".to_string());
     }
@@ -702,6 +748,9 @@ pub fn delete_ticket(ticket_id: String) -> Result<(), String> {
 
     app_log(&format!("MegaBugs: ticket {} deleted", ticket_id));
     Ok(())
+    })
+    .await
+    .map_err(|e| format!("delete_ticket task panicked: {}", e))?
 }
 
 // ---------------------------------------------------------------------------
@@ -835,7 +884,8 @@ fn get_profile_name(bepinex_path: &str) -> Option<String> {
 
 /// Fetch an attachment (image/log) from the repo as base64.
 #[command]
-pub fn fetch_attachment(path: String) -> Result<String, String> {
+pub async fn fetch_attachment(path: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<String, String> {
     // Only allow attachments/ prefix for safety
     if !path.starts_with("attachments/") {
         return Err("Invalid attachment path".to_string());
@@ -847,13 +897,17 @@ pub fn fetch_attachment(path: String) -> Result<String, String> {
 
     crate::commands::github::github_get_raw_base64(&path)
         .map_err(|e| format!("Failed to fetch attachment: {}", e))
+    })
+    .await
+    .map_err(|e| format!("fetch_attachment task panicked: {}", e))?
 }
 
 /// Download a ticket's attached log to the configured diagnostic logs folder.
 /// Saved as `MegaBugs_{ticket_id}_{author_slug}.log`. Returns the absolute path
 /// written. Owner-only — collaborators diagnose via GitHub directly.
 #[command]
-pub fn download_ticket_log(ticket_id: String, author_name: String) -> Result<String, String> {
+pub async fn download_ticket_log(ticket_id: String, author_name: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<String, String> {
     if !is_local_owner() {
         return Err("Only the Lord downloads ticket logs, mate".to_string());
     }
@@ -892,6 +946,9 @@ pub fn download_ticket_log(ticket_id: String, author_name: String) -> Result<Str
 
     app_log(&format!("MegaBugs: downloaded log for ticket {} to {}", ticket_id, dest.display()));
     Ok(dest.to_string_lossy().to_string())
+    })
+    .await
+    .map_err(|e| format!("download_ticket_log task panicked: {}", e))?
 }
 
 fn get_installed_mod_list(bepinex_path: &str) -> Vec<String> {

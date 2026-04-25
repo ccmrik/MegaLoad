@@ -14,7 +14,7 @@ import {
   RotateCcw,
 } from "lucide-react";
 import { cn } from "../lib/utils";
-import { useMegaListStore } from "../stores/megaListStore";
+import { useMegaListStore, isLiveList, isLiveItem } from "../stores/megaListStore";
 import { getItemById } from "../stores/valheimDataStore";
 import { copyText } from "../lib/clipboard";
 import { DeleteListConfirm } from "../components/megalist/DeleteListConfirm";
@@ -26,6 +26,7 @@ const VIEW_MODE_KEY = "megaload_megalist_view";
 function listNameToClipboardText(list: MegaListType): string {
   // Unchecked names, one per line — per decision: names-only plain text.
   return list.items
+    .filter(isLiveItem)
     .filter((it) => !it.checked)
     .map((it) => getItemById(it.itemId)?.name ?? it.itemId)
     .join("\n");
@@ -58,7 +59,8 @@ function sortLists(arr: MegaListType[]): MegaListType[] {
 
 export function MegaList() {
   const navigate = useNavigate();
-  const lists = useMegaListStore((s) => s.lists);
+  const allLists = useMegaListStore((s) => s.lists);
+  const lists = useMemo(() => allLists.filter(isLiveList), [allLists]);
   const createList = useMegaListStore((s) => s.createList);
   const renameList = useMegaListStore((s) => s.renameList);
   const deleteList = useMegaListStore((s) => s.deleteList);
@@ -206,8 +208,9 @@ export function MegaList() {
           {viewMode === "tile" ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {filtered.map((list) => {
-                const total = list.items.length;
-                const checked = list.items.filter((it) => it.checked).length;
+                const liveItems = list.items.filter(isLiveItem);
+                const total = liveItems.length;
+                const checked = liveItems.filter((it) => it.checked).length;
                 const isComplete = total > 0 && checked === total;
                 const snapshot = list.filterSnapshot;
                 const isEditing = editing === list.id;

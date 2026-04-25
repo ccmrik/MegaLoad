@@ -17,6 +17,7 @@ import {
   type TicketSummary,
   type Ticket,
   type ImageData,
+  type TicketPriority,
 } from "../lib/tauri-api";
 
 // ── Unread tracking via localStorage ──────────────────────────────
@@ -93,6 +94,7 @@ interface BugState {
     description: string,
     images: ImageData[],
     bepinexPath: string,
+    priority?: TicketPriority,
   ) => Promise<void>;
   reply: (ticketId: string, text: string, images: ImageData[]) => Promise<void>;
   setStatus: (ticketId: string, status: string, labels: string[]) => Promise<void>;
@@ -237,6 +239,7 @@ export const useBugStore = create<BugState>((set, get) => ({
     description: string,
     images: ImageData[],
     bepinexPath: string,
+    priority: TicketPriority = "normal",
   ) => {
     const { identity, cooldownRemaining } = get();
     if (!identity) return;
@@ -254,6 +257,7 @@ export const useBugStore = create<BugState>((set, get) => ({
         bepinexPath,
         identity.user_id,
         identity.display_name,
+        priority,
       );
       set((s) => ({
         tickets: [summary, ...s.tickets],
@@ -280,14 +284,57 @@ export const useBugStore = create<BugState>((set, get) => ({
         identity.display_name,
         access?.is_admin ?? false,
       );
-      const ticket = await fetchTicketDetail(ticketId);
-      // Mark as read after own reply so the notification dot doesn't show
-      setLastRead(ticketId);
-      const { tickets } = get();
-      const updatedTickets = tickets.map((t) =>
-        t.id === ticketId ? { ...t, updated_at: ticket.updated_at, message_count: ticket.messages.length } : t
+      // Optimistic update: append a synthetic message and clear submitting so the
+      // textarea unfreezes immediately. The fetchTicketDetail below reconciles the
+      // canonical IDs/timestamps in the background.
+      const { activeTicket, tickets, identity: id } = get();
+      const now = new Date().toISOString();
+      let optimisticTicket = activeTicket;
+      if (activeTicket && activeTicket.id === ticketId && id) {
+        const optimisticMessage: Ticket["messages"][number] = {
+          id: `msg-${(activeTicket.messages.length + 1).toString().padStart(3, "0")}`,
+          author_id: id.user_id,
+          author_name: id.display_name,
+          text: text.trim(),
+          images: [],
+          timestamp: now,
+          is_admin: access?.is_admin ?? false,
+        };
+        optimisticTicket = {
+          ...activeTicket,
+          messages: [...activeTicket.messages, optimisticMessage],
+          updated_at: now,
+        };
+      }
+      const optimisticTickets = tickets.map((t) =>
+        t.id === ticketId
+          ? { ...t, updated_at: now, message_count: t.message_count + 1 }
+          : t
       );
-      set({ activeTicket: ticket, tickets: updatedTickets, submitting: false, offline: false, notificationCount: computeNotificationCount(updatedTickets) });
+      setLastRead(ticketId);
+      set({
+        activeTicket: optimisticTicket,
+        tickets: optimisticTickets,
+        submitting: false,
+        offline: false,
+        notificationCount: computeNotificationCount(optimisticTickets),
+      });
+      // Reconcile in the background — don't make the user wait for the GET.
+      fetchTicketDetail(ticketId)
+        .then((ticket) => {
+          const { tickets: cur } = get();
+          const synced = cur.map((t) =>
+            t.id === ticketId
+              ? { ...t, updated_at: ticket.updated_at, message_count: ticket.messages.length }
+              : t
+          );
+          set({
+            activeTicket: ticket,
+            tickets: synced,
+            notificationCount: computeNotificationCount(synced),
+          });
+        })
+        .catch((e) => console.warn("[MegaLoad]", e));
     } catch (e) {
       const offline = isOfflineError(e);
       set({ error: offline ? "Unable to reach MegaBugs — check your internet connection." : String(e), submitting: false, offline });
@@ -304,25 +351,39 @@ export const useBugStore = create<BugState>((set, get) => ({
     set({ error: null });
     // Register optimistic override that persists through re-fetches (CDN may be stale)
     _statusOverrides.set(ticketId, { status, labels, expiresAt: Date.now() + OVERRIDE_TTL_MS });
-    const { tickets } = get();
+    const { tickets, activeTicket } = get();
     const updatedTickets = applyOverrides(tickets);
-    set({ tickets: updatedTickets, notificationCount: computeNotificationCount(updatedTickets) });
+    // Optimistic detail update too — flicks the badge in the header instantly.
+    const optimisticActive =
+      activeTicket && activeTicket.id === ticketId
+        ? { ...activeTicket, status, labels, updated_at: new Date().toISOString() }
+        : activeTicket;
+    set({
+      tickets: updatedTickets,
+      activeTicket: optimisticActive,
+      notificationCount: computeNotificationCount(updatedTickets),
+    });
     try {
       await updateTicketStatus(ticketId, status, labels, identity.user_id);
-      const ticket = await fetchTicketDetail(ticketId);
-      // Mirror the server's fresh updated_at into last-read so the unread dot
-      // clears for the mutator — they're obviously aware of the change they just made.
       setLastRead(ticketId);
-      const { tickets } = get();
-      const syncedTickets = tickets.map((t) =>
-        t.id === ticketId ? { ...t, status: ticket.status, labels: ticket.labels, updated_at: ticket.updated_at } : t
-      );
-      set({
-        activeTicket: ticket,
-        tickets: syncedTickets,
-        notificationCount: computeNotificationCount(syncedTickets),
-        offline: false,
-      });
+      // Reconcile in the background. The override + optimistic active already gave
+      // the user instant feedback; the real ticket fetch just keeps state honest.
+      fetchTicketDetail(ticketId)
+        .then((ticket) => {
+          const { tickets: cur } = get();
+          const synced = cur.map((t) =>
+            t.id === ticketId
+              ? { ...t, status: ticket.status, labels: ticket.labels, updated_at: ticket.updated_at }
+              : t
+          );
+          set({
+            activeTicket: ticket,
+            tickets: synced,
+            notificationCount: computeNotificationCount(synced),
+            offline: false,
+          });
+        })
+        .catch((e) => console.warn("[MegaLoad]", e));
     } catch (e) {
       // Revert optimistic override on failure
       _statusOverrides.delete(ticketId);

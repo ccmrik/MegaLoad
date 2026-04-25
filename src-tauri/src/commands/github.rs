@@ -121,6 +121,47 @@ pub fn github_put_file(
     Ok(new_sha)
 }
 
+/// Returns true if a `github_put_file` error is a 409 Conflict — i.e. the SHA
+/// we passed is stale because another client pushed a newer commit since we
+/// fetched. The caller should refresh the SHA (via a fresh `github_get_file`)
+/// and retry.
+pub fn is_conflict_error(err: &str) -> bool {
+    err.contains("409")
+}
+
+/// PUT a file with automatic 409 retry. On stale-SHA the caller's `prepare`
+/// closure is invoked to refetch the current SHA (and optionally re-derive
+/// the content based on whatever now lives at `path`). Tries up to `max_attempts`
+/// times before giving up.
+///
+/// `prepare` returns `(content_bytes, sha_to_send)`. On the first iteration the
+/// caller can return `(initial_content, initial_sha)`; on retries the closure
+/// must `github_get_file(path)` itself and return the new SHA along with whatever
+/// content makes sense (e.g. re-merged, or the same payload if pure overwrite).
+pub fn github_put_file_with_retry<F>(
+    path: &str,
+    message: &str,
+    max_attempts: u32,
+    mut prepare: F,
+) -> Result<String, String>
+where
+    F: FnMut(u32) -> Result<(Vec<u8>, Option<String>), String>,
+{
+    let mut last_err = String::new();
+    for attempt in 1..=max_attempts {
+        let (content, sha) = prepare(attempt)?;
+        match github_put_file(path, &content, message, sha.as_deref()) {
+            Ok(new_sha) => return Ok(new_sha),
+            Err(e) if is_conflict_error(&e) && attempt < max_attempts => {
+                last_err = e;
+                continue;
+            }
+            Err(e) => return Err(e),
+        }
+    }
+    Err(format!("PUT exhausted retries for {}: {}", path, last_err))
+}
+
 /// List files in a repo directory. Returns vec of (path, sha).
 pub fn github_list_dir(path: &str) -> Result<Vec<(String, String)>, String> {
     let token = github_token()?;

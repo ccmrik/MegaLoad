@@ -4,7 +4,7 @@ import { useProfileStore } from "../stores/profileStore";
 import { useBugStore, hasUnread } from "../stores/bugStore";
 import { useToastStore } from "../stores/toastStore";
 import { fetchAttachment, downloadTicketLog, openFolder } from "../lib/tauri-api";
-import type { ImageData, TicketSummary } from "../lib/tauri-api";
+import type { ImageData, TicketSummary, TicketPriority } from "../lib/tauri-api";
 import { cn } from "../lib/utils";
 import {
   Bug,
@@ -27,11 +27,37 @@ import {
   Trash2,
   Download,
   FolderOpen,
+  Flame,
+  Minus,
+  ArrowDown,
+  ClipboardCopy,
 } from "lucide-react";
 
 type View = "list" | "new" | "detail";
 type TicketType = "bug" | "feature";
 type FilterStatus = "all" | "open" | "in-progress" | "closed";
+
+const priorityStyles: Record<TicketPriority, { label: string; classes: string; Icon: typeof AlertCircle }> = {
+  urgent: {
+    label: "Urgent",
+    classes: "text-red-400 bg-red-500/10 border-red-500/30",
+    Icon: Flame,
+  },
+  normal: {
+    label: "Normal",
+    classes: "text-zinc-400 bg-zinc-500/10 border-zinc-500/20",
+    Icon: Minus,
+  },
+  low: {
+    label: "Low",
+    classes: "text-sky-400/80 bg-sky-500/5 border-sky-500/20",
+    Icon: ArrowDown,
+  },
+};
+
+function effectivePriority(p: TicketPriority | undefined): TicketPriority {
+  return p ?? "normal";
+}
 
 // Canonical lowercase mod/category tags. Stored inside the ticket's `labels` array
 // alongside the existing auto-added `[ticket_type]`. Kept in display order for the picker.
@@ -182,6 +208,7 @@ export function MegaBugs() {
   const [description, setDescription] = useState("");
   const [images, setImages] = useState<ImageData[]>([]);
   const [formShake, setFormShake] = useState(false);
+  const [priority, setPriority] = useState<TicketPriority>("normal");
 
   // Reply
   const [replyText, setReplyText] = useState("");
@@ -238,7 +265,9 @@ export function MegaBugs() {
     return () => clearInterval(interval);
   }, [view, identity, loadTickets]);
 
-  // Cooldown countdown tick
+  // Cooldown countdown tick. Subscribes to lastSubmitTime via a stable selector
+  // (NOT useBugStore.getState() in deps — that snapshots once and never re-runs).
+  const lastSubmitTime = useBugStore((s) => s.lastSubmitTime);
   useEffect(() => {
     const remaining = cooldownRemaining();
     if (remaining <= 0) { setCooldown(0); return; }
@@ -249,7 +278,7 @@ export function MegaBugs() {
       if (r <= 0) clearInterval(interval);
     }, 1000);
     return () => clearInterval(interval);
-  }, [cooldownRemaining, useBugStore.getState().lastSubmitTime]);
+  }, [cooldownRemaining, lastSubmitTime]);
 
   // Scroll to bottom of messages when ticket loads or new message added
   useEffect(() => {
@@ -348,12 +377,13 @@ export function MegaBugs() {
       setTimeout(() => setFormShake(false), 500);
       return;
     }
-    await submit(ticketType, title, description, images, profile.bepinex_path);
+    await submit(ticketType, title, description, images, profile.bepinex_path, priority);
     if (!useBugStore.getState().error) {
       addToast({ type: "success", title: "Ticket submitted!" });
       setTitle("");
       setDescription("");
       setImages([]);
+      setPriority("normal");
       setView("list");
     }
   }
@@ -442,7 +472,7 @@ export function MegaBugs() {
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               <span
                 className={cn(
                   "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium border",
@@ -460,12 +490,15 @@ export function MegaBugs() {
                 )}
                 {activeTicket.type}
               </span>
+              <PriorityBadge priority={activeTicket.priority} />
             </div>
             <h2 className="text-lg font-semibold text-zinc-200 truncate mt-1">
               {activeTicket.title}
             </h2>
-            <p className="text-xs text-zinc-500">
-              by {activeTicket.author_name} · {formatDate(activeTicket.created_at)}
+            <p className="text-xs text-zinc-500 flex items-center gap-2">
+              <span>by {activeTicket.author_name} · {formatDate(activeTicket.created_at)}</span>
+              <span className="text-zinc-700">·</span>
+              <TicketIdBadge ticketId={activeTicket.id} />
             </p>
           </div>
           {/* Manage controls — owner + collaborator can change status; only owner can delete or close */}
@@ -701,6 +734,36 @@ export function MegaBugs() {
               <Lightbulb className="w-4 h-4" />
               Feature Request
             </button>
+          </div>
+
+          {/* Priority picker — Normal default for everyone, owner can pick any */}
+          <div>
+            <label className="block text-[11px] uppercase tracking-wide text-zinc-500 mb-2">
+              Priority
+            </label>
+            <div className="flex gap-2">
+              {(["urgent", "normal", "low"] as TicketPriority[]).map((p) => {
+                const style = priorityStyles[p];
+                const PriorityIcon = style.Icon;
+                const active = priority === p;
+                return (
+                  <button
+                    key={p}
+                    type="button"
+                    onClick={() => setPriority(p)}
+                    className={cn(
+                      "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all border",
+                      active
+                        ? style.classes
+                        : "bg-zinc-800/30 text-zinc-400 border-zinc-700/30 hover:border-zinc-600/50",
+                    )}
+                  >
+                    <PriorityIcon className="w-4 h-4" />
+                    {style.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
           {/* Title */}
@@ -958,6 +1021,7 @@ function TicketRow({
             <StatusIcon className="w-2.5 h-2.5" />
             {ticket.status}
           </span>
+          <PriorityBadge priority={ticket.priority} compact />
           {visibleTags.map((tag) => (
             <span
               key={tag}
@@ -992,6 +1056,63 @@ function TicketRow({
         </button>
       )}
     </div>
+  );
+}
+
+function PriorityBadge({
+  priority,
+  compact = false,
+}: {
+  priority: TicketPriority | undefined;
+  compact?: boolean;
+}) {
+  const p = effectivePriority(priority);
+  // Don't show a badge for the default "Normal" priority — keeps the list quiet,
+  // only urgent/low draw the eye.
+  if (p === "normal") return null;
+  const style = priorityStyles[p];
+  const Icon = style.Icon;
+  return (
+    <span
+      className={cn(
+        "inline-flex items-center gap-1 rounded-full font-medium border shrink-0",
+        compact ? "px-1.5 py-0.5 text-[10px]" : "px-2 py-0.5 text-[11px]",
+        style.classes,
+      )}
+    >
+      <Icon className={compact ? "w-2.5 h-2.5" : "w-3 h-3"} />
+      {style.label}
+    </span>
+  );
+}
+
+function TicketIdBadge({ ticketId }: { ticketId: string }) {
+  const [copied, setCopied] = useState(false);
+  const handleCopy = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    try {
+      await navigator.clipboard.writeText(ticketId);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch (err) {
+      console.error("[MegaLoad]", err);
+    }
+  };
+  return (
+    <button
+      type="button"
+      onClick={handleCopy}
+      title={copied ? "Copied!" : "Copy ticket ID"}
+      className={cn(
+        "inline-flex items-center gap-1 px-1.5 py-0.5 rounded font-mono text-[10px] tracking-tight transition-colors",
+        copied
+          ? "bg-emerald-500/15 text-emerald-300"
+          : "bg-zinc-800/40 text-zinc-500 hover:bg-zinc-700/50 hover:text-zinc-300",
+      )}
+    >
+      <span>{copied ? "Copied" : `#${ticketId}`}</span>
+      {copied ? <CheckCircle2 className="w-2.5 h-2.5" /> : <ClipboardCopy className="w-2.5 h-2.5" />}
+    </button>
   );
 }
 

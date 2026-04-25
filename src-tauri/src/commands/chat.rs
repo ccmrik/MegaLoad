@@ -42,7 +42,7 @@ pub fn init_megachat_debug() {
 // ---------------------------------------------------------------------------
 // Usage tracking (informational only — no enforced limit since user provides own key)
 // ---------------------------------------------------------------------------
-const CLAUDE_MODEL: &str = "claude-sonnet-4-20250514";
+const CLAUDE_MODEL: &str = "claude-sonnet-4-6";
 const CLAUDE_API_URL: &str = "https://api.anthropic.com/v1/messages";
 const USER_AGENT: &str = concat!("MegaLoad/", env!("CARGO_PKG_VERSION"));
 

@@ -15,6 +15,7 @@ use commands::player_data::*;
 use commands::player_data::PlayerDataWatcherState;
 use commands::profiles::*;
 use commands::sync::*;
+use commands::sync_log::*;
 use commands::thunderstore::*;
 use commands::trainer::*;
 use commands::updater::*;
@@ -189,6 +190,9 @@ pub fn run() {
             sync_push_mega_lists,
             sync_pull_mega_lists,
             sync_reconcile_mega_lists,
+            // Sync event log
+            read_sync_events,
+            clear_sync_events,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

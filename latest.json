@@ -1,11 +1,11 @@
 {
-  "version": "1.10.13",
-  "notes": "Station detail pages now show a Build Materials card — all raw mats needed for walls, floors, roofs, furniture etc. at that station, rolled up so you can plan the whole build without clicking each piece.",
-  "pub_date": "2026-04-23T00:00:00Z",
+  "version": "1.10.16",
+  "notes": "MegaChat fixed (model bumped to claude-sonnet-4-6, sidebar now appears live on API key save). New Sync Log tab in Log Viewer with structured Push/Pull/No-op events per action. Per-mod thematic icons on the Mods page (Hoe → shovel, Shot → crosshair, Fishing → fish, etc.). MegaBugs gains ticket priority (Urgent/Normal/Low) and a clickable ticket ID with copy-to-clipboard. UI lag on MegaBugs status changes/replies fixed — backend commands no longer block the UI thread; status and reply actions update optimistically and reconcile in the background.",
+  "pub_date": "2026-04-25T04:30:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOVBheUdMdjAzdExPWFBGa2VHc0hTaU9sRE5PZThkeHFPV3dyWk9TQmRSMDJ5Tmh1elBGZ3JoQlJqUGwwTzVtRHF0WW9DdTFnN3RSNlIxUytvTDFwZUFRPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc2OTQwMjEwCWZpbGU6TWVnYUxvYWRfMS4xMC4xM194NjQtc2V0dXAubnNpcy56aXAKZHpFNVg5cHJJS0VWVGsrVVB4bC9hL1BsMWt6bElCL3hiQ1BZK3FXKzllbDcrL0lJbVlUOGp4d3pFYlkrd1BZUjNlVVNiRWtmWUF6dzVFVmtJc2xXRFE9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.13/MegaLoad_1.10.13_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUtValJzQVZ0VlhFa2J2R3kzYXdvaFpydEZMUFdoSUNOamt2RTZtNUd1R1FTcmxJamVMR2FsUmhoRW12L1hOTDNLK2tNV3NXalJCU3BFeUVKejFDOVE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MDkwNDI2CWZpbGU6TWVnYUxvYWRfMS4xMC4xNl94NjQtc2V0dXAubnNpcy56aXAKZnJnYkZ1Q253UTN4V1l1N1BpUS9JQzB4T2tIcVJYMzBLcitmR3ZBSUwxMFFXZXFiUEdNZHBwclkvL2pib2phenJqT3c4c01JekEvOWovTmI2a2E1QlE9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.16/MegaLoad_1.10.16_x64-setup.nsis.zip"
     }
   }
 }

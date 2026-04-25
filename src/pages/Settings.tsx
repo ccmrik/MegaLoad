@@ -59,6 +59,7 @@ export function Settings() {
   const activeProfile = useProfileStore((s) => s.activeProfile());
   const { loggingEnabled, megabugsEnabled, loaded: settingsLoaded, fetchSettings, setLoggingEnabled, setMegabugsEnabled } = useSettingsStore();
   const { debugEnabled, debugLoaded, fetchDebug, setDebugEnabled } = useChatStore();
+  const refreshChatAvailable = useChatStore((s) => s.checkAvailable);
   const { currentVersion } = useAppUpdateStore();
   const { identity, clearIdentity } = useIdentityStore();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
@@ -257,6 +258,8 @@ export function Settings() {
       setApiKeyHasKey(true);
       setApiKey("");
       setApiKeyVisible(false);
+      // Refresh chatStore.available so the MegaChat sidebar entry appears immediately.
+      await refreshChatAvailable();
       setToast("API key saved!");
     } catch (e) {
       setToast(`Failed: ${e}`);
@@ -270,6 +273,7 @@ export function Settings() {
       await chatClearApiKey();
       setApiKeyHasKey(false);
       setApiKey("");
+      await refreshChatAvailable();
       setToast("API key removed");
     } catch (e) {
       setToast(`Failed: ${e}`);
@@ -479,7 +483,10 @@ export function Settings() {
                 onClick={async () => {
                   try {
                     await pushAllProfiles();
-                    setToast("Profiles pushed to cloud");
+                    // Fold MegaLists in too — backend merges, never overwrites.
+                    const { useMegaListStore } = await import("../stores/megaListStore");
+                    await useMegaListStore.getState().pushNow();
+                    setToast("Profiles + lists pushed to cloud");
                   } catch (e) {
                     setToast(`Push failed: ${e}`);
                   }
@@ -498,7 +505,10 @@ export function Settings() {
                 onClick={async () => {
                   try {
                     await pullAllProfiles();
-                    setToast("Profiles pulled from cloud");
+                    // Pull All previously skipped MegaLists — that gap let Lady Emz lose 24 lists.
+                    const { useMegaListStore } = await import("../stores/megaListStore");
+                    await useMegaListStore.getState().reconcile();
+                    setToast("Profiles + lists pulled from cloud");
                   } catch (e) {
                     setToast(`Pull failed: ${e}`);
                   }

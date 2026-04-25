@@ -14,6 +14,7 @@ pub mod player_data;
 pub mod profiles;
 pub mod security;
 pub mod sync;
+pub mod sync_log;
 pub mod thunderstore;
 pub mod trainer;
 pub mod updater;

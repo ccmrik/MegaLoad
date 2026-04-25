@@ -146,6 +146,22 @@ export const saveLogFile = (bepinexPath: string, destPath: string) =>
 export const saveTextFile = (destPath: string, content: string) =>
   invoke<void>("save_text_file", { destPath, content });
 
+// --- Sync event log (structured per-action audit trail) ---
+
+export interface SyncEvent {
+  id: string;
+  timestamp: string;
+  action: string;
+  result: "success" | "skipped" | "noop" | "failed";
+  detail: string;
+}
+
+export const readSyncEvents = (limit?: number) =>
+  invoke<SyncEvent[]>("read_sync_events", { limit });
+
+export const clearSyncEvents = () =>
+  invoke<void>("clear_sync_events");
+
 // --- Import commands ---
 
 export const importR2modmanProfile = (
@@ -568,6 +584,8 @@ export interface SystemInfo {
   installed_mods: string[];
 }
 
+export type TicketPriority = "urgent" | "normal" | "low";
+
 export interface TicketSummary {
   id: string;
   type: string;
@@ -579,6 +597,7 @@ export interface TicketSummary {
   updated_at: string;
   message_count: number;
   labels: string[];
+  priority?: TicketPriority;
 }
 
 export interface Ticket {
@@ -594,6 +613,7 @@ export interface Ticket {
   system_info: SystemInfo;
   messages: TicketMessage[];
   has_log: boolean;
+  priority?: TicketPriority;
 }
 
 export const checkMegabugsAccess = (bepinexPath: string) =>
@@ -619,7 +639,8 @@ export const submitTicket = (
   bepinexPath: string,
   userId: string,
   userName: string,
-) => invoke<TicketSummary>("submit_ticket", { ticketType, title, description, images, bepinexPath, userId, userName });
+  priority: TicketPriority = "normal",
+) => invoke<TicketSummary>("submit_ticket", { ticketType, title, description, images, bepinexPath, userId, userName, priority });
 
 export const replyToTicket = (
   ticketId: string,
@@ -963,13 +984,11 @@ export const _syncPullPlayerDataLegacy = () =>
 // Blob-level LWW on `updated_at`. The backend returns and accepts the blob
 // as raw JSON text so the TS side owns the shape.
 
-export const syncPushMegaLists = (blobJson: string) =>
-  invoke<boolean>("sync_push_mega_lists", { blobJson });
-
 export const syncPullMegaLists = () =>
   invoke<string>("sync_pull_mega_lists");
 
-/** Returns [winningBlobJson, remoteWasNewer]. If `remoteWasNewer` is false
- *  the caller should push after replacing local state. */
+/** Server-side merge-and-push. Caller sends the local blob; receives the merged blob
+ *  (local ∪ remote, tombstones honoured) which has been written to remote already.
+ *  The caller MUST overwrite its local state with the returned blob. */
 export const syncReconcileMegaLists = (localBlobJson: string) =>
-  invoke<[string, boolean]>("sync_reconcile_mega_lists", { localBlobJson });
+  invoke<string>("sync_reconcile_mega_lists", { localBlobJson });

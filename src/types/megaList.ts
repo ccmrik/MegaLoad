@@ -5,6 +5,10 @@ export interface MegaListItem {
   checked: boolean;
   addedAt: string;
   source: "export" | "manual";
+  /** Set whenever the item is mutated (checked/unchecked, source change). Used for merge tie-breaks across devices. */
+  updatedAt?: string;
+  /** Soft-delete tombstone. If present and >= updatedAt, the item is treated as removed. */
+  deletedAt?: string;
 }
 
 export interface MegaListFilterSnapshot {
@@ -29,6 +33,9 @@ export interface MegaList {
   /** Manual ordering index — set when the user drags to reorder.
    *  Undefined means "sort alphabetically" (the default). */
   order?: number;
+  /** Soft-delete tombstone. If present and >= updatedAt, the list is treated as deleted.
+   *  Kept in the blob for ~30 days so peer devices learn about the deletion, then GC'd. */
+  deletedAt?: string;
 }
 
 export interface MegaListBlob {

@@ -13,7 +13,7 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "../lib/utils";
-import { useMegaListStore } from "../stores/megaListStore";
+import { useMegaListStore, isLiveList, isLiveItem } from "../stores/megaListStore";
 import { getItemById, useValheimDataStore } from "../stores/valheimDataStore";
 import { ItemIcon } from "../components/ui/ItemIcon";
 import { copyText } from "../lib/clipboard";
@@ -50,7 +50,7 @@ function BiomeChip({ biome, onClick, active }: { biome: string; onClick?: () => 
 export function MegaListDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const list = useMegaListStore((s) => s.lists.find((l) => l.id === id));
+  const list = useMegaListStore((s) => s.lists.find((l) => l.id === id && isLiveList(l)));
   const renameList = useMegaListStore((s) => s.renameList);
   const deleteList = useMegaListStore((s) => s.deleteList);
   const toggleItem = useMegaListStore((s) => s.toggleItem);
@@ -84,8 +84,8 @@ export function MegaListDetail() {
     );
   }
 
-  // Resolve + sort + filter
-  const resolved = list.items.map((it) => ({
+  // Resolve + sort + filter — tombstoned items are excluded from view.
+  const resolved = list.items.filter(isLiveItem).map((it) => ({
     ...it,
     item: getItemById(it.itemId),
   }));
@@ -143,9 +143,11 @@ export function MegaListDetail() {
     .map((r) => r.item?.name ?? r.itemId)
     .join("\n");
 
-  const total = list.items.length;
-  const checkedCount = list.items.filter((it) => it.checked).length;
-  const alreadyInList = new Set(list.items.map((it) => it.itemId));
+  const liveItems = list.items.filter(isLiveItem);
+  const total = liveItems.length;
+  const checkedCount = liveItems.filter((it) => it.checked).length;
+  // Only LIVE items count as "already in list" — tombstoned ones can be re-added.
+  const alreadyInList = new Set(liveItems.map((it) => it.itemId));
 
   return (
     <div className="max-w-4xl mx-auto">

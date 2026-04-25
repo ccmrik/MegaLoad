@@ -48,6 +48,11 @@ export function useAutoSync() {
       initialPullDone.current = true;
 
       (async () => {
+        // Ensure MegaList store has hydrated from localStorage BEFORE any reconcile
+        // can fire — otherwise an EPOCH-default state can lose to remote and then
+        // be pushed back as an empty blob, wiping good data.
+        useMegaListStore.getState().init();
+
         try {
           const hasChanges = await checkForRemoteChanges();
           if (hasChanges) {
@@ -90,6 +95,8 @@ export function useAutoSync() {
 
     pollTimerRef.current = setInterval(async () => {
       if (syncing) return;
+      // Defensive: poll only fires post-mount but cheap to assert init happened.
+      useMegaListStore.getState().init();
       try {
         const hasChanges = await checkForRemoteChanges();
         if (hasChanges) {
