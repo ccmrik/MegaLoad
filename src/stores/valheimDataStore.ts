@@ -143,12 +143,58 @@ export const VENDORS: Record<string, Vendor> = {
 };
 
 // ── Armor Sets ───────────────────────────────────────────────
+export interface ArmorSetBonus {
+  name: string;
+  tooltip: string;
+}
+
 export interface ArmorSet {
   setId: string;
   setName: string;
   pieces: ValheimItem[];
   setSize: number;
-  setBonus?: string;
+  bonus?: ArmorSetBonus;
+}
+
+// Set bonus name + tooltip strings, sourced from Valheim's localization
+// (`se_<setId>seteffect_name` / `_tooltip` keys in the data dump). The dump
+// doesn't link these to items directly — `equipEffect` is empty on individual
+// pieces — so we map setId → bonus here. Update this table when the game
+// adds a new full-set effect.
+const SET_BONUSES: Record<string, ArmorSetBonus> = {
+  AshlandsMediumArmor: {
+    name: "Ask's Endurance",
+    tooltip: "A lighter armour lets you move more freely, every move requiring less energy.",
+  },
+  berserker_armor: {
+    name: "Berserk",
+    tooltip: "Increases damage and regeneration, but weakens you against physical damage.",
+  },
+  berserker_armor_undead: {
+    name: "Vilebone Wrath",
+    tooltip: "Increases damage and regeneration, but weakens you against physical damage.",
+  },
+  fenring_armor: {
+    name: "Fenris blessing",
+    tooltip:
+      "The Fenris armour makes you quick on your feet so you can pass through fire, and your fists feel the power of the beast.",
+  },
+  harvester: {
+    name: "Harvester",
+    tooltip: "Wearing the right clothes makes the chores easier.",
+  },
+  root_armor: {
+    name: "Improved archery",
+    tooltip: "The ancient roots help you focus your bow skill.",
+  },
+  troll: {
+    name: "Sneaky",
+    tooltip: "Makes you more sneaky.",
+  },
+};
+
+export function getArmorSetBonus(setId: string): ArmorSetBonus | undefined {
+  return SET_BONUSES[setId];
 }
 
 export function getArmorSet(item: ValheimItem): ArmorSet | null {
@@ -162,7 +208,7 @@ export function getArmorSet(item: ValheimItem): ArmorSet | null {
   const pieces = VALHEIM_ITEMS.filter((i) =>
     i.stats.some((s) => s.label === "Set" && s.value.startsWith(setId))
   );
-  return { setId, setName: formatSetName(setId), pieces, setSize };
+  return { setId, setName: formatSetName(setId), pieces, setSize, bonus: SET_BONUSES[setId] };
 }
 
 // Lightweight helper for list views — just returns the display name, no piece lookup.

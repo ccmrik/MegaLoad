@@ -1996,9 +1996,15 @@ function DetailView({ item, onBack }: { item: ValheimItem; onBack: () => void })
             {/* Armor Set */}
             {armorSet && (
               <div className="glass rounded-xl p-5 border border-zinc-800/50">
-                <h2 className="text-sm font-semibold text-zinc-200 mb-3">
+                <h2 className="text-sm font-semibold text-zinc-200 mb-1">
                   {armorSet.setName} <span className="text-zinc-500 font-normal">({armorSet.setSize}pc set)</span>
                 </h2>
+                {armorSet.bonus && (
+                  <div className="mb-3">
+                    <p className="text-xs text-amber-400 font-semibold">{armorSet.bonus.name}</p>
+                    <p className="text-xs text-zinc-400 mt-0.5 leading-relaxed">{armorSet.bonus.tooltip}</p>
+                  </div>
+                )}
                 <div className="space-y-1">
                   {armorSet.pieces.map((piece) => (
                     <button

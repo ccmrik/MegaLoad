@@ -1,11 +1,11 @@
 {
-  "version": "1.10.26",
-  "notes": "MegaList — fixes intermittent bug where freshly checked items would revert to unchecked a few seconds later. Reconcile now detects local edits made during the in-flight cloud merge and discards the stale merged result instead of clobbering them.",
-  "pub_date": "2026-04-25T11:30:00Z",
+  "version": "1.10.27",
+  "notes": "Valheim Data — armor set bonus name and tooltip now appear on every item in a set, sourced from Valheim's localization. Covers Ask's Endurance, Berserk, Vilebone Wrath, Fenris blessing, Harvester, Improved archery, and Sneaky.",
+  "pub_date": "2026-04-26T08:55:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUR1RFhFNVBSZjBYM3BQeGhFT0VpcDk3WUFlY1hXZXpFcWRaQ3VoUEh3U0ZnZGZGYzRxMmV2b08vL1N6cE5VRHQrQmhUZ3V0ZlBXWFBOaU15K01BWWcwPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTE1NzgzCWZpbGU6TWVnYUxvYWRfMS4xMC4yNl94NjQtc2V0dXAubnNpcy56aXAKbmFmWkF0cEJZQVlxdVJUbHRnZ2YxaFlGbW01MzZVdmFTV3NSZ2d6VjV0YUM0OGlOeG0zb2YvWFNtRFNyMXhvc1RNRXZjVlJVcTA5SHRzWXFIK2NxRGc9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.26/MegaLoad_1.10.26_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU1yMzVBSmlrYlVqU0ZISGxnUHRjK2F6eGRHaWtvcnJVeG9VYm4vWTBEaktqVTc1VzF5bnNLaGVrcUN2NlM1VTVmL1k0cmxRenN5UHZ6TXoxN0s3TXdjPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTU2Nzg4CWZpbGU6TWVnYUxvYWRfMS4xMC4yN194NjQtc2V0dXAubnNpcy56aXAKU1ZzaVdoQ0hiTWI1YkcvV2ZWVWpTdWxHSXlJTzNuTU03Q2U1OElaYkRQazVBa1crYUZLblA0bi90d29PaFpyckpaamRTVGl1Q0R4Tm8vaFFpVHg1QkE9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.27/MegaLoad_1.10.27_x64-setup.nsis.zip"
     }
   }
 }
