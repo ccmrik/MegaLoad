@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { X, ListChecks, Plus } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { useMegaListStore, isLiveList } from "../../stores/megaListStore";
@@ -16,7 +16,11 @@ interface Props {
 /** Modal for "Export to list" — choose new/existing list, add filtered items. */
 export function ExportToListModal({ open, onClose, itemIds, filterSnapshot }: Props) {
   const navigate = useNavigate();
-  const lists = useMegaListStore((s) => s.lists.filter(isLiveList));
+  // Subscribe to the raw lists array; filtering inline in the selector returns
+  // a fresh reference every snapshot, which trips React 18's getSnapshot
+  // identity check and crashes with "Maximum update depth exceeded" (#185).
+  const allLists = useMegaListStore((s) => s.lists);
+  const lists = useMemo(() => allLists.filter(isLiveList), [allLists]);
   const createList = useMegaListStore((s) => s.createList);
   const addItems = useMegaListStore((s) => s.addItems);
   const addToast = useToastStore((s) => s.addToast);

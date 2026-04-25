@@ -1,11 +1,11 @@
 {
-  "version": "1.10.21",
-  "notes": "Crash recovery: a render error on any page (Valheim Data, MegaBugs, etc.) now shows an in-app error card with the stack trace instead of white-screening the whole shell — the rest of the app stays usable and the stack lands in megaload.log. Also hardens character-data reads on Valheim Data so a missing known_materials/known_recipes field can't take the page down.",
-  "pub_date": "2026-04-25T07:30:00Z",
+  "version": "1.10.22",
+  "notes": "Fix: Valheim Data + Cart pages crashed with React #185 ('Maximum update depth exceeded') the moment they rendered. ExportToListModal subscribed to the MegaList store with an inline `.filter()` selector, returning a fresh array reference every snapshot — React 18's getSnapshot identity check tripped on it. The selector now reads the raw lists array and filters via useMemo. Pairs with v1.10.21's ErrorBoundary, which surfaced this stack from megaload.log.",
+  "pub_date": "2026-04-25T07:50:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUFuVnhWd1F3aXlzbzB3UlhhdmFSeU4ySzhvKzJwZS9oS3RsS2kxK0I4OHVkMlBWNjY3c3RCOC95ZUpGbm1NU3N6UExkeWVldnlQd1FVQXB5T1NncHdrPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTAwMTA1CWZpbGU6TWVnYUxvYWRfMS4xMC4yMV94NjQtc2V0dXAubnNpcy56aXAKd0EyMno4MTJFVWQ0RnJpb3B4bTdSeEY2R3NmallJckNYaWEwTkxRZEZXM1RJQ2dRNEd1aGJjNWZZMkdQZVUwM0cwclN0a2V4cGpiUDM0eDBwY2RMQVE9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.21/MegaLoad_1.10.21_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdyVUFlMmNDK1JiMWhnUytUcEozODVqaEtlVmJ0MkZ3cmQ3U2VYZnBMM3lUV2FVQVU5ZmRCdVJLd21kOXZERUx1bnVqWkRBbW15ZkRDMlRQK0pmYndzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTAwOTAzCWZpbGU6TWVnYUxvYWRfMS4xMC4yMl94NjQtc2V0dXAubnNpcy56aXAKS2tSdml0cTVhQ0VrTkhiaVRsckE0d1A5blF2enpDZC8vWHV3OGxFTWtvZHlVYnNDRjNXREtkSmIrOFI4NWxlVEZmT3VkSzFKUll3bzBPVU5FSFA2Q3c9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.22/MegaLoad_1.10.22_x64-setup.nsis.zip"
     }
   }
 }
