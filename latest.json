@@ -1,11 +1,11 @@
 {
-  "version": "1.10.22",
-  "notes": "Fix: Valheim Data + Cart pages crashed with React #185 ('Maximum update depth exceeded') the moment they rendered. ExportToListModal subscribed to the MegaList store with an inline `.filter()` selector, returning a fresh array reference every snapshot — React 18's getSnapshot identity check tripped on it. The selector now reads the raw lists array and filters via useMemo. Pairs with v1.10.21's ErrorBoundary, which surfaced this stack from megaload.log.",
-  "pub_date": "2026-04-25T07:50:00Z",
+  "version": "1.10.23",
+  "notes": "Sync hardening — final wave on the data-loss ticket. Profile bundles now merge per-config: two devices editing different .cfg files in the same profile concurrently both keep their edits (previously last-writer-wins on the whole bundle). Each config carries its own updated_at watermark sourced from file mtime; 409-retry refetches AND remerges so conflicts don't lose either side. Pull respects per-file watermarks, so a fresh local edit isn't clobbered by a stale remote. Backwards compatible with v1 string-keyed bundles. Plus a new Delete-from-cloud button on the Player Data page for manual character cloud removal — auto-propagation from local-disk deletions was deliberately left out (too risky without a UI affirming intent).",
+  "pub_date": "2026-04-25T07:35:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUdyVUFlMmNDK1JiMWhnUytUcEozODVqaEtlVmJ0MkZ3cmQ3U2VYZnBMM3lUV2FVQVU5ZmRCdVJLd21kOXZERUx1bnVqWkRBbW15ZkRDMlRQK0pmYndzPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTAwOTAzCWZpbGU6TWVnYUxvYWRfMS4xMC4yMl94NjQtc2V0dXAubnNpcy56aXAKS2tSdml0cTVhQ0VrTkhiaVRsckE0d1A5blF2enpDZC8vWHV3OGxFTWtvZHlVYnNDRjNXREtkSmIrOFI4NWxlVEZmT3VkSzFKUll3bzBPVU5FSFA2Q3c9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.22/MegaLoad_1.10.22_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOVBaZWpZSnNQWFdxbTZvWkhqeWllQmxKazM3Q2ZiNUdSNDgvaURZK3p0YnJmWi9RNzVuS0toL2pQcW90alpnWExBR3VFemRNVWVhanJ0amZTZjZtQVFvPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTAyMzM2CWZpbGU6TWVnYUxvYWRfMS4xMC4yM194NjQtc2V0dXAubnNpcy56aXAKSlJWcTNNR2ZFUG1lOXpDUzE4MkhuNEFzTXY3OFRESnVVN0JSSldKQTZkUnVVZ1ZQdjNvL2F0bDBVRk9WbGVsUC83QkJPaU5WbldiV3ZaU3VaSzdWRFE9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.23/MegaLoad_1.10.23_x64-setup.nsis.zip"
     }
   }
 }

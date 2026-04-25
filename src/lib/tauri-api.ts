@@ -900,13 +900,19 @@ export interface SyncConfigHash {
   hash: string;
 }
 
+export interface SyncConfigEntry {
+  content: string;
+  updated_at: string;
+}
+
 export interface SyncProfileState {
   profile_id: string;
   profile_name: string;
   last_updated: string;
   mods: SyncModEntry[];
   thunderstore_mods: SyncThunderstoreMod[];
-  configs: Record<string, string>;
+  configs: Record<string, SyncConfigEntry>;
+  trainer_state?: SyncConfigEntry;
   config_hashes?: SyncConfigHash[];
 }
 
@@ -983,6 +989,12 @@ export interface PlayerReconcileSummary {
 
 export const syncReconcilePlayerData = () =>
   invoke<PlayerReconcileSummary>("sync_reconcile_player_data");
+
+/// Manually delete a character's cloud copy. Auto-propagation from local-disk
+/// deletions was deliberately not implemented — see ticket
+/// 20260425-022017-3390a591 for the propagation rule.
+export const syncDeletePlayerData = (characterName: string) =>
+  invoke<void>("sync_delete_player_data", { characterName });
 
 export const _syncPullPlayerDataLegacy = () =>
   invoke<CharacterData[]>("sync_pull_player_data");

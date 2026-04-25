@@ -1,7 +1,7 @@
 use crate::commands::app_log::app_log;
 use crate::commands::github::{
-    github_get_file, github_list_dir, github_put_file, github_put_file_with_retry,
-    is_conflict_error,
+    github_delete_file, github_get_file, github_list_dir, github_put_file,
+    github_put_file_with_retry, is_conflict_error,
 };
 use crate::commands::sync_log;
 use crate::commands::identity::get_megaload_identity;
@@ -95,16 +95,135 @@ fn iso_now() -> String {
     let now = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
-        .as_secs();
-    let secs_per_day: u64 = 86400;
-    let days = now / secs_per_day;
-    let time_of_day = now % secs_per_day;
+        .as_secs() as i64;
+    secs_to_iso(now)
+}
+
+// ---------------------------------------------------------------------------
+// Bundle model — single file per profile with all state + config contents
+// ---------------------------------------------------------------------------
+
+/// Per-config entry. v2 bundles carry a `content` + `updated_at` (ISO-8601)
+/// so concurrent edits to *different* .cfg files in the same profile no
+/// longer drop one device's changes — the watermark picks the latest writer
+/// per file. v1 bundles stored a bare string; `parse_bundle()` promotes them
+/// using the bundle's top-level `last_updated` as the per-file fallback.
+#[derive(Serialize, Deserialize, Clone, Debug, PartialEq, Eq)]
+pub struct ConfigEntry {
+    pub content: String,
+    pub updated_at: String,
+}
+
+/// Accepts either the legacy bare string ({"file.cfg": "<content>"}) or the
+/// new struct shape ({"file.cfg": {"content": "...", "updated_at": "..."}}).
+/// Stays in this enum until `parse_bundle()` normalises it.
+#[derive(Deserialize)]
+#[serde(untagged)]
+enum ConfigContentRaw {
+    Entry(ConfigEntry),
+    Legacy(String),
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+pub struct SyncProfileBundle {
+    pub profile_id: String,
+    pub profile_name: String,
+    pub last_updated: String,
+    pub mods: Vec<SyncModEntry>,
+    pub thunderstore_mods: Vec<SyncThunderstoreMod>,
+    /// Config file contents keyed by filename (e.g. "MegaShot.cfg" → ConfigEntry).
+    /// v2 schema. Legacy v1 bundles were `HashMap<String, String>` — see
+    /// `parse_bundle()` for the back-compat fallback.
+    pub configs: HashMap<String, ConfigEntry>,
+    /// MegaTrainer state (trainer_state.json contents, if present), wrapped
+    /// in a `ConfigEntry` so it gets the same per-file watermark treatment.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub trainer_state: Option<ConfigEntry>,
+}
+
+/// Mirror of `SyncProfileBundle` whose configs/trainer_state are the raw
+/// either-shape value. Internal — only used during deserialise.
+#[derive(Deserialize)]
+struct RawSyncProfileBundle {
+    profile_id: String,
+    profile_name: String,
+    last_updated: String,
+    #[serde(default)]
+    mods: Vec<SyncModEntry>,
+    #[serde(default)]
+    thunderstore_mods: Vec<SyncThunderstoreMod>,
+    #[serde(default)]
+    configs: HashMap<String, ConfigContentRaw>,
+    #[serde(default)]
+    trainer_state: Option<ConfigContentRaw>,
+}
+
+/// Parse a bundle JSON, transparently promoting v1 (bare-string configs) to
+/// v2 (per-file `ConfigEntry`) using the bundle's top-level `last_updated` as
+/// the per-file fallback timestamp. Always returns the canonical v2 shape.
+fn parse_bundle(content: &str) -> Result<SyncProfileBundle, String> {
+    let raw: RawSyncProfileBundle = serde_json::from_str(content)
+        .map_err(|e| format!("Bundle parse error: {}", e))?;
+    let fallback = raw.last_updated.clone();
+    let configs = raw
+        .configs
+        .into_iter()
+        .map(|(k, v)| {
+            let entry = match v {
+                ConfigContentRaw::Entry(e) => e,
+                ConfigContentRaw::Legacy(s) => ConfigEntry {
+                    content: s,
+                    updated_at: fallback.clone(),
+                },
+            };
+            (k, entry)
+        })
+        .collect();
+    let trainer_state = raw.trainer_state.map(|v| match v {
+        ConfigContentRaw::Entry(e) => e,
+        ConfigContentRaw::Legacy(s) => ConfigEntry {
+            content: s,
+            updated_at: fallback.clone(),
+        },
+    });
+    Ok(SyncProfileBundle {
+        profile_id: raw.profile_id,
+        profile_name: raw.profile_name,
+        last_updated: raw.last_updated,
+        mods: raw.mods,
+        thunderstore_mods: raw.thunderstore_mods,
+        configs,
+        trainer_state,
+    })
+}
+
+/// Convert a filesystem mtime into an ISO-8601 timestamp suitable for use as
+/// a `ConfigEntry.updated_at` watermark. Falls back to `iso_now()` when the
+/// mtime is unavailable so brand-new files still carry a usable timestamp.
+fn mtime_iso(path: &Path) -> String {
+    let secs = fs::metadata(path)
+        .ok()
+        .and_then(|m| m.modified().ok())
+        .and_then(|t| t.duration_since(std::time::UNIX_EPOCH).ok())
+        .map(|d| d.as_secs());
+    match secs {
+        Some(s) => secs_to_iso(s as i64),
+        None => iso_now(),
+    }
+}
+
+/// Format an absolute Unix-second timestamp as ISO-8601. Shared between
+/// `iso_now`, `iso_days_ago`, and `mtime_iso`.
+fn secs_to_iso(now: i64) -> String {
+    let secs_per_day: i64 = 86400;
+    let days = now.div_euclid(secs_per_day);
+    let time_of_day = now.rem_euclid(secs_per_day);
     let hours = time_of_day / 3600;
     let minutes = (time_of_day % 3600) / 60;
     let seconds = time_of_day % 60;
 
     let mut y = 1970i64;
-    let mut remaining = days as i64;
+    let mut remaining = days;
     loop {
         let days_in_year = if y % 4 == 0 && (y % 100 != 0 || y % 400 == 0) { 366 } else { 365 };
         if remaining < days_in_year { break; }
@@ -120,24 +239,6 @@ fn iso_now() -> String {
     }
     let d = remaining + 1;
     format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z", y, m + 1, d, hours, minutes, seconds)
-}
-
-// ---------------------------------------------------------------------------
-// Bundle model — single file per profile with all state + config contents
-// ---------------------------------------------------------------------------
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-pub struct SyncProfileBundle {
-    pub profile_id: String,
-    pub profile_name: String,
-    pub last_updated: String,
-    pub mods: Vec<SyncModEntry>,
-    pub thunderstore_mods: Vec<SyncThunderstoreMod>,
-    /// Config file contents keyed by filename (e.g. "MegaShot.cfg" → full file text)
-    pub configs: HashMap<String, String>,
-    /// MegaTrainer state (trainer_state.json contents, if present)
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub trainer_state: Option<String>,
 }
 
 // ---------------------------------------------------------------------------
@@ -233,8 +334,11 @@ struct TsWrappedState { mods: Vec<TsModEntry> }
 #[derive(Deserialize)]
 struct TsModEntry { full_name: String, version: String, folder_name: String }
 
-/// Read ALL .cfg files from config/ into a HashMap<filename, contents>.
-fn read_all_configs(bepinex_path: &str) -> HashMap<String, String> {
+/// Read ALL .cfg files from config/ into a HashMap<filename, ConfigEntry>.
+/// Each entry's `updated_at` reflects the file's mtime, so per-config merge
+/// can pick the latest writer when two devices edit different .cfg files in
+/// the same profile concurrently.
+fn read_all_configs(bepinex_path: &str) -> HashMap<String, ConfigEntry> {
     let config_dir = Path::new(bepinex_path).join("config");
     let mut configs = HashMap::new();
     if let Ok(entries) = fs::read_dir(&config_dir) {
@@ -244,7 +348,13 @@ fn read_all_configs(bepinex_path: &str) -> HashMap<String, String> {
                 let file_name = entry.file_name().to_string_lossy().to_string();
                 if file_name.to_lowercase().ends_with(".cfg") {
                     if let Ok(content) = fs::read_to_string(&path) {
-                        configs.insert(file_name, content);
+                        configs.insert(
+                            file_name,
+                            ConfigEntry {
+                                content,
+                                updated_at: mtime_iso(&path),
+                            },
+                        );
                     }
                 }
             }
@@ -253,13 +363,17 @@ fn read_all_configs(bepinex_path: &str) -> HashMap<String, String> {
     configs
 }
 
-/// Read trainer_state.json from the profile directory (parent of BepInEx path).
-fn read_trainer_state(bepinex_path: &str) -> Option<String> {
+/// Read trainer_state.json from the profile directory (parent of BepInEx path),
+/// returning a `ConfigEntry` so it slots into the same per-file merge logic.
+fn read_trainer_state(bepinex_path: &str) -> Option<ConfigEntry> {
     let path = Path::new(bepinex_path)
         .parent()
         .unwrap_or_else(|| Path::new("."))
         .join("trainer_state.json");
-    fs::read_to_string(&path).ok()
+    fs::read_to_string(&path).ok().map(|content| ConfigEntry {
+        content,
+        updated_at: mtime_iso(&path),
+    })
 }
 
 /// Write trainer_state.json to the profile directory (parent of BepInEx path).
@@ -459,65 +573,149 @@ struct ProfilePushInfo {
     is_linked: bool,
 }
 
-fn push_profile_bundle(user_id: &str, display_name: &str, profile: &ProfilePushInfo) -> Result<(), String> {
-    let bundle = snapshot_bundle(&profile.id, &profile.name, &profile.bepinex_path)?;
-    let bundle_path = sync_bundle_path(user_id, &profile.id);
-    let bundle_json = serde_json::to_string_pretty(&bundle).map_err(|e| e.to_string())?;
+/// Pick the bundle entry with the larger `updated_at`. Ties go to `b` so that
+/// when both sides have identical timestamps, the most recently observed copy
+/// wins — this matches the MegaList tie-break convention.
+fn pick_config_entry(a: ConfigEntry, b: ConfigEntry) -> ConfigEntry {
+    if b.updated_at >= a.updated_at { b } else { a }
+}
 
-    // Defensive: refuse to overwrite a populated remote bundle with a clearly-empty
-    // local one. Empty here = no mods, no thunderstore mods, no .cfg files. This catches
-    // the "fresh-state-on-second-device wipes good remote" pattern that took out Lady
-    // Emz's MegaLists. We DON'T compare last_updated — `snapshot_bundle()` stamps it to
-    // `iso_now()` every push, so local is always "newer" by that field even when stale.
-    let local_is_empty = bundle.mods.is_empty()
-        && bundle.thunderstore_mods.is_empty()
-        && bundle.configs.is_empty();
-
-    if local_is_empty {
-        if let Ok((remote_content, _)) = github_get_file(&bundle_path) {
-            if let Ok(remote) = serde_json::from_str::<SyncProfileBundle>(&remote_content) {
-                let remote_has_data = !remote.mods.is_empty()
-                    || !remote.thunderstore_mods.is_empty()
-                    || !remote.configs.is_empty();
-                if remote_has_data {
-                    app_log(&format!(
-                        "Sync push: refusing to overwrite populated remote bundle for {} \
-                         with empty local (remote has {} mods, {} ts mods, {} configs)",
-                        profile.name,
-                        remote.mods.len(),
-                        remote.thunderstore_mods.len(),
-                        remote.configs.len(),
-                    ));
-                    return Err(format!(
-                        "Refusing empty bundle push for '{}' — remote has data. Pull first.",
-                        profile.name
-                    ));
-                }
+/// Merge two bundles per-file. Configs are unioned by filename; on collision,
+/// the newer `updated_at` wins. Mods + thunderstore_mods stay last-writer
+/// (they describe an installed-state set, not freely-editable content), with
+/// the bundle-level `last_updated` watermark deciding which side is canonical.
+/// Trainer state gets the same per-entry watermark treatment as configs.
+fn merge_profile_bundle(local: SyncProfileBundle, remote: SyncProfileBundle) -> SyncProfileBundle {
+    // Per-file config merge — union by filename, pick by updated_at.
+    let mut merged_configs: HashMap<String, ConfigEntry> = remote.configs;
+    for (name, local_entry) in local.configs {
+        match merged_configs.remove(&name) {
+            Some(remote_entry) => {
+                merged_configs.insert(name, pick_config_entry(remote_entry, local_entry));
+            }
+            None => {
+                merged_configs.insert(name, local_entry);
             }
         }
     }
 
+    // Trainer state — same watermark logic, only one entry.
+    let merged_trainer = match (local.trainer_state, remote.trainer_state) {
+        (Some(l), Some(r)) => Some(pick_config_entry(r, l)),
+        (Some(l), None) => Some(l),
+        (None, Some(r)) => Some(r),
+        (None, None) => None,
+    };
+
+    // Mods/thunderstore_mods describe the active installed set, not
+    // independent files — they don't have per-entry timestamps, so use the
+    // bundle-level last_updated as the watermark to decide canonical side.
+    let local_newer = local.last_updated >= remote.last_updated;
+    let (mods, ts_mods, profile_name) = if local_newer {
+        (local.mods, local.thunderstore_mods, local.profile_name)
+    } else {
+        (remote.mods, remote.thunderstore_mods, remote.profile_name)
+    };
+
+    SyncProfileBundle {
+        profile_id: local.profile_id,
+        profile_name,
+        last_updated: iso_now(),
+        mods,
+        thunderstore_mods: ts_mods,
+        configs: merged_configs,
+        trainer_state: merged_trainer,
+    }
+}
+
+fn push_profile_bundle(user_id: &str, display_name: &str, profile: &ProfilePushInfo) -> Result<(), String> {
+    let local = snapshot_bundle(&profile.id, &profile.name, &profile.bepinex_path)?;
+    let bundle_path = sync_bundle_path(user_id, &profile.id);
+
+    // Fetch remote (if any) so we can merge per-file rather than overwrite. Two
+    // devices editing different .cfg files in the same profile previously
+    // dropped one's edit on push — the bundle is one blob, last writer wins.
+    // Now we union per-file by `updated_at`.
+    let remote = match github_get_file(&bundle_path) {
+        Ok((content, _)) => parse_bundle(&content).ok(),
+        Err(_) => None,
+    };
+
+    // Defensive: refuse to overwrite a populated remote bundle with a clearly-empty
+    // local one. Empty here = no mods, no thunderstore mods, no .cfg files. This catches
+    // the "fresh-state-on-second-device wipes good remote" pattern that took out Lady
+    // Emz's MegaLists.
+    let local_is_empty = local.mods.is_empty()
+        && local.thunderstore_mods.is_empty()
+        && local.configs.is_empty();
+
+    if local_is_empty {
+        if let Some(ref r) = remote {
+            let remote_has_data = !r.mods.is_empty()
+                || !r.thunderstore_mods.is_empty()
+                || !r.configs.is_empty();
+            if remote_has_data {
+                app_log(&format!(
+                    "Sync push: refusing to overwrite populated remote bundle for {} \
+                     with empty local (remote has {} mods, {} ts mods, {} configs)",
+                    profile.name,
+                    r.mods.len(),
+                    r.thunderstore_mods.len(),
+                    r.configs.len(),
+                ));
+                return Err(format!(
+                    "Refusing empty bundle push for '{}' — remote has data. Pull first.",
+                    profile.name
+                ));
+            }
+        }
+    }
+
+    // Merge with remote (or use local as-is if no remote yet).
+    let merged = match remote {
+        Some(r) => merge_profile_bundle(local, r),
+        None => local,
+    };
+    let bundle_json = serde_json::to_string_pretty(&merged).map_err(|e| e.to_string())?;
+    let configs_count = merged.configs.len();
+    let mods_count = merged.mods.len();
+
     // PUT with 409 retry — two debounced pushes racing each other (or another device)
-    // used to silently lose one. Refetch SHA on conflict and try again.
+    // used to silently lose one. Refetch SHA AND remerge on conflict so the push that
+    // wins includes both sides' changes.
+    let bundle_path_for_retry = bundle_path.clone();
+    let local_for_retry = snapshot_bundle(&profile.id, &profile.name, &profile.bepinex_path)?;
     github_put_file_with_retry(
         &bundle_path,
         &format!("Sync {} — {}", profile.name, display_name),
         3,
         |attempt| {
-            let sha = if attempt == 1 {
-                github_get_file(&bundle_path).ok().map(|(_, s)| s)
+            if attempt == 1 {
+                let sha = github_get_file(&bundle_path_for_retry).ok().map(|(_, s)| s);
+                Ok((bundle_json.as_bytes().to_vec(), sha))
             } else {
-                // Refetch on retry to pick up the newer SHA the conflicting push produced.
-                match github_get_file(&bundle_path) {
-                    Ok((_, s)) => Some(s),
-                    Err(_) => None,
-                }
-            };
-            Ok((bundle_json.as_bytes().to_vec(), sha))
+                // Conflict: another device pushed between our GET and PUT.
+                // Refetch remote, remerge with our local snapshot, and try again
+                // — that way the retry's bytes include the new remote changes.
+                let (remote_json, sha) = github_get_file(&bundle_path_for_retry)
+                    .map(|(c, s)| (Some(c), Some(s)))
+                    .unwrap_or((None, None));
+                let merged_bytes = match remote_json.and_then(|j| parse_bundle(&j).ok()) {
+                    Some(r) => {
+                        let m = merge_profile_bundle(local_for_retry.clone(), r);
+                        serde_json::to_string_pretty(&m).map_err(|e| e.to_string())?
+                    }
+                    None => bundle_json.clone(),
+                };
+                Ok((merged_bytes.into_bytes(), sha))
+            }
         },
     )?;
 
-    app_log(&format!("Pushed bundle: {} ({} mods, {} configs)", profile.name, bundle.mods.len(), bundle.configs.len()));
+    app_log(&format!(
+        "Pushed bundle: {} ({} mods, {} configs)",
+        profile.name, mods_count, configs_count
+    ));
     Ok(())
 }
 
@@ -590,29 +788,54 @@ pub fn sync_pull_bundle(profile_id: String, bepinex_path: String) -> Result<Sync
     let bundle_path = sync_bundle_path(user_id, &profile_id);
     let (content, _) = github_get_file(&bundle_path)
         .map_err(|_| format!("No cloud bundle found for profile {}", profile_id))?;
-    let remote: SyncProfileBundle = serde_json::from_str(&content)
-        .map_err(|e| format!("Bundle parse error: {}", e))?;
+    let remote: SyncProfileBundle = parse_bundle(&content)?;
 
-    // 2. Apply configs — write all remote configs to local, track what changed
+    // 2. Apply configs — only overwrite local when remote's per-file
+    //    `updated_at` is newer (or equal) than local's mtime, OR the local
+    //    file doesn't exist. A local edit made between push and pull is
+    //    strictly newer than remote and must not be clobbered; the next push
+    //    will then propagate it via per-config merge.
     let config_dir = Path::new(&bepinex_path).join("config");
     fs::create_dir_all(&config_dir).map_err(|e| e.to_string())?;
 
     let mut configs_updated: u32 = 0;
-    for (file_name, remote_content) in &remote.configs {
+    for (file_name, remote_entry) in &remote.configs {
         let local_path = config_dir.join(file_name);
+        let local_exists = local_path.exists();
         let local_content = fs::read_to_string(&local_path).unwrap_or_default();
-        if local_content != *remote_content {
-            fs::write(&local_path, remote_content).map_err(|e| e.to_string())?;
-            configs_updated += 1;
-            app_log(&format!("Sync pull config: {}", file_name));
+        if local_content == remote_entry.content {
+            continue;
         }
+        if local_exists {
+            let local_mtime = mtime_iso(&local_path);
+            if local_mtime > remote_entry.updated_at {
+                app_log(&format!(
+                    "Sync pull: skip {} — local mtime {} > remote {}",
+                    file_name, local_mtime, remote_entry.updated_at
+                ));
+                continue;
+            }
+        }
+        fs::write(&local_path, &remote_entry.content).map_err(|e| e.to_string())?;
+        configs_updated += 1;
+        app_log(&format!("Sync pull config: {}", file_name));
     }
 
-    // 2b. Apply trainer state if present in remote bundle
+    // 2b. Apply trainer state with the same per-entry watermark guard.
     if let Some(ref remote_trainer) = remote.trainer_state {
-        let local_trainer = read_trainer_state(&bepinex_path).unwrap_or_default();
-        if local_trainer != *remote_trainer {
-            write_trainer_state(&bepinex_path, remote_trainer);
+        let local_trainer = read_trainer_state(&bepinex_path);
+        let local_content = local_trainer
+            .as_ref()
+            .map(|t| t.content.as_str())
+            .unwrap_or("");
+        let local_mtime = local_trainer
+            .as_ref()
+            .map(|t| t.updated_at.as_str())
+            .unwrap_or("");
+        if local_content != remote_trainer.content
+            && (local_trainer.is_none() || local_mtime <= remote_trainer.updated_at.as_str())
+        {
+            write_trainer_state(&bepinex_path, &remote_trainer.content);
             configs_updated += 1;
             app_log("Sync pull: trainer_state.json");
         }
@@ -689,7 +912,7 @@ pub fn sync_pull_profile_state(profile_id: String) -> Result<SyncProfileBundle, 
 
     let (content, _) = github_get_file(&bundle_path)
         .map_err(|_| format!("No cloud bundle found for profile {}", profile_id))?;
-    serde_json::from_str(&content).map_err(|e| format!("Bundle parse error: {}", e))
+    parse_bundle(&content)
 }
 
 // Legacy compat — sync_pull_configs delegates to bundle pull
@@ -1177,6 +1400,66 @@ fn sync_reconcile_player_data_impl() -> Result<PlayerReconcileSummary, String> {
     Ok(summary)
 }
 
+/// Delete a character's cloud copy. Manual-only — there's no auto-propagation
+/// from local-disk deletions. A `.fch` vanishing locally just stops getting
+/// pushed; it stays in the cloud until this command is invoked from the UI.
+/// That's the propagation rule we landed on (msg-004 in MegaBugs ticket
+/// 20260425-022017-3390a591) — auto-propagation was flagged as too risky
+/// without a UI affirming intent, since a corrupt local file could otherwise
+/// silently delete the cloud + peer copies.
+#[command]
+pub async fn sync_delete_player_data(character_name: String) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || -> Result<(), String> {
+        let settings = load_sync_settings();
+        if !settings.enabled {
+            return Err("Cloud sync is not enabled".to_string());
+        }
+        let identity = get_megaload_identity()?;
+        let user_id = &identity.user_id;
+        let path = sync_character_path(user_id, &character_name);
+
+        // Need the file's SHA before we can delete via the GitHub Contents API.
+        let (_, sha) = match github_get_file(&path) {
+            Ok(t) => t,
+            Err(e) if e.contains("404") => {
+                app_log(&format!(
+                    "Sync delete: {} already absent from cloud",
+                    character_name
+                ));
+                sync_log::emit(
+                    "DeletePlayerData",
+                    "noop",
+                    format!("{}: already absent from cloud", character_name),
+                );
+                return Ok(());
+            }
+            Err(e) => return Err(e),
+        };
+
+        github_delete_file(
+            &path,
+            &sha,
+            &format!(
+                "Sync delete {} — {}",
+                character_name, identity.display_name
+            ),
+        )?;
+
+        app_log(&format!(
+            "Sync delete: removed cloud copy of {}",
+            character_name
+        ));
+        sync_log::emit(
+            "DeletePlayerData",
+            "success",
+            format!("Removed cloud copy of {}", character_name),
+        );
+        Ok(())
+    })
+    .await
+    .map_err(|e| format!("Player delete task panicked: {}", e))?
+}
+
 // ---------------------------------------------------------------------------
 // MegaList sync — merge-with-tombstones. Stale local can never wipe remote;
 // it can only contribute additions. Concurrent pushes serialise via 409 retry.
@@ -1196,31 +1479,7 @@ fn iso_days_ago(days: i64) -> String {
         .duration_since(std::time::UNIX_EPOCH)
         .unwrap_or_default()
         .as_secs() as i64;
-    let cutoff = now - days * 86400;
-    let secs_per_day: i64 = 86400;
-    let d = cutoff / secs_per_day;
-    let tod = cutoff % secs_per_day;
-    let hours = tod / 3600;
-    let minutes = (tod % 3600) / 60;
-    let seconds = tod % 60;
-
-    let mut y = 1970i64;
-    let mut remaining = d;
-    loop {
-        let days_in_year = if y % 4 == 0 && (y % 100 != 0 || y % 400 == 0) { 366 } else { 365 };
-        if remaining < days_in_year { break; }
-        remaining -= days_in_year;
-        y += 1;
-    }
-    let leap = y % 4 == 0 && (y % 100 != 0 || y % 400 == 0);
-    let month_days = [31, if leap { 29 } else { 28 }, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    let mut m = 0usize;
-    for (i, &md) in month_days.iter().enumerate() {
-        if remaining < md as i64 { m = i; break; }
-        remaining -= md as i64;
-    }
-    let day = remaining + 1;
-    format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}Z", y, m + 1, day, hours, minutes, seconds)
+    secs_to_iso(now - days * 86400)
 }
 
 /// Pick the lexicographically larger of two optional strings (empty == "").
@@ -1741,5 +2000,187 @@ mod megalist_merge_tests {
         let merged = merge_blobs(local, remote.clone());
         assert!(blobs_content_equal(&merged, &remote),
             "merged content should equal remote content when nothing changed");
+    }
+}
+
+#[cfg(test)]
+mod profile_bundle_merge_tests {
+    use super::*;
+
+    fn make_bundle(
+        name: &str,
+        last_updated: &str,
+        configs: &[(&str, &str, &str)],
+    ) -> SyncProfileBundle {
+        let mut map = HashMap::new();
+        for (file, content, ts) in configs {
+            map.insert(
+                file.to_string(),
+                ConfigEntry {
+                    content: content.to_string(),
+                    updated_at: ts.to_string(),
+                },
+            );
+        }
+        SyncProfileBundle {
+            profile_id: "p1".to_string(),
+            profile_name: name.to_string(),
+            last_updated: last_updated.to_string(),
+            mods: vec![],
+            thunderstore_mods: vec![],
+            configs: map,
+            trainer_state: None,
+        }
+    }
+
+    /// Two devices each edit a *different* .cfg file in the same profile,
+    /// concurrently. Before the per-config merge fix, the second push
+    /// overwrote the first's edit because the bundle was a single blob.
+    /// After the fix, both edits must survive the merge.
+    #[test]
+    fn concurrent_edits_to_different_cfg_files_both_survive() {
+        let local = make_bundle(
+            "default",
+            "2026-04-25T00:00:10Z",
+            &[
+                ("MegaShot.cfg", "shot=local-edit", "2026-04-25T00:00:10Z"),
+                ("MegaHoe.cfg",  "hoe=remote-edit", "2026-04-25T00:00:05Z"),
+            ],
+        );
+        let remote = make_bundle(
+            "default",
+            "2026-04-25T00:00:08Z",
+            &[
+                ("MegaShot.cfg", "shot=old",         "2026-04-25T00:00:01Z"),
+                ("MegaHoe.cfg",  "hoe=remote-edit",  "2026-04-25T00:00:05Z"),
+                ("MegaQoL.cfg",  "qol=remote-only",  "2026-04-25T00:00:02Z"),
+            ],
+        );
+        let merged = merge_profile_bundle(local, remote);
+        assert_eq!(merged.configs.get("MegaShot.cfg").unwrap().content, "shot=local-edit",
+            "local's newer edit must win for MegaShot.cfg");
+        assert_eq!(merged.configs.get("MegaHoe.cfg").unwrap().content, "hoe=remote-edit",
+            "MegaHoe.cfg unchanged — equal-watermark tie keeps remote");
+        assert_eq!(merged.configs.get("MegaQoL.cfg").unwrap().content, "qol=remote-only",
+            "remote-only file must NOT be dropped from merged bundle");
+        assert_eq!(merged.configs.len(), 3);
+    }
+
+    /// Reverse direction: remote has the newer edit for a file local hasn't
+    /// touched. Remote must win for that file even though local's
+    /// bundle-level last_updated is fresher (because local just got around
+    /// to pushing some other unrelated change).
+    #[test]
+    fn remote_newer_per_file_beats_local_bundle_timestamp() {
+        let local = make_bundle(
+            "default",
+            "2026-04-25T01:00:00Z",
+            &[("MegaShot.cfg", "shot=stale-local", "2026-04-25T00:00:01Z")],
+        );
+        let remote = make_bundle(
+            "default",
+            "2026-04-25T00:30:00Z",
+            &[("MegaShot.cfg", "shot=fresh-remote", "2026-04-25T00:25:00Z")],
+        );
+        let merged = merge_profile_bundle(local, remote);
+        assert_eq!(merged.configs.get("MegaShot.cfg").unwrap().content, "shot=fresh-remote",
+            "per-file watermark beats bundle-level last_updated");
+    }
+
+    /// v1 bundles (bare-string configs) round-trip through the v2 schema by
+    /// promoting each entry with the bundle-level `last_updated` as fallback.
+    /// A device that hasn't been upgraded yet can still publish a v1 bundle
+    /// and the v2 client must read it without exploding.
+    #[test]
+    fn legacy_v1_bundle_promotes_to_v2_on_parse() {
+        let v1_json = r#"{
+            "profile_id": "p1",
+            "profile_name": "default",
+            "last_updated": "2026-04-25T00:00:00Z",
+            "mods": [],
+            "thunderstore_mods": [],
+            "configs": {
+                "MegaShot.cfg": "shot=v1-data",
+                "MegaHoe.cfg": "hoe=v1-data"
+            },
+            "trainer_state": "{\"opens\":3}"
+        }"#;
+        let parsed = parse_bundle(v1_json).expect("v1 parse must succeed");
+        assert_eq!(parsed.configs.len(), 2);
+        let shot = parsed.configs.get("MegaShot.cfg").expect("MegaShot present");
+        assert_eq!(shot.content, "shot=v1-data");
+        assert_eq!(shot.updated_at, "2026-04-25T00:00:00Z",
+            "v1 entry must inherit bundle's last_updated as the fallback watermark");
+        let trainer = parsed.trainer_state.expect("trainer state present");
+        assert_eq!(trainer.content, "{\"opens\":3}");
+        assert_eq!(trainer.updated_at, "2026-04-25T00:00:00Z");
+    }
+
+    /// v2 bundles parse without losing the per-file timestamps.
+    #[test]
+    fn v2_bundle_parses_with_per_file_timestamps() {
+        let v2_json = r#"{
+            "profile_id": "p1",
+            "profile_name": "default",
+            "last_updated": "2026-04-25T00:00:00Z",
+            "mods": [],
+            "thunderstore_mods": [],
+            "configs": {
+                "MegaShot.cfg": { "content": "shot=v2", "updated_at": "2026-04-25T00:00:05Z" }
+            }
+        }"#;
+        let parsed = parse_bundle(v2_json).expect("v2 parse must succeed");
+        let shot = parsed.configs.get("MegaShot.cfg").expect("MegaShot present");
+        assert_eq!(shot.content, "shot=v2");
+        assert_eq!(shot.updated_at, "2026-04-25T00:00:05Z",
+            "v2 per-file updated_at must round-trip exactly");
+    }
+
+    /// Trainer state is single-keyed but uses the same per-entry watermark.
+    /// Whichever side has the newer timestamp wins.
+    #[test]
+    fn trainer_state_picks_by_watermark() {
+        let mut local = make_bundle("default", "2026-04-25T00:00:00Z", &[]);
+        local.trainer_state = Some(ConfigEntry {
+            content: "{\"opens\":5}".to_string(),
+            updated_at: "2026-04-25T00:00:10Z".to_string(),
+        });
+        let mut remote = make_bundle("default", "2026-04-25T00:00:00Z", &[]);
+        remote.trainer_state = Some(ConfigEntry {
+            content: "{\"opens\":2}".to_string(),
+            updated_at: "2026-04-25T00:00:01Z".to_string(),
+        });
+        let merged = merge_profile_bundle(local, remote);
+        let t = merged.trainer_state.expect("trainer state present");
+        assert_eq!(t.content, "{\"opens\":5}", "newer trainer state must win");
+    }
+
+    /// The merged bundle's mods array follows the bundle-level last_updated
+    /// (mods describe the active installed set, not freely-editable content).
+    /// Local newer ⇒ local mods wins.
+    #[test]
+    fn mods_follow_bundle_level_watermark() {
+        let mut local = make_bundle("default", "2026-04-25T00:00:10Z", &[]);
+        local.mods.push(SyncModEntry {
+            name: "MegaShot".to_string(),
+            file_name: "MegaShot.dll".to_string(),
+            version: None,
+            enabled: true,
+            source: "manual".to_string(),
+        });
+        let mut remote = make_bundle("default", "2026-04-25T00:00:05Z", &[]);
+        remote.mods.push(SyncModEntry {
+            name: "MegaHoe".to_string(),
+            file_name: "MegaHoe.dll".to_string(),
+            version: None,
+            enabled: true,
+            source: "manual".to_string(),
+        });
+        let merged = merge_profile_bundle(local, remote);
+        let names: Vec<String> = merged.mods.iter().map(|m| m.name.clone()).collect();
+        assert!(names.contains(&"MegaShot".to_string()),
+            "local-newer bundle's mod set must win, got {:?}", names);
+        assert!(!names.contains(&"MegaHoe".to_string()),
+            "stale remote mod set must NOT contribute, got {:?}", names);
     }
 }

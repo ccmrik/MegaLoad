@@ -188,6 +188,7 @@ pub fn run() {
             sync_push_player_data,
             sync_pull_player_data,
             sync_reconcile_player_data,
+            sync_delete_player_data,
             sync_push_mega_lists,
             sync_pull_mega_lists,
             sync_reconcile_mega_lists,

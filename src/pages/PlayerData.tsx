@@ -24,6 +24,7 @@ import {
   AlertCircle,
   Sparkles,
   Cloud,
+  CloudOff,
 } from "lucide-react";
 import { cn } from "../lib/utils";
 import { usePlayerDataStore } from "../stores/playerDataStore";
@@ -42,7 +43,12 @@ import {
   type ValheimItem,
 } from "../data/valheim-items";
 import type { InventoryItem, SkillData } from "../lib/tauri-api";
-import { startPlayerDataWatcher, stopPlayerDataWatcher, syncReconcilePlayerData } from "../lib/tauri-api";
+import {
+  startPlayerDataWatcher,
+  stopPlayerDataWatcher,
+  syncReconcilePlayerData,
+  syncDeletePlayerData,
+} from "../lib/tauri-api";
 import { useSyncStore } from "../stores/syncStore";
 
 // ── Guardian power display names ───────────────────────────
@@ -410,6 +416,38 @@ export function PlayerData() {
             >
               {syncing ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Cloud className="w-3.5 h-3.5" />}
               Sync
+            </button>
+          )}
+
+          {/* Delete-from-cloud — manual-only propagation rule for character
+              deletions. Auto-propagation from local-disk deletions was
+              deliberately not implemented (see ticket 20260425-022017-3390a591). */}
+          {syncEnabled && character && (
+            <button
+              onClick={async () => {
+                const charName = character.name;
+                if (!confirm(
+                  `Delete "${charName}" from the cloud?\n\n` +
+                  `The local character file stays on this PC. Other devices will stop receiving cloud updates for this character.\n\n` +
+                  `This cannot be undone.`
+                )) return;
+                setSyncing(true);
+                try {
+                  await syncDeletePlayerData(charName);
+                  setSyncToast(`Removed "${charName}" from cloud`);
+                } catch (e) {
+                  setSyncToast(`Cloud delete failed: ${e}`);
+                } finally {
+                  setSyncing(false);
+                  setTimeout(() => setSyncToast(null), 3000);
+                }
+              }}
+              disabled={syncing}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-colors disabled:opacity-40"
+              title="Delete this character's cloud copy. Local file stays."
+            >
+              <CloudOff className="w-3.5 h-3.5" />
+              Delete cloud
             </button>
           )}
 
