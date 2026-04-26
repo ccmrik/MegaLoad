@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-04-26T18:15:00Z",
+  "updated_at": "2026-04-26T18:18:00Z",
   "mods": [
     {
       "name": "MegaHoe",
@@ -92,8 +92,8 @@
     },
     {
       "name": "MegaSkeletons",
-      "version": "1.2.2",
-      "download_url": "https://github.com/ccmrik/MegaSkeletons/releases/download/v1.2.2/MegaSkeletons.dll",
+      "version": "1.2.3",
+      "download_url": "https://github.com/ccmrik/MegaSkeletons/releases/download/v1.2.3/MegaSkeletons.dll",
       "dll_name": "MegaSkeletons.dll",
       "plugin_folder": "MegaSkeletons",
       "description": "Summoned skeleton buffs (health, speed, HoT, attack speed) + portal/dungeon persistence + remote skeleton detonator (hotkey-triggered AOE explosion)"
