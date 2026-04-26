@@ -28,6 +28,39 @@ if (rawText.charCodeAt(0) === 0xFEFF) rawText = rawText.substring(1);
 const raw = JSON.parse(rawText);
 const { items, recipes, creatureDrops, pieces, localization } = raw;
 
+// ── Plantable taxonomy ─────────────────────────────────────
+// Plantables are items the player places via the Cultivator (or seeds/produce
+// that loop back into a Cultivator placement). The 17 sapling BuildPieces are
+// re-typed to "Plantable" so they don't pollute the BuildPiece list (saplings
+// inflate the build-mat rollups with seed recipes that have nothing to do with
+// structures). Seeds, crops, and plantable mushrooms keep their primary type
+// (Material/Food) so they stay in those category filters, but get plantable=true
+// so the Plantable filter still surfaces them.
+
+// Sapling BuildPieces — re-typed to Plantable + sub="Sapling".
+const PLANTABLE_PIECES = new Set([
+  "sapling_barley", "sapling_carrot", "sapling_flax", "sapling_jotunpuffs",
+  "sapling_magecap", "sapling_onion", "sapling_seedcarrot", "sapling_seedonion",
+  "sapling_seedturnip", "sapling_turnip",
+  "Beech_Sapling", "Birch_Sapling", "FirTree_Sapling", "Oak_Sapling",
+  "PineTree_Sapling", "VineAsh_sapling", "VineGreen_sapling",
+]);
+
+// Seeds + plantable produce — flagged plantable=true while keeping their
+// primary type for the Material/Food filters.
+const PLANTABLE_FLAG = new Set([
+  // Crop seeds
+  "CarrotSeeds", "OnionSeeds", "TurnipSeeds",
+  // Tree seeds (Acorn = oak)
+  "BeechSeeds", "BirchSeeds", "Acorn", "FirCone", "PineCone",
+  // Vine seeds (VineGreen = ivy)
+  "VineberrySeeds", "VineGreenSeeds",
+  // Plantable produce / grains
+  "Carrot", "Onion", "Turnip", "Barley", "Flax",
+  // Plantable mushrooms (used as their own seed)
+  "MushroomJotunPuffs", "MushroomMagecap",
+]);
+
 // ── Localization resolver ──
 function loc(token) {
   if (!token) return "";
@@ -1946,15 +1979,16 @@ for (const p of pieces) {
   // Skip pieces with no recipe (internal/debug)
   if (recipeIngredients.length === 0) continue;
   
+  const isPlantablePiece = PLANTABLE_PIECES.has(p.prefab);
   const entry = {
     id: p.prefab,
     token: p.name || "",
     name: name,
-    type: "BuildPiece",
-    subcategory: mapPieceCategory(p.category),
+    type: isPlantablePiece ? "Plantable" : "BuildPiece",
+    subcategory: isPlantablePiece ? "Sapling" : mapPieceCategory(p.category),
     description: loc(p.description),
     biomes: guessBiomes(p.prefab, { resources: p.resources || [] }),
-    source: ["Building"],
+    source: isPlantablePiece ? ["Planting"] : ["Building"],
     station: p.craftingStation ? mapStation(p.craftingStation) : "",
     stationLevel: 0,
     maxQuality: 1,
@@ -1968,8 +2002,9 @@ for (const p of pieces) {
     stats: p.comfort > 0 ? [{ label: "Comfort", value: `${p.comfort}` }] : [],
     wikiUrl: WIKI_MAP[p.prefab] ? WIKI_MAP[p.prefab][0] : "",
     wikiGroup: WIKI_MAP[p.prefab] && WIKI_MAP[p.prefab][1] ? WIKI_MAP[p.prefab][1] : "",
+    ...(isPlantablePiece ? { plantable: true } : {}),
   };
-  
+
   converted.push(entry);
   seenIds.add(p.prefab);
 }
@@ -2113,11 +2148,22 @@ function mapPieceCategory(cat) {
   }
 }
 
+// ── Plantable flag on seeds / crops / mushrooms ──────────────
+// These keep their primary type (Material/Food) so they remain in those
+// category filters, but get plantable=true so the Plantable filter picks
+// them up alongside the sapling pieces.
+for (const entry of converted) {
+  if (PLANTABLE_FLAG.has(entry.id)) {
+    entry.plantable = true;
+  }
+}
+
 // ── Build piece biome resolution ─────────────────────────────
 // Build pieces aren't in recipeMap, so getItemBiomeTier can't resolve them.
-// Use max-tier of ingredients (same logic as crafted items).
+// Use max-tier of ingredients (same logic as crafted items). Plantable
+// saplings follow the same rule — their tier is the seed/produce tier.
 for (const entry of converted) {
-  if (entry.type !== "BuildPiece") continue;
+  if (entry.type !== "BuildPiece" && entry.type !== "Plantable") continue;
   if (entry.biomes.length > 0 && entry.biomes.length === 1) continue; // Already set by override
   if (entry.recipe.length === 0) continue;
   
@@ -2363,7 +2409,7 @@ let fixupCount = Object.keys(ITEM_FIXUPS).length + ITEM_REMOVE.size + ITEM_ADDIT
 console.log(`Applied ${fixupCount} post-processing fixups`);
 
 // ── Sort: Materials, Weapons, Armor, Food, Potions, Tools, Ammo, Creatures, BuildPieces, Misc
-const TYPE_ORDER = ["Material", "Weapon", "Armor", "Food", "Potion", "Tool", "Ammo", "Creature", "WorldObject", "BuildPiece", "Misc"];
+const TYPE_ORDER = ["Material", "Weapon", "Armor", "Food", "Potion", "Tool", "Ammo", "Creature", "WorldObject", "BuildPiece", "Plantable", "Misc"];
 converted.sort((a, b) => {
   const ta = TYPE_ORDER.indexOf(a.type);
   const tb = TYPE_ORDER.indexOf(b.type);
@@ -2437,6 +2483,7 @@ export type ItemType =
   | "Tool"
   | "Ammo"
   | "BuildPiece"
+  | "Plantable"
   | "Creature"
   | "WorldObject"
   | "Misc";
@@ -2461,6 +2508,10 @@ export interface ValheimItem {
   drops: ItemDrop[];    // What this creature/source drops (for Creature type)
   worldSources: WorldSource[];  // Trees, rocks, destructibles that drop this item
   stats: ItemStat[];    // Flexible stats (damage, armor, duration, etc.)
+  plantable?: boolean;  // True for items planted via the Cultivator — saplings,
+                        // crop seeds, plantable produce/mushrooms. Surfaces these
+                        // under the Plantable filter even when their primary
+                        // type is Material/Food.
   tameable?: boolean;   // Creatures only — true for Boar, Wolf, Lox, Asksvin
   tameFoods?: string[]; // Creatures only — prefab IDs of foods this creature will eat to tame
   faction?: string;     // Creatures only — pretty-printed (e.g. "Forest")

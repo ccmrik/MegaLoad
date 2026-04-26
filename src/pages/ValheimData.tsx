@@ -44,6 +44,7 @@ import {
   Shirt,
   MapPin,
   Copy,
+  Sprout,
 } from "lucide-react";
 import { save } from "@tauri-apps/plugin-dialog";
 import { saveTextFile } from "../lib/tauri-api";
@@ -144,6 +145,7 @@ const TYPE_ICONS: Record<ItemType, typeof Package> = {
   Tool: Wrench,
   Ammo: Crosshair,
   BuildPiece: Landmark,
+  Plantable: Sprout,
   Creature: Skull,
   WorldObject: MapPin,
   Misc: HelpCircle,
@@ -151,7 +153,7 @@ const TYPE_ICONS: Record<ItemType, typeof Package> = {
 
 const TYPE_ORDER: ItemType[] = [
   "Material", "Weapon", "Armor", "Clothing", "Food", "Potion",
-  "Tool", "Ammo", "BuildPiece", "Creature", "WorldObject", "Misc",
+  "Tool", "Ammo", "BuildPiece", "Plantable", "Creature", "WorldObject", "Misc",
 ];
 
 const TYPE_GROUP_LABELS: Partial<Record<ItemType, string>> = {
@@ -164,6 +166,7 @@ const TYPE_GROUP_LABELS: Partial<Record<ItemType, string>> = {
   Tool: "Tools",
   Ammo: "Ammo",
   BuildPiece: "Build Pieces",
+  Plantable: "Plantables",
   Creature: "Creatures",
   WorldObject: "World Objects",
   Misc: "Misc",
@@ -907,7 +910,7 @@ export function ValheimData() {
                     count={count}
                     icon={<Icon className="w-3 h-3" />}
                   >
-                    {type === "BuildPiece" ? "Build Piece" : type}
+                    {type === "BuildPiece" ? "Build Piece" : type === "Plantable" ? "Plantable" : type}
                   </FilterCheckbox>
                 );
               })}

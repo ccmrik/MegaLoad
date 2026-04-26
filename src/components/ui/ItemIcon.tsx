@@ -13,6 +13,7 @@ import {
   MapPin,
   HelpCircle,
   Gem,
+  Sprout,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 import { getItemById, getCreatureIconId } from "../../stores/valheimDataStore";
@@ -28,6 +29,7 @@ const TYPE_ICONS: Record<ItemType, typeof Package> = {
   Tool: Wrench,
   Ammo: Crosshair,
   BuildPiece: Landmark,
+  Plantable: Sprout,
   Creature: Skull,
   WorldObject: MapPin,
   Misc: HelpCircle,

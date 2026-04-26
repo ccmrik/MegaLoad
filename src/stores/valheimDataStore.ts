@@ -746,33 +746,80 @@ export function getStationMaterials(stationNames: string[], mode: "craft" | "bui
   return [...totals.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
+// Items that can show up as ingredients but should never count as raw mats:
+// crafted weapons/armor/tools/ammo (already filtered) plus plantables (saplings
+// drop here as upgrade-recipes for Hammer pieces in some mods — keep the list
+// raw-resource only).
+const NON_RAW_MAT_TYPES = new Set([...ITEM_INGREDIENT_TYPES, "Plantable"]);
+
+/** "Player-obtainable" check used to weed out decoration-only BuildPieces.
+ *  An ingredient counts as obtainable if it has any of: a recipe (craftable),
+ *  drops (creature loot), worldSources (located in the world), or a source
+ *  tag indicating a player-direct route (Pickup, Tree, Mining, Looting,
+ *  Pickable, Crafting, Foraging, Fishing, Creature Drop, Chest Loot, Vendor).
+ *  Pot_Shard_Red / CharcoalResin / etc. fail this — Ashlands ruin pots are
+ *  decoration spawns, not Hammer-buildable. */
+const PLAYER_OBTAINABLE_SOURCES = new Set([
+  "Pickup", "Tree", "Mining", "Looting", "Pickable", "Crafting",
+  "Foraging", "Fishing", "Creature Drop", "Chest Loot", "Vendor",
+]);
+
+const _bpItemMap = new Map(VALHEIM_ITEMS.map(i => [i.id, i]));
+
+function isMaterialObtainable(itemId: string): boolean {
+  const it = _bpItemMap.get(itemId);
+  if (!it) return false;
+  if ((it.recipe || []).length > 0) return true;
+  if ((it.drops || []).length > 0) return true;
+  if ((it.worldSources || []).length > 0) return true;
+  return (it.source || []).some(s => PLAYER_OBTAINABLE_SOURCES.has(s));
+}
+
+/** A BuildPiece is "really player-buildable" when either its station is set
+ *  (Hammer / Workbench / etc.) or all its recipe ingredients are obtainable.
+ *  Catches the 9 Ashlands ruin pot pieces (empty station + un-obtainable
+ *  Pot_Shard / CharcoalResin ingredients) without false-flagging legit Hammer
+ *  pieces like Cooking Station / Campfire (empty station but Wood/Stone ings). */
+function isPlayerBuildable(piece: ValheimItem): boolean {
+  if (piece.station) return true;
+  return (piece.recipe || []).every(ing => isMaterialObtainable(ing.id));
+}
+
 /** Get all unique raw ingredients needed to build BuildPieces (optionally
  *  filtered to specific sub-categories — Wall, Floor, Roof, etc.). Mirrors
  *  getStationMaterials but pivots on the BuildPiece sub-category axis instead
- *  of the station axis. */
+ *  of the station axis. Skips decoration-only pieces (see isPlayerBuildable)
+ *  so Ashlands ruin pots don't pollute the rollup. */
 export function getBuildPieceMaterials(subcategories: string[]): CartMaterial[] {
   const totals = new Map<string, CartMaterial>();
   const filterSet = subcategories.length > 0 ? new Set(subcategories) : null;
   for (const item of VALHEIM_ITEMS) {
     if (item.type !== "BuildPiece") continue;
     if (filterSet && !filterSet.has(item.subcategory)) continue;
+    if (!isPlayerBuildable(item)) continue;
     for (const ing of item.recipe) {
+      const canonical = _bpItemMap.get(ing.id);
+      // Prefer the canonical name from the item record so manually-added
+      // entries (ITEM_ADDITIONS) override raw token names left over from the
+      // pieces dump (e.g. "$item_pot_shard_red" → "Red Pot Shard").
+      const displayName = canonical?.name || ing.name;
       const prev = totals.get(ing.id);
-      totals.set(ing.id, { id: ing.id, name: ing.name, amount: (prev?.amount || 0) + ing.amount });
+      totals.set(ing.id, { id: ing.id, name: displayName, amount: (prev?.amount || 0) + ing.amount });
     }
     for (const uc of item.upgradeCosts) {
       for (const r of uc.resources) {
+        const canonical = _bpItemMap.get(r.id);
+        const displayName = canonical?.name || r.name;
         const prev = totals.get(r.id);
-        totals.set(r.id, { id: r.id, name: r.name, amount: (prev?.amount || 0) + r.amount });
+        totals.set(r.id, { id: r.id, name: displayName, amount: (prev?.amount || 0) + r.amount });
       }
     }
   }
   // Drop ingredients that are themselves crafted weapons/armor/tools/ammo so
   // the list stays raw materials only (matches getStationMaterials).
-  const itemMap = new Map(VALHEIM_ITEMS.map(i => [i.id, i]));
   for (const [id] of totals) {
-    const ingItem = itemMap.get(id);
-    if (ingItem && ITEM_INGREDIENT_TYPES.has(ingItem.type)) {
+    const ingItem = _bpItemMap.get(id);
+    if (ingItem && NON_RAW_MAT_TYPES.has(ingItem.type)) {
       totals.delete(id);
     }
   }
@@ -786,6 +833,7 @@ export function getBuildPieceCount(subcategories: string[]): number {
   for (const item of VALHEIM_ITEMS) {
     if (item.type !== "BuildPiece") continue;
     if (filterSet && !filterSet.has(item.subcategory)) continue;
+    if (!isPlayerBuildable(item)) continue;
     n++;
   }
   return n;
@@ -1060,7 +1108,14 @@ export function getFilteredItems(
     items = items.filter((i) => i.weakTo && activeWeakTo.every((d) => i.weakTo!.includes(d)));
   }
   if (activeTypes.length > 0) {
-    items = items.filter((i) => activeTypes.includes(i.type));
+    // "Plantable" matches both type==="Plantable" (the 17 sapling pieces) AND
+    // any item flagged plantable===true (seeds/crops/mushrooms that keep their
+    // primary Material/Food typing). Without this, Carrot/Onion/etc. wouldn't
+    // surface under the Plantable filter.
+    const plantableActive = activeTypes.includes("Plantable");
+    items = items.filter((i) =>
+      activeTypes.includes(i.type) || (plantableActive && i.plantable === true)
+    );
   }
   if (activeSubcategories.length > 0) {
     items = items.filter((i) => activeSubcategories.includes(i.subcategory));
@@ -1171,6 +1226,12 @@ export function getTypeCounts(
   const counts: Record<string, number> = {};
   for (const item of base) {
     counts[item.type] = (counts[item.type] || 0) + 1;
+    // Plantable is a union: type==="Plantable" OR plantable===true. Count items
+    // whose primary type is something else (Material/Food) but have plantable
+    // tagged so the Plantable filter shows the right total.
+    if (item.plantable === true && item.type !== "Plantable") {
+      counts["Plantable"] = (counts["Plantable"] || 0) + 1;
+    }
   }
   return counts;
 }
