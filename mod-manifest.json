@@ -84,11 +84,11 @@
     },
     {
       "name": "MegaSkeletons",
-      "version": "1.1.1",
-      "download_url": "https://github.com/ccmrik/MegaSkeletons/releases/download/v1.1.1/MegaSkeletons.dll",
+      "version": "1.2.0",
+      "download_url": "https://github.com/ccmrik/MegaSkeletons/releases/download/v1.2.0/MegaSkeletons.dll",
       "dll_name": "MegaSkeletons.dll",
       "plugin_folder": "MegaSkeletons",
-      "description": "Summoned skeleton buffs (health, speed, HoT, attack speed) + portal/dungeon persistence"
+      "description": "Summoned skeleton buffs (health, speed, HoT, attack speed) + portal/dungeon persistence + remote skeleton detonator (hotkey-triggered AOE explosion)"
     }
   ]
 }
