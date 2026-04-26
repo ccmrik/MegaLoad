@@ -68,6 +68,8 @@ import {
   getStationItems,
   getStationItemsByLevel,
   getStationMaterials,
+  getBuildPieceMaterials,
+  getBuildPieceCount,
   getProcessingStationForOutput,
   getItemSource,
   VENDORS,
@@ -451,6 +453,7 @@ export function ValheimData() {
     activeFactions, activeDealsDamage, activeWeakTo,
     viewMode, tableSortKey, tableSortDir,
     stationMaterialsMode, setStationMaterialsMode,
+    buildPieceMaterialsMode, setBuildPieceMaterialsMode,
     setQuery, setActiveType, setActiveSubcategory, setActiveBiome,
     setActiveStation, setActiveFactory, setActiveVendor, setSortBy, setSelectedItem,
     setSelectedStation, setSelectedFactory, setSelectedVendor,
@@ -546,6 +549,11 @@ export function ValheimData() {
     if (!stationMaterialsMode || activeStations.length === 0) return [];
     return getStationMaterials(activeStations, stationMaterialsMode);
   }, [stationMaterialsMode, activeStations]);
+  const buildPieceMatsActive = buildPieceMaterialsMode === "materials" && activeTypes.includes("BuildPiece");
+  const buildPieceMaterials = useMemo(() => {
+    if (!buildPieceMatsActive) return [];
+    return getBuildPieceMaterials(activeSubcategories);
+  }, [buildPieceMatsActive, activeSubcategories]);
   const subcategoryEntries = Object.entries(subcategoryCounts).sort((a, b) => b[1] - a[1]);
   const hasActiveFilters = query || activeTypes.length > 0 || activeSubcategories.length > 0 || activeBiomes.length > 0 || activeStations.length > 0 || activeFactories.length > 0 || activeVendors.length > 0 || onlyTameable || activeFactions.length > 0 || activeDealsDamage.length > 0 || activeWeakTo.length > 0 || sortBy !== "name-asc";
 
@@ -873,6 +881,7 @@ export function ValheimData() {
                   setOnlyTameable(false);
                   useValheimDataStore.setState({ activeFactions: [], activeDealsDamage: [], activeWeakTo: [] });
                   setStationMaterialsMode(false);
+                  setBuildPieceMaterialsMode(false);
                   setSortBy("name-asc");
                 }}
                 className="text-[10px] text-red-400 hover:text-red-300 transition-colors"
@@ -921,6 +930,33 @@ export function ValheimData() {
             {/* Subcategory — only shown when types are selected and subcategories exist */}
             {activeTypes.length > 0 && subcategoryEntries.length > 1 && (
               <FilterAccordion title="Subcategory" defaultOpen>
+                {activeTypes.includes("BuildPiece") && (
+                  <div className="flex items-center rounded-md bg-zinc-800/40 border border-zinc-700/30 overflow-hidden mb-1.5 mx-1">
+                    <button
+                      onClick={() => setBuildPieceMaterialsMode(false)}
+                      className={cn(
+                        "flex-1 flex items-center justify-center py-1 text-[10px] font-medium transition-colors",
+                        !buildPieceMaterialsMode
+                          ? "bg-brand-500/15 text-brand-400"
+                          : "text-zinc-500 hover:text-zinc-300"
+                      )}
+                    >
+                      Pieces
+                    </button>
+                    <div className="w-px h-3 bg-zinc-700/50" />
+                    <button
+                      onClick={() => setBuildPieceMaterialsMode("materials")}
+                      className={cn(
+                        "flex-1 flex items-center justify-center py-1 text-[10px] font-medium transition-colors",
+                        buildPieceMaterialsMode === "materials"
+                          ? "bg-amber-500/15 text-amber-400"
+                          : "text-zinc-500 hover:text-zinc-300"
+                      )}
+                    >
+                      Materials
+                    </button>
+                  </div>
+                )}
                 {subcategoryEntries.map(([sub, count]) => (
                   <FilterCheckbox
                     key={sub}
@@ -1225,6 +1261,14 @@ export function ValheimData() {
                   </button>
                 </span>
               )}
+              {buildPieceMatsActive && (
+                <span className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-amber-500/15 text-[11px] text-amber-300 border border-amber-500/20">
+                  Build-Piece Materials
+                  <button title="Switch back to pieces" onClick={() => setBuildPieceMaterialsMode(false)}>
+                    <X className="w-3 h-3 text-amber-300/50 hover:text-amber-300" />
+                  </button>
+                </span>
+              )}
               {activeVendors.map((v) => (
                 <span key={v} className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-[11px] text-emerald-400">
                   {v}
@@ -1254,6 +1298,8 @@ export function ValheimData() {
 
           {stationMaterialsMode && activeStations.length > 0 ? (
             <StationMaterialsView materials={stationMaterials} stations={activeStations} mode={stationMaterialsMode} onItemClick={selectItem} />
+          ) : buildPieceMatsActive ? (
+            <BuildPieceMaterialsView materials={buildPieceMaterials} subcategories={activeSubcategories} onItemClick={selectItem} />
           ) : items.length === 0 ? (
             <div className="text-center py-12">
               <Package className="w-12 h-12 text-zinc-700 mx-auto mb-4" />
@@ -1345,7 +1391,9 @@ export function ValheimData() {
         itemIds={
           stationMaterialsMode && activeStations.length > 0
             ? stationMaterials.map((m) => m.id)
-            : items.map((i) => i.id)
+            : buildPieceMatsActive
+              ? buildPieceMaterials.map((m) => m.id)
+              : items.map((i) => i.id)
         }
         filterSnapshot={{
           query: query || undefined,
@@ -1353,9 +1401,11 @@ export function ValheimData() {
           subcategories:
             stationMaterialsMode && activeStations.length > 0
               ? [stationMaterialsMode === "craft" ? "Craft Materials" : "Build Materials"]
-              : activeSubcategories.length
-                ? activeSubcategories
-                : undefined,
+              : buildPieceMatsActive
+                ? ["Build-Piece Materials", ...activeSubcategories]
+                : activeSubcategories.length
+                  ? activeSubcategories
+                  : undefined,
           biomes: activeBiomes.length ? activeBiomes : undefined,
           stations: activeStations.length ? activeStations : undefined,
           factories: activeFactories.length ? activeFactories : undefined,
@@ -2519,6 +2569,82 @@ function StationMaterialsView({ materials, stations, mode, onItemClick }: {
             <p className="text-[11px] text-zinc-500 mt-0.5">
               All ingredients needed to {modeDesc} {totalCraftable} items at{" "}
               {stations.join(", ")}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Materials list */}
+      <div className="glass rounded-xl border border-zinc-800/50 overflow-hidden">
+        <div className="divide-y divide-zinc-800/30">
+          {materials.map((mat) => {
+            const matItem = getItemById(mat.id);
+            const biome = matItem?.biomes[0];
+            return (
+              <div
+                key={mat.id}
+                onClick={() => matItem && onItemClick(matItem)}
+                className="flex items-center gap-3 px-4 py-2 hover:bg-zinc-800/20 transition-colors cursor-pointer group"
+              >
+                <div className="w-6 h-6 shrink-0">
+                  <ItemIcon id={mat.id} size={24} />
+                </div>
+                <span className="text-sm text-brand-400 hover:underline flex-1 truncate">
+                  {mat.name}
+                </span>
+                <CopyTextButton
+                  text={mat.name}
+                  size={14}
+                  title={`Copy "${mat.name}"`}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity shrink-0"
+                />
+                {biome && (
+                  <span className={cn("text-[10px] font-medium shrink-0", BIOME_COLORS[biome] || "text-zinc-400")}>
+                    {biome}
+                  </span>
+                )}
+                <span className="text-sm text-zinc-400 font-mono shrink-0 w-16 text-right">
+                  x{mat.amount.toLocaleString()}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Build-Piece Materials View ─────────────────────────────
+function BuildPieceMaterialsView({ materials, subcategories, onItemClick }: {
+  materials: { id: string; name: string; amount: number }[];
+  subcategories: string[];
+  onItemClick: (item: ValheimItem) => void;
+}) {
+  const pieceCount = useMemo(() => getBuildPieceCount(subcategories), [subcategories]);
+  const scopeLabel = subcategories.length > 0 ? subcategories.join(", ") : "all categories";
+
+  return (
+    <div className="space-y-3">
+      {/* Summary header */}
+      <div className="glass rounded-xl p-4 border border-amber-500/20">
+        <div className="flex items-center gap-3">
+          <Package className="w-5 h-5 text-amber-400 shrink-0" />
+          <div className="flex-1">
+            <h2 className="text-sm font-semibold text-zinc-200 flex items-center gap-1">
+              Build-Piece Materials
+              <span className="text-zinc-500 font-normal ml-2">
+                ({materials.length} unique)
+              </span>
+              <CopyTextButton
+                text={materials.map((m) => `${m.name} x${m.amount}`).join("\n")}
+                size={14}
+                title="Copy all materials to clipboard"
+                className="ml-1"
+              />
+            </h2>
+            <p className="text-[11px] text-zinc-500 mt-0.5">
+              All ingredients needed to build {pieceCount} pieces in {scopeLabel}
             </p>
           </div>
         </div>

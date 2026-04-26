@@ -746,6 +746,51 @@ export function getStationMaterials(stationNames: string[], mode: "craft" | "bui
   return [...totals.values()].sort((a, b) => a.name.localeCompare(b.name));
 }
 
+/** Get all unique raw ingredients needed to build BuildPieces (optionally
+ *  filtered to specific sub-categories — Wall, Floor, Roof, etc.). Mirrors
+ *  getStationMaterials but pivots on the BuildPiece sub-category axis instead
+ *  of the station axis. */
+export function getBuildPieceMaterials(subcategories: string[]): CartMaterial[] {
+  const totals = new Map<string, CartMaterial>();
+  const filterSet = subcategories.length > 0 ? new Set(subcategories) : null;
+  for (const item of VALHEIM_ITEMS) {
+    if (item.type !== "BuildPiece") continue;
+    if (filterSet && !filterSet.has(item.subcategory)) continue;
+    for (const ing of item.recipe) {
+      const prev = totals.get(ing.id);
+      totals.set(ing.id, { id: ing.id, name: ing.name, amount: (prev?.amount || 0) + ing.amount });
+    }
+    for (const uc of item.upgradeCosts) {
+      for (const r of uc.resources) {
+        const prev = totals.get(r.id);
+        totals.set(r.id, { id: r.id, name: r.name, amount: (prev?.amount || 0) + r.amount });
+      }
+    }
+  }
+  // Drop ingredients that are themselves crafted weapons/armor/tools/ammo so
+  // the list stays raw materials only (matches getStationMaterials).
+  const itemMap = new Map(VALHEIM_ITEMS.map(i => [i.id, i]));
+  for (const [id] of totals) {
+    const ingItem = itemMap.get(id);
+    if (ingItem && ITEM_INGREDIENT_TYPES.has(ingItem.type)) {
+      totals.delete(id);
+    }
+  }
+  return [...totals.values()].sort((a, b) => a.name.localeCompare(b.name));
+}
+
+/** Count BuildPieces aggregated by getBuildPieceMaterials for header display. */
+export function getBuildPieceCount(subcategories: string[]): number {
+  const filterSet = subcategories.length > 0 ? new Set(subcategories) : null;
+  let n = 0;
+  for (const item of VALHEIM_ITEMS) {
+    if (item.type !== "BuildPiece") continue;
+    if (filterSet && !filterSet.has(item.subcategory)) continue;
+    n++;
+  }
+  return n;
+}
+
 /** Get items grouped by station level */
 export function getStationItemsByLevel(stationName: string): Map<number, ValheimItem[]> {
   const items = getStationItems(stationName);
@@ -829,6 +874,9 @@ interface ValheimDataState {
   // Station materials mode: false = show items, "craft" = craft materials, "build" = build materials
   stationMaterialsMode: false | "craft" | "build";
   setStationMaterialsMode: (mode: false | "craft" | "build") => void;
+  // Build piece materials mode: false = show pieces, "materials" = show aggregated build mats
+  buildPieceMaterialsMode: false | "materials";
+  setBuildPieceMaterialsMode: (mode: false | "materials") => void;
   // Return path — when set, the Back button on item/station/vendor detail
   // navigates to this route instead of clearing selection in place.
   // Set by cross-page links (e.g. PlayerData inventory click → item detail).
@@ -873,23 +921,33 @@ export const useValheimDataStore = create<ValheimDataState>((set) => ({
   tableSortDir: "asc",
   stationMaterialsMode: false,
   setStationMaterialsMode: (on) => set({ stationMaterialsMode: on }),
+  buildPieceMaterialsMode: false,
+  setBuildPieceMaterialsMode: (on) => set({ buildPieceMaterialsMode: on }),
   returnPath: null,
   setReturnPath: (returnPath) => set({ returnPath }),
   cartItems: [],
   cartOpen: false,
   setQuery: (query) => set({ query }),
   // Set single value (for detail view navigation)
-  setActiveType: (t) => set({ activeTypes: t ? [t] : [], activeSubcategories: [] }),
+  setActiveType: (t) => set((s) => ({
+    activeTypes: t ? [t] : [],
+    activeSubcategories: [],
+    buildPieceMaterialsMode: t === "BuildPiece" ? s.buildPieceMaterialsMode : false,
+  })),
   setActiveSubcategory: (s) => set({ activeSubcategories: s ? [s] : [] }),
   setActiveBiome: (b) => set({ activeBiomes: b ? [b] : [] }),
   setActiveStation: (s) => set({ activeStations: s ? [s] : [] }),
   setActiveFactory: (f) => set({ activeFactories: f ? [f] : [] }),
   setActiveVendor: (v) => set({ activeVendors: v ? [v] : [] }),
   // Toggle in/out of array (for sidebar checkboxes)
-  toggleType: (t) => set((s) => ({
-    activeTypes: s.activeTypes.includes(t) ? s.activeTypes.filter(x => x !== t) : [...s.activeTypes, t],
-    activeSubcategories: [],
-  })),
+  toggleType: (t) => set((s) => {
+    const nextTypes = s.activeTypes.includes(t) ? s.activeTypes.filter(x => x !== t) : [...s.activeTypes, t];
+    return {
+      activeTypes: nextTypes,
+      activeSubcategories: [],
+      buildPieceMaterialsMode: nextTypes.includes("BuildPiece") ? s.buildPieceMaterialsMode : false,
+    };
+  }),
   toggleSubcategory: (sub) => set((s) => ({
     activeSubcategories: s.activeSubcategories.includes(sub) ? s.activeSubcategories.filter(x => x !== sub) : [...s.activeSubcategories, sub],
   })),

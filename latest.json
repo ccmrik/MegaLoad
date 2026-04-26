@@ -1,11 +1,11 @@
 {
-  "version": "1.10.28",
-  "notes": "Valheim Data — Armor Set card now lists the actual mechanical bonuses each set gives, sourced live from the game via MegaDataExtractor v1.5.0. Examples: Sneaky = +15 Sneak skill; Ask's Endurance = Run stamina drain -10%, Jump stamina cost -10%, Attack stamina cost -20%; Berserk = Health regen +30%, Stamina regen +15%.",
-  "pub_date": "2026-04-26T12:30:00Z",
+  "version": "1.10.29",
+  "notes": "Valheim Data — new sub-sub-category for Build Pieces. When Build Piece is selected in the Type filter, the Subcategory panel now shows a Pieces / Materials toggle. Switch to Materials to see the aggregated raw ingredients needed to build every piece in the active subcategory selection (or all build pieces if none selected). Mirrors the existing Stations Items / Craft Mats / Build Mats pattern.",
+  "pub_date": "2026-04-26T14:45:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUNZYTRFb1ZDLytxeWpVT3pJTTVTZDRzVEZFUHJ4Q0szZTdiN2FLY3NtR1I2MGFwMndSdEs5UW9YZ2xTZlJjNUNOcDZ6c0txRHd3UGVPTFloc21hdkE4PQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTcwNDk3CWZpbGU6TWVnYUxvYWRfMS4xMC4yOF94NjQtc2V0dXAubnNpcy56aXAKajg0Q1ZLYVA5OWNBazFhNkN2Q1h1SWNTcWtEK05wQWlTeTNuN3o1UGtUVEZkbjRrZHhpMzBoSDNvSkNLS2pUQURKT3NvUkhuT284VGpoTUdHQUJrQWc9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.28/MegaLoad_1.10.28_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUtVd0hJc3BlMzRmbG5PUnFvT1RRYjRPZk5wTEU0bHFndmtDR0xVbFN6NVlCZTVQZzJ2aUdHU0cvZVMzaCtCUFQ2UFRoMjNhMW1WTHRKVWRZVnRTY3dnPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTc4Mzg1CWZpbGU6TWVnYUxvYWRfMS4xMC4yOV94NjQtc2V0dXAubnNpcy56aXAKWWNEWXJ1cUNUaTRhSnRhdWJBOFhMYmJCOW4rRkpubjhwT2liQ1dIUi9zSm1RSVVLbEJmd0VOK0lOaHdRTjR1UmlsTGh4RG9VRmkxOFU5cHFWdmdFRFE9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.29/MegaLoad_1.10.29_x64-setup.nsis.zip"
     }
   }
 }
