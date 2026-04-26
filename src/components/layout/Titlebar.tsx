@@ -1,8 +1,9 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { Minus, Square, X, Download, Loader2, ShoppingCart } from "lucide-react";
+import { Minus, Square, X, Download, Loader2, ShoppingCart, NotebookPen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useAppUpdateStore } from "../../stores/appUpdateStore";
 import { useValheimDataStore } from "../../stores/valheimDataStore";
+import { useBugStore, isDraftMeaningful } from "../../stores/bugStore";
 
 const appWindow = getCurrentWindow();
 
@@ -64,6 +65,7 @@ export function Titlebar() {
       </div>
 
       <div className="flex h-full items-center">
+        <DraftTicketIndicator />
         <CartIndicator />
         <button
           onClick={() => appWindow.minimize()}
@@ -102,6 +104,24 @@ function CartIndicator() {
       <span className="absolute -top-0 right-1 min-w-[14px] h-[14px] rounded-full bg-red-500 text-white text-[9px] font-bold flex items-center justify-center px-0.5">
         {cartItems.length}
       </span>
+    </button>
+  );
+}
+
+// Shows a return-to-draft icon while there's an in-progress new ticket.
+// Lets the user wander around MegaLoad collecting context without losing typed text.
+function DraftTicketIndicator() {
+  const draft = useBugStore((s) => s.draft);
+  const navigate = useNavigate();
+  if (!isDraftMeaningful(draft)) return null;
+  return (
+    <button
+      onClick={() => navigate("/bugs", { state: { restoreDraft: true } })}
+      className="relative h-full px-3 hover:bg-zinc-800 transition-colors duration-150"
+      title="Resume your in-progress ticket"
+    >
+      <NotebookPen className="w-3.5 h-3.5 text-emerald-400" />
+      <span className="absolute -top-0 right-1 w-2 h-2 rounded-full bg-emerald-400" />
     </button>
   );
 }

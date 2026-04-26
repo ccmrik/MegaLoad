@@ -762,6 +762,11 @@ const NON_RAW_MAT_TYPES = new Set([...ITEM_INGREDIENT_TYPES, "Plantable"]);
 const PLAYER_OBTAINABLE_SOURCES = new Set([
   "Pickup", "Tree", "Mining", "Looting", "Pickable", "Crafting",
   "Foraging", "Fishing", "Creature Drop", "Chest Loot", "Vendor",
+  // Destructibles drop materials when broken — Charcoal Resin (charred trees,
+  // Ashlands), Pot Shards (ruin pots), Asksvin carrion bones, Dvergr Extractor
+  // (Mistlands devices). Required for the Green Pot Furniture pieces to show
+  // their CharcoalResin + Pot_Shard_Green ingredients in the build-mats rollup.
+  "Destructible",
 ]);
 
 const _bpItemMap = new Map(VALHEIM_ITEMS.map(i => [i.id, i]));

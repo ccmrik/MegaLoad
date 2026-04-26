@@ -24,6 +24,44 @@ import {
 // ── Unread tracking via localStorage ──────────────────────────────
 const UNREAD_KEY = "megabugs_last_read";
 const SEEN_USERS_KEY = "megabugs_seen_users";
+const DRAFT_KEY = "megabugs_draft";
+
+export interface TicketDraft {
+  ticketType: string;
+  title: string;
+  description: string;
+  images: ImageData[];
+  priority: TicketPriority;
+  modTags: string[];
+}
+
+function readDraft(): TicketDraft | null {
+  try {
+    const raw = localStorage.getItem(DRAFT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as TicketDraft;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeDraft(draft: TicketDraft | null) {
+  try {
+    if (draft === null) localStorage.removeItem(DRAFT_KEY);
+    else localStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+  } catch { /* quota or disabled storage — non-critical */ }
+}
+
+export function isDraftMeaningful(d: TicketDraft | null): boolean {
+  if (!d) return false;
+  return Boolean(
+    d.title.trim() ||
+    d.description.trim() ||
+    d.images.length > 0 ||
+    d.modTags.length > 0,
+  );
+}
 
 function getSeenUserIds(): Set<string> {
   try {
@@ -81,6 +119,9 @@ interface BugState {
   notificationCount: number;
   /** New users not yet seen by admin */
   newUserCount: number;
+  /** In-progress new-ticket draft, persisted to localStorage so navigating
+   *  away from the form doesn't lose typed text/images. Null when empty. */
+  draft: TicketDraft | null;
 
   checkAccess: (bepinexPath: string) => Promise<void>;
   /** Refresh the caller's role from the backend (reads collaborators.json). */
@@ -113,6 +154,8 @@ interface BugState {
   stopNotificationPolling: () => void;
   /** Mark all current users as seen (call when admin views user list) */
   markUsersSeen: () => void;
+  /** Persist the in-progress new-ticket form to localStorage. Pass null to clear. */
+  setDraft: (draft: TicketDraft | null) => void;
 }
 
 function isOfflineError(e: unknown): boolean {
@@ -157,6 +200,7 @@ export const useBugStore = create<BugState>((set, get) => ({
   lastSubmitTime: 0,
   notificationCount: 0,
   newUserCount: 0,
+  draft: readDraft(),
 
   checkAccess: async (bepinexPath: string) => {
     try {
@@ -530,5 +574,11 @@ export const useBugStore = create<BugState>((set, get) => ({
       markAllUsersSeen(users.map((u) => u.user_id));
       set({ newUserCount: 0 });
     }).catch(() => {});
+  },
+
+  setDraft: (draft: TicketDraft | null) => {
+    const stored = isDraftMeaningful(draft) ? draft : null;
+    writeDraft(stored);
+    set({ draft: stored });
   },
 }));

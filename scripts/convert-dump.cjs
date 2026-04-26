@@ -2341,11 +2341,16 @@ const ITEM_REMOVE = new Set([
   "Skeleton_NoArcher",  // Duplicate of Skeleton (melee-only variant)
   "TheHive",            // Bogus entry (Drake nest data on a Mistlands "boss")
   "Hive",               // Redundant with SeekerQueen (The Queen)
+  // Ashlands ruin pots that aren't currently in-game — Iron Gate ships the
+  // prefabs in the data dump but only the Green variants are placeable from
+  // the Cultivator/Hammer. Strip the Red and Cracked-clay variants so they
+  // don't pollute Furniture or the build-mats rollup.
+  "piece_pot1_red", "piece_pot2_red", "piece_pot3_red",
+  "piece_pot1_cracked", "piece_pot2_cracked", "piece_pot3_cracked",
 ]);
 
 // Items to add (missing from extraction)
 const ITEM_ADDITIONS = [
-  {id:"Pot_Shard_Red",token:"$item_pot_shard_red",name:"Red Pot Shard",type:"Material",subcategory:"Material",description:"A fragment of something brittle.",biomes:["Ashlands"],source:["Destructible"],station:"",stationLevel:0,maxQuality:1,stack:50,weight:2,value:0,recipe:[],upgradeCosts:[],drops:[],worldSources:[],stats:[],wikiUrl:"https://valheim.fandom.com/wiki/Pot_shard",wikiGroup:""},
   // Bee Nest — world destructible that hangs off abandoned houses and Black Forest
   // contested towers. Drops a Queen Bee + Honey when broken; stings the player for
   // 10 poison in a 4m radius every 4 seconds while they're close.

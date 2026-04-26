@@ -32,6 +32,7 @@ import {
   ArrowDown,
   ClipboardCopy,
   Search,
+  Save,
 } from "lucide-react";
 
 type View = "list" | "new" | "detail";
@@ -202,7 +203,9 @@ export function MegaBugs() {
     clearActiveTicket,
     clearError,
     cooldownRemaining,
+    setDraft,
   } = useBugStore();
+  const draft = useBugStore((s) => s.draft);
 
   // Owner and collaborator both manage tickets; only owner can delete or close.
   const canManage = role !== "user";
@@ -218,21 +221,48 @@ export function MegaBugs() {
   const [searchQuery, setSearchQuery] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
 
-  // Reset to list view when navigating to this page
+  // Reset to list view when navigating in. If the Titlebar's draft icon sent us
+  // here (location.state.restoreDraft) and a draft exists, jump straight back
+  // into the new-ticket form with fields pre-populated by the draft loader below.
   useEffect(() => {
-    setView("list");
+    const wantDraft = (location.state as { restoreDraft?: boolean } | null)?.restoreDraft === true;
+    if (wantDraft && useBugStore.getState().draft) {
+      setView("new");
+    } else {
+      setView("list");
+    }
     clearActiveTicket();
   }, [location.key, clearActiveTicket]);
 
   // New ticket form — order matches Milord's flow:
   // 1. Bug/Feature → 2. Mods/Apps → 3. Priority (default Normal) → 4. Title → 5. Description/images
-  const [ticketType, setTicketType] = useState<TicketType>("bug");
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [images, setImages] = useState<ImageData[]>([]);
+  // Initial state restores from the persisted draft so navigating back picks up
+  // exactly where the user left off.
+  const initialDraft = draft;
+  const [ticketType, setTicketType] = useState<TicketType>(
+    (initialDraft?.ticketType as TicketType) || "bug",
+  );
+  const [title, setTitle] = useState(initialDraft?.title ?? "");
+  const [description, setDescription] = useState(initialDraft?.description ?? "");
+  const [images, setImages] = useState<ImageData[]>(initialDraft?.images ?? []);
   const [formShake, setFormShake] = useState(false);
-  const [priority, setPriority] = useState<TicketPriority>("normal");
-  const [selectedModTags, setSelectedModTags] = useState<ModTag[]>([]);
+  const [priority, setPriority] = useState<TicketPriority>(initialDraft?.priority ?? "normal");
+  const [selectedModTags, setSelectedModTags] = useState<ModTag[]>(
+    (initialDraft?.modTags as ModTag[]) ?? [],
+  );
+
+  // Auto-save the draft on every change. Cheap localStorage write — no debounce
+  // needed for a few KB of text + a handful of base64 thumbnails.
+  useEffect(() => {
+    setDraft({
+      ticketType,
+      title,
+      description,
+      images,
+      priority,
+      modTags: selectedModTags,
+    });
+  }, [ticketType, title, description, images, priority, selectedModTags, setDraft]);
 
   // Reply
   const [replyText, setReplyText] = useState("");
@@ -417,8 +447,21 @@ export function MegaBugs() {
       setImages([]);
       setPriority("normal");
       setSelectedModTags([]);
+      setTicketType("bug");
+      setDraft(null);
       setView("list");
     }
+  }
+
+  function discardDraft() {
+    setTitle("");
+    setDescription("");
+    setImages([]);
+    setPriority("normal");
+    setSelectedModTags([]);
+    setTicketType("bug");
+    setDraft(null);
+    setView("list");
   }
 
   async function handleReply() {
@@ -749,10 +792,31 @@ export function MegaBugs() {
             onClick={() => setView("list")}
             className="text-zinc-400 hover:text-zinc-200 transition-colors"
             aria-label="Go back"
+            title="Back — your draft is saved"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <h2 className="text-lg font-semibold text-zinc-200">New Ticket</h2>
+          {draft && (
+            <span
+              className="ml-2 inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-400/90 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded-full"
+              title="Auto-saved — navigate away and come back any time"
+            >
+              <Save className="w-3 h-3" />
+              Draft saved
+            </span>
+          )}
+          <div className="flex-1" />
+          {draft && (
+            <button
+              onClick={discardDraft}
+              className="text-[11px] text-zinc-500 hover:text-red-400 transition-colors flex items-center gap-1"
+              title="Discard this draft"
+            >
+              <Trash2 className="w-3.5 h-3.5" />
+              Discard draft
+            </button>
+          )}
         </div>
 
         {offline && <OfflineBanner />}

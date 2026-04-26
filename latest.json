@@ -1,11 +1,11 @@
 {
-  "version": "1.10.30",
-  "notes": "Valheim Data — new Plantable item type covers the 17 sapling pieces (split out of Build Piece) plus seeds, crops, and plantable mushrooms (flagged plantable=true while keeping their primary Material/Food typing — Carrot still appears under Food, etc.). Build-Piece Materials view now skips the 9 Ashlands ruin pots whose ingredients aren't player-farmable, and ingredient names resolve via the canonical item record so manually-added entries like Red Pot Shard display properly instead of the raw $item_pot_shard_red token.",
-  "pub_date": "2026-04-26T15:15:00Z",
+  "version": "1.10.31",
+  "notes": "MegaBugs ticket draft retention — your in-progress new ticket is now auto-saved to localStorage so navigating around MegaLoad while writing it no longer loses your work. A NotebookPen icon appears next to the cart in the titlebar whenever you have an unsubmitted draft; click it to jump straight back into the form with everything restored. Also strips the 6 placeholder Ashlands ruin pot pieces (Red and Cracked variants aren't placeable in-game) and lets the build-mats rollup recognise Destructible-source materials like Pot Shards and Charcoal Resin.",
+  "pub_date": "2026-04-26T16:30:00Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOU1sWHErdE8yYTAyaDBqQ2VKcTYrWW9STkJHM3M0cE03MUZjb2oybHVrUlhrUnNKNllUQVNhblR2LzBPcUlmUFJ0SDc0eXNrTzJNU1k3dlFkNGMxNVFJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTgwNDY2CWZpbGU6TWVnYUxvYWRfMS4xMC4zMF94NjQtc2V0dXAubnNpcy56aXAKd3lwbjRsRlJtVERYVjVHNktLZWtBc003RThrMGNjcDc4S21hMHRxV01EY1ZCZWZWWTN1Y2Z5YXgvYVJ4aVN6eEwwVk05bEx3OXNadFlOa0FOTWZvQ1E9PQo=",
-      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.30/MegaLoad_1.10.30_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUtPbDYxNC9lQm9uM1Q1cjVlbDZYY05BNFl4eG5VU3JZQysrYjVVR3AwZTZBNDNteXBDdTNpdFkwYXBmY3lpM1JRMXZ4NGNyako4dk9taHE1c2svT2dJPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzc3MTgyNDE1CWZpbGU6TWVnYUxvYWRfMS4xMC4zMV94NjQtc2V0dXAubnNpcy56aXAKV3N1cEJ3YU1BTkUxWFhNeFhTR0pnalV5ZG9RRzExTjJPSUdoUmdpakoxeVNveTBXVGpzbHFOUkdCbDl2cENiTG5qVk9aQkx3dXJKeGN4c0N5M0pqQ3c9PQo=",
+      "url": "https://github.com/ccmrik/MegaLoad/releases/download/v1.10.31/MegaLoad_1.10.31_x64-setup.nsis.zip"
     }
   }
 }
