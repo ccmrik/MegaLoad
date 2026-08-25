@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-25T14:50:00Z",
+  "updated_at": "2026-08-25T06:18:19Z",
   "mods": [
     {
       "name": "MegaHoe",
@@ -108,11 +108,11 @@
     },
     {
       "name": "MegaPlanner",
-      "version": "1.6.0",
-      "download_url": "https://github.com/LordRikiller/MegaPlanner/releases/download/v1.6.0/MegaPlanner.dll",
+      "version": "1.7.0",
+      "download_url": "https://github.com/LordRikiller/MegaPlanner/releases/download/v1.7.0/MegaPlanner.dll",
       "dll_name": "MegaPlanner.dll",
       "plugin_folder": "MegaPlanner",
-      "description": "Capture every built piece within a configurable radius into a JSON blueprint (F9 default), then re-place the entire structure later from a menu (F10 default). Replay HUD shows the full running material budget with proper localised names (have/need per material). Free Build option (config + auto-engages with MegaTrainer's no_placement_cost cheat) skips materials entirely. Ghost is independent of the player — walk freely with WASD/mouse, manipulate the ghost with arrow keys: Left/Right rotate, Up/Down raise/lower (Shift = fast), Alt+arrows nudge XZ in your view direction. Mousewheel-zoom placement camera (close third-person <-> godview), R resets zoom, Home resets ghost offsets. Live 3D preview in the menu, paced placement, pulls materials from inventory + nearby chests.",
+      "description": "Capture every built piece within a configurable radius into a JSON blueprint (F9 default), then re-place the entire structure later from a menu (F10 default). Replay HUD shows the full running material budget with proper localised names (have/need per material). Free Build option (config + auto-engages with MegaTrainer's no_placement_cost cheat) skips materials entirely. Ghost is independent of the player — walk freely with WASD/mouse, manipulate the ghost with arrow keys: Left/Right rotate, Up/Down raise/lower (Shift = fast), Alt+arrows nudge XZ in your view direction. Mousewheel-zoom placement camera (close third-person <-> godview), R resets zoom, Home resets ghost offsets. Live 3D preview in the menu, paced placement, pulls materials from inventory + nearby chests. Food, meads and loose items (armour/weapons/trophies) are excluded from blueprints by default so a replay builds the structure only - opt each back in with the IncludeFood / IncludeMeads / IncludeItems toggles.",
       "hidden": false
     },
     {
