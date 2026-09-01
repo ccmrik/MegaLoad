@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-08-29T05:49:07Z",
+  "updated_at": "2026-09-01T00:20:40Z",
   "mods": [
     {
       "name": "MegaHoe",
@@ -76,8 +76,8 @@
     },
     {
       "name": "MegaTrainer",
-      "version": "1.6.5",
-      "download_url": "https://github.com/LordRikiller/MegaTrainer/releases/download/v1.6.5/MegaTrainer.dll",
+      "version": "1.6.6",
+      "download_url": "https://github.com/LordRikiller/MegaTrainer/releases/download/v1.6.6/MegaTrainer.dll",
       "dll_name": "MegaTrainer.dll",
       "plugin_folder": "MegaTrainer",
       "description": "In-game cheat trainer — god mode, fly, no cost, explore map, always rested, infinite eitr, tame all, no structure damage, fast skill up, speed/jump controls"
