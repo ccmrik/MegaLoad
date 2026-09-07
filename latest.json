@@ -1,11 +1,11 @@
 {
-  "version": "1.12.1",
-  "notes": "Responsiveness fix — MegaLoad no longer seizes up after days of uptime.\n\nEvery background job (the game-status poll, mod update checks, the MegaBugs badge, cloud sync, MegaChat) used to do its work on the app's main thread, and a web request that stalled — typically after a laptop sleep/wake — could block that thread indefinitely. Everything you clicked afterwards queued up behind it, which is why pages took an age to open and the sidebar sat stuck on \"Updating mods...\".\n\nAll commands now run off the main thread, every web request has proper connect and read timeouts so a dead connection errors out instead of hanging forever, and the background pollers skip a beat instead of stacking up when a request runs long. Leave it open for a week — she'll be right.",
-  "pub_date": "2026-08-15T02:00:09.000Z",
+  "version": "1.12.2",
+  "notes": "MegaArrow joins the family.\n\nA new mod, MegaArrow, is now in the mod list: a volley arrow for any bow that fires one homing arrow per enemy in front of you (up to ten), all-or-nothing with the arrow you actually aimed. This MegaLoad update adds its icon in the mod list and the 'MegaArrow' tag in MegaBugs so tickets can be filed against it. No other changes.",
+  "pub_date": "2026-09-07T22:12:44.000Z",
   "platforms": {
     "windows-x86_64": {
-      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOURqcENwY0dBNzhIRGlCRVdoYXJDcEFoUmxzMURuZE1MNDZtcGFBd1V2RlVRM1pLZ0h2ZHJxeUFvRmNtNmt1ZHNjZmw5ZTlOZEJnZXA3OWg1ODdZMXdVPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg2NzU5MDYyCWZpbGU6TWVnYUxvYWRfMS4xMi4xX3g2NC1zZXR1cC5uc2lzLnppcApydVRCL3BZUFl0Wk5oajdybVdndXdkWlNUdVBBQnlKT2tKbjVING1neTl0bi9XbG5YZnlGZDRyV1VBYWF4bTdJZjFJNHMxV2I5TUdPeEJYbmFLQkFBZz09Cg==",
-      "url": "https://github.com/LordRikiller/MegaLoad/releases/download/v1.12.1/MegaLoad_1.12.1_x64-setup.nsis.zip"
+      "signature": "dW50cnVzdGVkIGNvbW1lbnQ6IHNpZ25hdHVyZSBmcm9tIHRhdXJpIHNlY3JldCBrZXkKUlVTZGtBN0hkQ3RKOUhYRVJyN1EwVmZSRGhiWnQxaWpOOCt0VWQ3dFNjc2NqdXc0S1F5TENjSXJmcDN2LzlNbitqSjFiL2VjK3MyRzljb1pIZFpDYzM5SW8rT1JFcHdVZXdFPQp0cnVzdGVkIGNvbW1lbnQ6IHRpbWVzdGFtcDoxNzg4ODE5MTE1CWZpbGU6TWVnYUxvYWRfMS4xMi4yX3g2NC1zZXR1cC5uc2lzLnppcAphd08yRllxK21hWm1FYmRJbHhUZ0Z2c29wME1FUWVFK01QaUtnUHNzWWFMZWtjLzhEVDBoOE96UDVlWDJDYTA4OW9XWG12SnM1MlZ0RFlISXE1c3ZBdz09Cg==",
+      "url": "https://github.com/LordRikiller/MegaLoad/releases/download/v1.12.2/MegaLoad_1.12.2_x64-setup.nsis.zip"
     }
   }
 }

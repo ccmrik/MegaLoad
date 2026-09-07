@@ -88,6 +88,7 @@ const MOD_TAGS = [
   // Apps
   "megaload",
   "megaapp",
+  "megaarrow",
   // Mods A-Z
   "megabuilder",
   "megadataextractor",
@@ -118,6 +119,7 @@ const MOD_TAG_SET = new Set<string>(MOD_TAGS);
 const MOD_TAG_LABELS: Record<ModTag, string> = {
   megaload: "MegaLoad",
   megaapp: "MegaApp",
+  megaarrow: "MegaArrow",
   megabuilder: "MegaBuilder",
   megadataextractor: "MegaDataExtractor",
   megadebug: "MegaDebug",

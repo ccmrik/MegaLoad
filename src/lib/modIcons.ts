@@ -14,6 +14,7 @@ import {
   Sprout,
   LayoutGrid,
   DoorOpen,
+  Target,
   type LucideIcon,
 } from "lucide-react";
 
@@ -36,6 +37,8 @@ export const MOD_ICONS: Record<string, LucideIcon> = {
   miniqol: LayoutGrid,
   // Home Portal hub-and-spoke network, split out of MegaQoL/MiniQoL.
   megaportals: DoorOpen,
+  // Volley arrow — one homing arrow per enemy, all-or-nothing with the aimed shot.
+  megaarrow: Target,
 };
 
 export function iconForMod(folder: string | null | undefined, fileName: string): LucideIcon {
