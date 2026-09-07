@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at": "2026-09-05T23:20:46Z",
+  "updated_at": "2026-09-07T22:06:10Z",
   "mods": [
     {
       "name": "MegaHoe",
@@ -148,6 +148,14 @@
       "dll_name": "MegaPortals.dll",
       "plugin_folder": "MegaPortals",
       "description": "Hub-and-spoke portal teleport network. Build a stone \"Home Portal Hub\" from the Hammer (Misc tab) and name it, e.g. \"home\", then name your ordinary portals \"home>Label\" to link them as spokes. Walk into a spoke to travel to its hub; walk into the hub to pick a destination from a sortable Name/Biome/Distance table — click a header to sort, hub pinned top, names sort symbols before digits before letters, and the biome shows for every destination on the map (not just loaded zones). SpokeToSpoke lets spokes reach sibling spokes directly. PortalNameMaxLength raises vanilla's 10-character portal name cap. Configurable hub build cost. — This feature MOVED here out of MegaQoL (v1.18.0) and MiniQoL (v1.5.0); update those at the same time or two mods will patch the same portal methods. Hubs you have already built keep working: MegaPortals registers the legacy MegaQoL_PortalHub and FarmBuild_PortalHub prefab names alongside its own, and adopts your existing Home Portal settings on first run."
+    },
+    {
+      "name": "MegaArrow",
+      "version": "1.0.0",
+      "download_url": "https://github.com/LordRikiller/MegaArrow/releases/download/v1.0.0/MegaArrow.dll",
+      "dll_name": "MegaArrow.dll",
+      "plugin_folder": "MegaArrow",
+      "description": "Volley arrow for any bow. Craft 100 at the Workbench (10 Wood, 10 Feathers, 1 Freeze Gland, 1 Ooze, 1 Resin, 1 Obsidian). Loose one and it becomes one homing arrow per enemy in your forward cone, up to 10 — target 1 is the creature under your crosshair and is the arrow you fired; the rest each wear a different vanilla arrow's look (Frost, Poison, Fire, Needle, Obsidian, Silver, Charred, Carapace, Iron, Bronze). All or nothing: if your aimed arrow strikes a creature every extra arrow lands, if it misses they all miss. Every arrow deals TotalDamage (100) split evenly across the enabled types — Pierce, Blunt, Slash, Fire, Frost, Lightning, Poison, Spirit, all on by default — with vanilla burn/poison/spirit DoT, frost slow and lightning effects. Configurable cone, range, line-of-sight gate, homing turn rate and per-type toggles; live config reload."
     }
   ]
 }
